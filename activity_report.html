@@ -17,8 +17,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino 
 .container { max-width: 1200px; margin: 0 auto; padding: 24px 24px 60px; }
 
 /* ============ METHODOLOGY NOTICE ============ */
-.method-notice { background: #1e2d40; border: 1px solid #2a4a6e; border-left: 4px solid #4299e1; border-radius: 8px; padding: 16px 20px; margin-bottom: 28px; font-size: 14px; line-height: 1.7; color: #90cdf4; }
+.method-notice { background: #1e2d40; border: 1px solid #2a4a6e; border-left: 4px solid #4299e1; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; font-size: 14px; line-height: 1.7; color: #90cdf4; }
 .method-notice strong { color: #bee3f8; }
+
+/* ============ PULSE HIGHLIGHT ============ */
+.pulse-highlight { background: linear-gradient(135deg, #2d1f0a 0%, #4a2d0a 100%); border: 2px solid #f6ad55; border-radius: 12px; padding: 20px 24px; margin-bottom: 28px; display: flex; gap: 16px; align-items: flex-start; }
+.pulse-icon { font-size: 36px; line-height: 1; }
+.pulse-content { flex: 1; }
+.pulse-title { font-size: 16px; font-weight: 700; color: #f6ad55; margin-bottom: 8px; }
+.pulse-desc { font-size: 13px; color: #e2e8f0; line-height: 1.8; margin-bottom: 12px; }
+.pulse-desc strong { color: #fff; background: rgba(246, 173, 85, 0.2); padding: 1px 6px; border-radius: 4px; }
+.pulse-stats { display: flex; gap: 20px; }
+.pulse-stat { font-size: 13px; color: #a0aec0; }
+.pulse-stat strong { font-size: 18px; color: #f6ad55; margin-right: 4px; }
+
+/* ============ PULSE CHART ANNOTATION ============ */
+.pulse-annotation { margin-top: 12px; padding: 10px 14px; background: #111827; border-radius: 6px; font-size: 12px; color: #a0aec0; }
+.anno-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
 
 /* ============ KPI CARDS ============ */
 .section-title { font-size: 16px; font-weight: 600; color: #a0aec0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; margin-top: 36px; }
@@ -107,22 +122,39 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino 
   对照基准：<strong>4月1日（上周三）同时段</strong>，排除时间段差异，使增量更能反映活动真实拉动效果。
 </div>
 
+<!-- 关键发现 - 脉冲效应 -->
+<div class="pulse-highlight">
+  <div class="pulse-icon">⚡</div>
+  <div class="pulse-content">
+    <div class="pulse-title">关键发现：推送结束后 1 分钟出现订单激增脉冲</div>
+    <div class="pulse-desc">
+      社群组在 <strong>19:56</strong>（推送结束后1分钟）单分钟订单量达到 <strong>43单</strong>，
+      是4/1同时段的 <strong>10.7倍</strong>，脉冲持续约20分钟后回落至基准线。
+      用户行为链路：推送阅读(19:33-19:55) → 进入积分商城 → 发现积分不足 → 跳转充值中心 → 支付完成。
+    </div>
+    <div class="pulse-stats">
+      <span class="pulse-stat"><strong>43</strong> 单/分钟</span>
+      <span class="pulse-stat"><strong>+970%</strong> vs 4/1</span>
+      <span class="pulse-stat"><strong>~1min</strong> 响应延迟</span>
+    </div>
+  </div>
+</div>
+
 <!-- KPI 汇总 -->
 <div class="section-title">窗口期核心指标对比（19:33–20:30）</div>
 <div class="kpi-grid" id="kpiGrid"></div>
 
-<!-- 分钟级脉冲图 -->
-<div class="section-title">分钟级订单脉冲（社群组 vs 4/1基准）</div>
+<!-- 分钟级脉冲图 - 双Y轴合并 -->
+<div class="section-title">分钟级订单脉冲（双组对比 · 左轴社群组 / 右轴VIP组）</div>
 <div class="chart-card">
-  <div class="card-title">社群组 · 每分钟订单量对比</div>
-  <div class="card-sub">橙色=4/8活动日；灰色=4/1上周三基准；红线=推送时段（19:33–19:55）</div>
-  <div class="chart-area-tall" id="chartSocialMin"></div>
-</div>
-
-<div style="margin-top:16px" class="chart-card">
-  <div class="card-title">VIP组 · 每分钟订单量对比</div>
-  <div class="card-sub">蓝色=4/8活动日；灰色=4/1上周三基准；红线=推送时段</div>
-  <div class="chart-area-tall" id="chartVipMin"></div>
+  <div class="card-title">🔥 推送后脉冲效应 · 每分钟订单量对比</div>
+  <div class="card-sub">橙色柱=社群组(左轴) 蓝色柱=VIP组(右轴) 灰色=4/1基准 红线区=推送时段(19:33-19:55) 红虚线=推送结束</div>
+  <div class="chart-area-tall" id="chartPulseDual"></div>
+  <div class="pulse-annotation">
+    <span class="anno-dot" style="background:#f6ad55"></span> 社群组 19:56 脉冲峰值 <strong>43单/分钟</strong>（vs 4/1 的4单，+970%）
+    <span style="margin-left:20px"></span>
+    <span class="anno-dot" style="background:#63b3ed"></span> VIP组 19:56 脉冲峰值 <strong>15单/分钟</strong>（vs 4/1 的3单，+400%）
+  </div>
 </div>
 
 <!-- 组内增量 -->
@@ -360,39 +392,112 @@ var markLine = {
   label: { formatter: '推送结束\n19:55', color: '#fc8181', fontSize: 11, position: 'insideEndTop' }
 };
 
-// Social minute chart
+// Dual-axis pulse chart - merged social & VIP
 (function() {
-  var chart = echarts.init(document.getElementById('chartSocialMin'));
-  var m8 = toMap(D.minute_s8);
-  var m1 = toMap(D.minute_s1);
+  var chart = echarts.init(document.getElementById('chartPulseDual'));
+  var s8 = toMap(D.minute_s8), s1 = toMap(D.minute_s1);
+  var v8 = toMap(D.minute_v8), v1 = toMap(D.minute_v1);
   chart.setOption({
     backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis', backgroundColor: '#1a1d2e', borderColor: '#2d3748', textStyle: { color: '#e2e8f0' } },
-    legend: { data: ['4/8 活动日', '4/1 基准日'], top: 0, right: 0, textStyle: { color: '#a0aec0', fontSize: 12 } },
-    grid: { top: 36, bottom: 60, left: 40, right: 20 },
+    tooltip: { 
+      trigger: 'axis', 
+      backgroundColor: '#1a1d2e', 
+      borderColor: '#2d3748', 
+      textStyle: { color: '#e2e8f0' },
+      formatter: function(params) {
+        var t = params[0].axisValue;
+        var html = '<div style="font-weight:600;margin-bottom:6px;">' + t + '</div>';
+        params.forEach(function(p) {
+          var color = p.color;
+          html += '<div style="display:flex;align-items:center;gap:6px;margin:3px 0;">';
+          html += '<span style="display:inline-block;width:10px;height:10px;background:' + color + ';border-radius:2px;"></span>';
+          html += '<span style="flex:1;">' + p.seriesName + '</span>';
+          html += '<span style="font-weight:600;">' + p.value + '单</span>';
+          html += '</div>';
+        });
+        return html;
+      }
+    },
+    legend: { 
+      data: ['社群组 4/8', '社群组 4/1', 'VIP组 4/8', 'VIP组 4/1'], 
+      top: 0, 
+      right: 0, 
+      textStyle: { color: '#a0aec0', fontSize: 11 },
+      itemWidth: 14,
+      itemHeight: 10
+    },
+    grid: { top: 44, bottom: 60, left: 50, right: 50 },
     xAxis: {
       type: 'category', data: axisAll,
       axisLabel: { color: '#718096', fontSize: 10, rotate: 45, interval: 4 },
       axisLine: { lineStyle: { color: '#2d3748' } }
     },
-    yAxis: { type: 'value', axisLabel: { color: '#718096', fontSize: 11 }, splitLine: { lineStyle: { color: '#1e2535' } } },
+    yAxis: [
+      { 
+        type: 'value', 
+        name: '社群组', 
+        nameTextStyle: { color: '#f6ad55', fontSize: 11 },
+        axisLabel: { color: '#f6ad55', fontSize: 10 }, 
+        splitLine: { lineStyle: { color: '#1e2535' } },
+        axisLine: { lineStyle: { color: '#744210' } }
+      },
+      { 
+        type: 'value', 
+        name: 'VIP组', 
+        nameTextStyle: { color: '#63b3ed', fontSize: 11 },
+        axisLabel: { color: '#63b3ed', fontSize: 10 }, 
+        splitLine: { show: false },
+        axisLine: { lineStyle: { color: '#1a4a7a' } }
+      }
+    ],
     series: [
-      Object.assign(buildSeries(axisAll, m8, '#f6ad55', '4/8 活动日'), { markArea: markArea, markLine: markLine }),
-      buildSeries(axisAll, m1, '#4a5568', '4/1 基准日')
+      // 社群组 4/8 - 左轴
+      {
+        name: '社群组 4/8',
+        type: 'bar',
+        yAxisIndex: 0,
+        data: axisAll.map(function(t) { return s8[t] || 0; }),
+        itemStyle: { color: '#f6ad55', borderRadius: [2,2,0,0] },
+        barMaxWidth: 8,
+        markArea: markArea,
+        markLine: markLine
+      },
+      // 社群组 4/1 - 左轴
+      {
+        name: '社群组 4/1',
+        type: 'bar',
+        yAxisIndex: 0,
+        data: axisAll.map(function(t) { return s1[t] || 0; }),
+        itemStyle: { color: '#4a5568', borderRadius: [2,2,0,0] },
+        barMaxWidth: 6
+      },
+      // VIP组 4/8 - 右轴
+      {
+        name: 'VIP组 4/8',
+        type: 'bar',
+        yAxisIndex: 1,
+        data: axisAll.map(function(t) { return v8[t] || 0; }),
+        itemStyle: { color: '#63b3ed', borderRadius: [2,2,0,0] },
+        barMaxWidth: 8
+      },
+      // VIP组 4/1 - 右轴
+      {
+        name: 'VIP组 4/1',
+        type: 'bar',
+        yAxisIndex: 1,
+        data: axisAll.map(function(t) { return v1[t] || 0; }),
+        itemStyle: { color: '#2d4a5e', borderRadius: [2,2,0,0] },
+        barMaxWidth: 6
+      }
     ]
   });
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// VIP minute chart
+// Placeholder for removed charts (keep for compatibility if needed)
 (function() {
-  var chart = echarts.init(document.getElementById('chartVipMin'));
-  var m8 = toMap(D.minute_v8);
-  var m1 = toMap(D.minute_v1);
-  chart.setOption({
-    backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis', backgroundColor: '#1a1d2e', borderColor: '#2d3748', textStyle: { color: '#e2e8f0' } },
-    legend: { data: ['4/8 活动日', '4/1 基准日'], top: 0, right: 0, textStyle: { color: '#a0aec0', fontSize: 12 } },
+  // chartSocialMin and chartVipMin removed - merged into chartPulseDual
+})();
     grid: { top: 36, bottom: 60, left: 40, right: 20 },
     xAxis: {
       type: 'category', data: axisAll,
