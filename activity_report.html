@@ -494,25 +494,6 @@ var markLine = {
   window.addEventListener('resize', function() { chart.resize(); });
 })();
 
-// Placeholder for removed charts (keep for compatibility if needed)
-(function() {
-  // chartSocialMin and chartVipMin removed - merged into chartPulseDual
-})();
-    grid: { top: 36, bottom: 60, left: 40, right: 20 },
-    xAxis: {
-      type: 'category', data: axisAll,
-      axisLabel: { color: '#718096', fontSize: 10, rotate: 45, interval: 4 },
-      axisLine: { lineStyle: { color: '#2d3748' } }
-    },
-    yAxis: { type: 'value', axisLabel: { color: '#718096', fontSize: 11 }, splitLine: { lineStyle: { color: '#1e2535' } } },
-    series: [
-      Object.assign(buildSeries(axisAll, m8, '#63b3ed', '4/8 活动日'), { markArea: markArea, markLine: markLine }),
-      buildSeries(axisAll, m1, '#4a5568', '4/1 基准日')
-    ]
-  });
-  window.addEventListener('resize', function() { chart.resize(); });
-})();
-
 // Social bar 3-day
 (function() {
   var chart = echarts.init(document.getElementById('chartSocialBar'));
