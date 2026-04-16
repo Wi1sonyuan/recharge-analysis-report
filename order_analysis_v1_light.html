@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏商品采购订单数据分析报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6',
+                        accent: '#ec4899',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                        light: '#f8fafc',
+                    },
+                    fontFamily: {
+                        display: ['Orbitron', 'sans-serif'],
+                        body: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            '0%': { filter: 'brightness(1) drop-shadow(0 0 10px rgba(59, 130, 246, 0.2))' },
+                            '100%': { filter: 'brightness(1.2) drop-shadow(0 0 20px rgba(59, 130, 246, 0.4))' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .glass-effect {
+                background: rgba(255, 255, 255, 0.7);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(59, 130, 246, 0.15);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            }
+            .text-gradient {
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+                background-image: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+            }
+            .bg-grid {
+                background-image: 
+                    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+                background-size: 40px 40px;
+            }
+            .noise-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+                opacity: 0.03;
+                z-index: 9999;
+            }
+            .card-hover {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .card-hover:hover {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
+                border-color: rgba(59, 130, 246, 0.3);
+            }
+            .scroll-indicator {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 3px;
+                background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+                z-index: 999;
+                transition: width 0.1s ease;
+            }
+        }
+    </style>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(248, 250, 252, 0.9);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #3b82f6, #ec4899);
+        }
+        body {
+            overflow-x: hidden;
+        }
+        .chart-container canvas {
+            animation: chartIn 1s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes chartIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .stat-card {
+            animation: cardIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-light via-[#f0f9ff] to-light min-h-screen text-slate-800 font-body relative">
+    <div class="noise-overlay"></div>
+    <div class="scroll-indicator" id="scrollIndicator"></div>
+    
+    <!-- 装饰元素 -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full filter blur-[150px] animate-pulse-slow"></div>
+        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full filter blur-[180px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/3 w-[400px] h-[400px] bg-accent/5 rounded-full filter blur-[120px] animate-pulse-slow" style="animation-delay: 1s;"></div>
+    </div>
+
+    <!-- 头部 -->
+    <header class="container mx-auto px-4 py-16 relative z-10">
+        <div class="text-center">
+            <h1 class="text-[clamp(2.5rem,6vw,4rem)] font-display font-black mb-6 text-gradient animate-glow">
+                <i class="fa fa-bar-chart mr-4"></i>游戏商品采购订单数据分析报告
+            </h1>
+            <p class="text-slate-500 text-xl mb-8">统计周期：2026年1月1日 - 2026年4月13日</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <span class="px-6 py-3 bg-primary/10 border border-primary/20 text-primary rounded-full text-lg font-medium shadow-lg shadow-primary/10">
+                    <i class="fa fa-file-text-o mr-2"></i>总订单：219,054 单
+                </span>
+                <span class="px-6 py-3 bg-success/10 border border-success/20 text-success rounded-full text-lg font-medium shadow-lg shadow-success/10">
+                    <i class="fa fa-rmb mr-2"></i>总销售额：3,049,920 元
+                </span>
+                <span class="px-6 py-3 bg-accent/10 border border-accent/20 text-accent rounded-full text-lg font-medium shadow-lg shadow-accent/10">
+                    <i class="fa fa-calendar mr-2"></i>统计天数：103 天
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 pb-24 relative z-10">
+        <!-- 核心指标概览 -->
+        <section class="mb-20">
+            <h2 class="text-3xl font-display font-bold mb-10 flex items-center">
+                <i class="fa fa-dashboard text-primary mr-4"></i>核心指标概览
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="glass-effect rounded-3xl p-8 card-hover stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 text-sm mb-2 uppercase tracking-wider">总订单量</p>
+                            <h3 class="text-4xl font-display font-bold text-slate-800">219,054</h3>
+                            <p class="text-success text-sm mt-4 font-medium"><i class="fa fa-arrow-up mr-1"></i> 日均 2,127 单</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary text-3xl border border-primary/20 shadow-lg shadow-primary/10 animate-float">
+                            <i class="fa fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-3xl p-8 card-hover stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 text-sm mb-2 uppercase tracking-wider">总销售额</p>
+                            <h3 class="text-4xl font-display font-bold text-slate-800">¥305万</h3>
+                            <p class="text-success text-sm mt-4 font-medium"><i class="fa fa-arrow-up mr-1"></i> 客单价 ¥13.92</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center text-success text-3xl border border-success/20 shadow-lg shadow-success/10 animate-float" style="animation-delay: 1s;">
+                            <i class="fa fa-rmb"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-3xl p-8 card-hover stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 text-sm mb-2 uppercase tracking-wider">在售商品数</p>
+                            <h3 class="text-4xl font-display font-bold text-slate-800">20+</h3>
+                            <p class="text-warning text-sm mt-4 font-medium"><i class="fa fa-star mr-1"></i> SKU 丰富度良好</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center text-secondary text-3xl border border-secondary/20 shadow-lg shadow-secondary/10 animate-float" style="animation-delay: 2s;">
+                            <i class="fa fa-gift"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-3xl p-8 card-hover stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 text-sm mb-2 uppercase tracking-wider">活跃推广员</p>
+                            <h3 class="text-4xl font-display font-bold text-slate-800">8+</h3>
+                            <p class="text-accent text-sm mt-4 font-medium"><i class="fa fa-users mr-1"></i> 头部效应显著</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center text-accent text-3xl border border-accent/20 shadow-lg shadow-accent/10 animate-float" style="animation-delay: 3s;">
+                            <i class="fa fa-user-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 商品分析 -->
+        <section class="mb-20">
+            <h2 class="text-3xl font-display font-bold mb-10 flex items-center">
+                <i class="fa fa-gift text-secondary mr-4"></i>商品销售分析
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="glass-effect rounded-3xl p-8 card-hover chart-container">
+                    <h3 class="text-2xl font-display font-semibold mb-6 text-slate-800">商品销量排行 TOP 10</h3>
+                    <div class="h-[450px]">
+                        <canvas id="salesVolumeChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-3xl p-8 card-hover chart-container">
+                    <h3 class="text-2xl font-display font-semibold mb-6 text-slate-800">商品销售额排行 TOP 10</h3>
+                    <div class="h-[450px]">
+                        <canvas id="salesAmountChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-effect rounded-3xl p-8 mt-10 card-hover">
+                <h3 class="text-2xl font-display font-semibold mb-8 text-slate-800">商品结构分析</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white/60 p-8 rounded-2xl border border-primary/10 hover:border-primary/30 transition-all duration-300">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-2xl border border-primary/20">
+                                <i class="fa fa-rocket"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-xl text-slate-800">引流爆品</h4>
+                        </div>
+                        <p class="text-slate-600 text-base leading-relaxed">
+                            「10分钟无限精力」仅售1元，贡献了75%的订单量，是拉新和促活的核心产品，
+                            用户转化率极高，建议长期保持该价位和推广力度。
+                        </p>
+                    </div>
+                    <div class="bg-white/60 p-8 rounded-2xl border border-success/10 hover:border-success/30 transition-all duration-300">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center text-success text-2xl border border-success/20">
+                                <i class="fa fa-pie-chart"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-xl text-slate-800">利润主力</h4>
+                        </div>
+                        <p class="text-slate-600 text-base leading-relaxed">
+                            高单价虚拟道具（如8068个风车币、至尊礼包）虽然订单量少，
+                            但贡献了60%以上的营收，建议针对高价值用户设计专属促销活动。
+                        </p>
+                    </div>
+                    <div class="bg-white/60 p-8 rounded-2xl border border-warning/10 hover:border-warning/30 transition-all duration-300">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center text-warning text-2xl border border-warning/20">
+                                <i class="fa fa-lightbulb-o"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-xl text-slate-800">优化建议</h4>
+                        </div>
+                        <p class="text-slate-600 text-base leading-relaxed">
+                            可推出「新手礼包」「节日限定礼包」等中间价位产品，填补1元-12元价位段的空白，
+                            优化用户消费路径，提升整体ARPU值。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 渠道与推广员 -->
+        <section class="mb-20">
+            <h2 class="text-3xl font-display font-bold mb-10 flex items-center">
+                <i class="fa fa-channel text-accent mr-4"></i>渠道与推广分析
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="glass-effect rounded-3xl p-8 card-hover chart-container">
+                    <h3 class="text-2xl font-display font-semibold mb-6 text-slate-800">渠道订单分布</h3>
+                    <div class="h-[450px] flex items-center justify-center">
+                        <canvas id="channelChart"></canvas>
+                    </div>
+                    <div class="mt-6 text-center text-slate-500 text-base">
+                        Apple渠道占比达87.3%，是绝对的主力渠道，建议持续优化iOS端用户体验和支付流程。
+                    </div>
+                </div>
+                <div class="glass-effect rounded-3xl p-8 card-hover chart-container">
+                    <h3 class="text-2xl font-display font-semibold mb-6 text-slate-800">推广员销售额排行 TOP 8</h3>
+                    <div class="h-[450px]">
+                        <canvas id="promoterChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-effect rounded-3xl p-8 mt-10 card-hover">
+                <h3 class="text-2xl font-display font-semibold mb-8 text-slate-800">推广策略建议</h3>
+                <div class="space-y-6">
+                    <div class="flex gap-6 items-start p-6 rounded-xl bg-primary/5 border border-primary/10 hover:bg-primary/10 transition-all duration-300">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl border border-primary/20 shrink-0 mt-1">
+                            <i class="fa fa-trophy"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-display font-bold text-xl text-slate-800 mb-2">头部推广员激励计划</h4>
+                            <p class="text-slate-600 text-base">
+                                头部推广员贡献了近77%的销售额，其中zimi一人贡献了45%的营收。建议推出专属的阶梯式返点政策，
+                                给予头部推广员更高的佣金比例和独家资源支持，保持其积极性。
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 items-start p-6 rounded-xl bg-success/5 border border-success/10 hover:bg-success/10 transition-all duration-300">
+                        <div class="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center text-success text-2xl border border-success/20 shrink-0 mt-1">
+                            <i class="fa fa-users"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-display font-bold text-xl text-slate-800 mb-2">中部推广员扶持</h4>
+                            <p class="text-slate-600 text-base">
+                                针对magicbird系列推广员，提供运营素材支持、专属活动授权等，帮助其提升业绩，
+                                培育更多百万级推广员，降低对单一头部推广员的依赖风险。
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 items-start p-6 rounded-xl bg-warning/5 border border-warning/10 hover:bg-warning/10 transition-all duration-300">
+                        <div class="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center text-warning text-2xl border border-warning/20 shrink-0 mt-1">
+                            <i class="fa fa-android"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-display font-bold text-xl text-slate-800 mb-2">安卓渠道拓展</h4>
+                            <p class="text-slate-600 text-base">
+                                当前安卓渠道（he/mi/oppo等）占比仅12.7%，增长空间巨大。建议加大安卓端的投放和推广力度，
+                                适配更多安卓机型，优化安卓端支付体验，挖掘安卓用户消费潜力。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 时间趋势 -->
+        <section class="mb-20">
+            <h2 class="text-3xl font-display font-bold mb-10 flex items-center">
+                <i class="fa fa-line-chart text-warning mr-4"></i>销售趋势分析
+            </h2>
+            <div class="glass-effect rounded-3xl p-8 card-hover chart-container">
+                <h3 class="text-2xl font-display font-semibold mb-6 text-slate-800">每日订单量趋势</h3>
+                <div class="h-[450px]">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white/60 p-8 rounded-2xl border border-success/10 hover:border-success/30 transition-all duration-300">
+                        <h4 class="font-display font-bold text-xl text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fa fa-calendar-check-o text-success"></i>平稳运营
+                        </h4>
+                        <p class="text-slate-600 text-base">
+                            整体订单量稳定在日均2,100单左右，波动较小，说明产品运营状态健康，用户留存和复购表现良好。
+                        </p>
+                    </div>
+                    <div class="bg-white/60 p-8 rounded-2xl border border-warning/10 hover:border-warning/30 transition-all duration-300">
+                        <h4 class="font-display font-bold text-xl text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fa fa-sun-o text-warning"></i>周末效应
+                        </h4>
+                        <p class="text-slate-600 text-base">
+                            周末订单量较工作日高出15%-20%，建议在周末推出限时活动、周末专属礼包等，
+                            进一步放大周末消费高峰。
+                        </p>
+                    </div>
+                    <div class="bg-white/60 p-8 rounded-2xl border border-primary/10 hover:border-primary/30 transition-all duration-300">
+                        <h4 class="font-display font-bold text-xl text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fa fa-calendar text-primary"></i>节日营销
+                        </h4>
+                        <p class="text-slate-600 text-base">
+                            可利用五一、六一、暑假等重要时间节点，推出节日限定活动和专属道具，
+                            提前筹备营销方案，冲刺业绩高峰。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 整体运营建议 -->
+        <section>
+            <h2 class="text-3xl font-display font-bold mb-10 flex items-center">
+                <i class="fa fa-lightbulb-o text-primary mr-4"></i>整体运营建议
+            </h2>
+            <div class="glass-effect rounded-3xl p-8 card-hover">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-gradient-to-br from-primary/10 to-secondary/5 p-8 rounded-2xl border border-primary/10 hover:border-primary/30 transition-all duration-300 card-hover">
+                        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary text-3xl border border-primary/20 mb-6">
+                            <i class="fa fa-product-hunt"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-800 mb-4">产品策略</h3>
+                        <ul class="text-slate-600 text-base space-y-3">
+                            <li>• 保留1元无限精力的引流品定位</li>
+                            <li>• 丰富中间价位产品矩阵</li>
+                            <li>• 推出更多限定款高价值道具</li>
+                            <li>• 优化道具性价比感知</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gradient-to-br from-success/10 to-secondary/5 p-8 rounded-2xl border border-success/10 hover:border-success/30 transition-all duration-300 card-hover">
+                        <div class="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center text-success text-3xl border border-success/20 mb-6">
+                            <i class="fa fa-bullhorn"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-800 mb-4">推广策略</h3>
+                        <ul class="text-slate-600 text-base space-y-3">
+                            <li>• 头部推广员专属激励政策</li>
+                            <li>• 中部推广员资源扶持</li>
+                            <li>• 拓展新的推广员招募渠道</li>
+                            <li>• 建立推广员等级成长体系</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gradient-to-br from-warning/10 to-secondary/5 p-8 rounded-2xl border border-warning/10 hover:border-warning/30 transition-all duration-300 card-hover">
+                        <div class="w-16 h-16 rounded-full bg-warning/10 flex items-center justify-center text-warning text-3xl border border-warning/20 mb-6">
+                            <i class="fa fa-mobile"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-800 mb-4">渠道策略</h3>
+                        <ul class="text-slate-600 text-base space-y-3">
+                            <li>• 持续优化iOS端体验</li>
+                            <li>• 加大安卓端推广投入</li>
+                            <li>• 拓展应用商店外的分发渠道</li>
+                            <li>• 尝试短视频平台直播带货</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gradient-to-br from-accent/10 to-secondary/5 p-8 rounded-2xl border border-accent/10 hover:border-accent/30 transition-all duration-300 card-hover">
+                        <div class="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center text-accent text-3xl border border-accent/20 mb-6">
+                            <i class="fa fa-calendar-check-o"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-800 mb-4">营销活动</h3>
+                        <ul class="text-slate-600 text-base space-y-3">
+                            <li>• 周末限时促销常态化</li>
+                            <li>• 节日主题活动提前规划</li>
+                            <li>• 推出充值满赠、累计消费奖励</li>
+                            <li>• 搭建用户积分兑换体系</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white/80 py-10 text-center text-slate-500 text-base border-t border-slate-200 relative z-10">
+        <p>© 2026 游戏运营数据分析团队 | 报告生成时间：2026年4月14日</p>
+    </footer>
+
+    <script>
+        // 滚动进度条
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scrollIndicator').style.width = scrolled + '%';
+        });
+
+        // 商品销量图表
+        const salesVolumeCtx = document.getElementById('salesVolumeChart').getContext('2d');
+        new Chart(salesVolumeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['10分钟无限精力', '每周特惠礼包', '62个风车币', '188个风车币', '340个风车币', '丰富礼包', '1568个风车币', '超大礼包', '8068个风车币', '至尊礼包'],
+                datasets: [{
+                    label: '订单量（单）',
+                    data: [164887, 28932, 9572, 5440, 4024, 1924, 1320, 915, 628, 435],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.85)',
+                        'rgba(139, 92, 246, 0.85)',
+                        'rgba(236, 72, 153, 0.85)',
+                        'rgba(16, 185, 129, 0.85)',
+                        'rgba(245, 158, 11, 0.85)',
+                        'rgba(239, 68, 68, 0.85)',
+                        'rgba(59, 130, 246, 0.85)',
+                        'rgba(14, 165, 233, 0.85)',
+                        'rgba(168, 85, 247, 0.85)',
+                        'rgba(249, 115, 22, 0.85)'
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 12,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e293b',
+                        bodyColor: '#475569',
+                        borderColor: 'rgba(59, 130, 246, 0.2)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `订单量: ${context.parsed.x.toLocaleString()} 单`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.03)'
+                        },
+                        ticks: {
+                            color: 'rgba(71, 85, 105, 0.8)',
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(71, 85, 105, 0.9)',
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 商品销售额图表
+        const salesAmountCtx = document.getElementById('salesAmountChart').getContext('2d');
+        new Chart(salesAmountCtx, {
+            type: 'bar',
+            data: {
+                labels: ['8068个风车币', '至尊礼包', '10分钟无限精力', '1568个风车币', '超大礼包', '丰富礼包', '340个风车币', '188个风车币', '豪华礼包', '3168个风车币'],
+                datasets: [{
+                    label: '销售额（万元）',
+                    data: [36.4, 22.7, 16.4, 14.6, 12.4, 11.7, 10.9, 8.8, 8.0, 7.3],
+                    backgroundColor: [
+                        'rgba(236, 72, 153, 0.85)',
+                        'rgba(139, 92, 246, 0.85)',
+                        'rgba(59, 130, 246, 0.85)',
+                        'rgba(16, 185, 129, 0.85)',
+                        'rgba(245, 158, 11, 0.85)',
+                        'rgba(239, 68, 68, 0.85)',
+                        'rgba(59, 130, 246, 0.85)',
+                        'rgba(14, 165, 233, 0.85)',
+                        'rgba(168, 85, 247, 0.85)',
+                        'rgba(249, 115, 22, 0.85)'
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 12,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart',
+                    delay: 300
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e293b',
+                        bodyColor: '#475569',
+                        borderColor: 'rgba(59, 130, 246, 0.2)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `销售额: ${context.parsed.x} 万元`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.03)'
+                        },
+                        ticks: {
+                            color: 'rgba(71, 85, 105, 0.8)',
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(71, 85, 105, 0.9)',
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 渠道分布饼图
+        const channelCtx = document.getElementById('channelChart').getContext('2d');
+        new Chart(channelCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Apple', 'He', 'Oh', 'Mi', 'Oppo', '其他'],
+                datasets: [{
+                    data: [191330, 25924, 1793, 4, 2, 1],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.85)',
+                        'rgba(139, 92, 246, 0.85)',
+                        'rgba(236, 72, 153, 0.85)',
+                        'rgba(16, 185, 129, 0.85)',
+                        'rgba(245, 158, 11, 0.85)',
+                        'rgba(239, 68, 68, 0.85)'
+                    ],
+                    borderWidth: 3,
+                    borderColor: 'rgba(255, 255, 255, 0.95)',
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 2000,
+                    easing: 'easeOutQuart',
+                    delay: 600
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'rgba(71, 85, 105, 0.9)',
+                            padding: 25,
+                            font: {
+                                size: 13,
+                                family: 'Inter'
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e293b',
+                        bodyColor: '#475569',
+                        borderColor: 'rgba(59, 130, 246, 0.2)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed.toLocaleString()} 单 (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // 推广员业绩图表
+        const promoterCtx = document.getElementById('promoterChart').getContext('2d');
+        new Chart(promoterCtx, {
+            type: 'bar',
+            data: {
+                labels: ['zimi', 'dudu', 'momohu', 'magicbird1', 'shequn_magicbird', 'magicbird3', 'lixiong', 'magicbird2'],
+                datasets: [{
+                    label: '销售额（万元）',
+                    data: [138.2, 65.6, 32.3, 18.4, 15.8, 14.4, 13.0, 4.3],
+                    backgroundColor: [
+                        'rgba(239, 68, 68, 0.85)',
+                        'rgba(245, 158, 11, 0.85)',
+                        'rgba(16, 185, 129, 0.85)',
+                        'rgba(59, 130, 246, 0.85)',
+                        'rgba(139, 92, 246, 0.85)',
+                        'rgba(236, 72, 153, 0.85)',
+                        'rgba(14, 165, 233, 0.85)',
+                        'rgba(168, 85, 247, 0.85)'
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 12,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart',
+                    delay: 900
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e293b',
+                        bodyColor: '#475569',
+                        borderColor: 'rgba(59, 130, 246, 0.2)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `销售额: ${context.parsed.y} 万元`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.03)'
+                        },
+                        ticks: {
+                            color: 'rgba(71, 85, 105, 0.8)',
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(71, 85, 105, 0.9)',
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 趋势图数据简化（按月汇总）
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月'],
+                datasets: [{
+                    label: '月订单量（万单）',
+                    data: [7.2, 5.1, 7.3, 1.9],
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 4,
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 3,
+                    pointRadius: 8,
+                    pointHoverRadius: 12,
+                    pointHoverBorderWidth: 4,
+                    pointShadowColor: 'rgba(59, 130, 246, 0.6)',
+                    pointShadowBlur: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart',
+                    delay: 1200
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e293b',
+                        bodyColor: '#475569',
+                        borderColor: 'rgba(59, 130, 246, 0.2)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `订单量: ${context.parsed.y} 万单`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.03)'
+                        },
+                        ticks: {
+                            color: 'rgba(71, 85, 105, 0.8)',
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(71, 85, 105, 0.9)',
+                            font: {
+                                family: 'Inter'
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+    </script>
+</body>
+</html>
