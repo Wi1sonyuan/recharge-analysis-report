@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开心消消乐 · 客服工单分析报告 v3</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --primary: #5B7FD6;
+    --primary-light: #EBF0FC;
+    --accent: #FF6B6B;
+    --green: #4CAF50;
+    --orange: #FF9F43;
+    --text: #2D3748;
+    --text-light: #718096;
+    --border: #E2E8F0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+  .header { background: linear-gradient(135deg, #5B7FD6 0%, #7B68EE 100%); color: white; padding: 36px 40px 28px; }
+  .header .tag { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 12px; font-size: 12px; display: inline-block; margin-bottom: 10px; }
+  .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+  .header p { opacity: 0.85; font-size: 13px; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 20px 40px; margin-top: -20px; }
+  .kpi { background: var(--card); border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .kpi .label { font-size: 12px; color: var(--text-light); margin-bottom: 6px; }
+  .kpi .value { font-size: 28px; font-weight: 700; color: var(--primary); }
+  .kpi .sub { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+  .kpi.highlight { border-left: 3px solid var(--accent); }
+
+  .section { padding: 24px 40px; }
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .section-title::before { content: ''; width: 4px; height: 16px; background: var(--primary); border-radius: 2px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: var(--card); border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+  .card-title { font-size: 13px; color: var(--text-light); margin-bottom: 14px; font-weight: 500; }
+
+  /* 痛点标签 */
+  .pain-section { background: var(--card); border-radius: 12px; padding: 20px 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+  .pain-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .pain-chip { border-radius: 20px; padding: 8px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .pain-chip.red { background: #FFF0F0; color: #D32F2F; border: 1px solid #FFCDD2; }
+  .pain-chip.orange { background: #FFF8E1; color: #E65100; border: 1px solid #FFE0B2; }
+  .pain-chip.blue { background: #E3F2FD; color: #1565C0; border: 1px solid #BBDEFB; }
+  .pain-chip.green { background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
+  .pain-chip.purple { background: #F3E5F5; color: #7B1FA2; border: 1px solid #E1BEE7; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #F8FAFC; color: var(--text-light); font-weight: 500; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 8px 12px; border-bottom: 1px solid #F1F5F9; }
+  tr:last-child td { border-bottom: none; }
+  .rank { display: inline-block; width: 20px; height: 20px; border-radius: 50%; background: var(--primary-light); color: var(--primary); text-align: center; line-height: 20px; font-size: 11px; font-weight: 700; margin-right: 6px; }
+  .rank.red { background: #FFEBEE; color: #C62828; }
+  .rank.orange { background: #FFF3E0; color: #E65100; }
+  .tag-pill { display: inline-block; border-radius: 12px; padding: 2px 8px; font-size: 11px; background: var(--primary-light); color: var(--primary); }
+  .tag-pill.red { background: #FFEBEE; color: #C62828; }
+  .bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .bar-bg { flex: 1; height: 6px; background: #F1F5F9; border-radius: 3px; }
+  .bar-fill { height: 6px; border-radius: 3px; background: var(--primary); }
+  .bar-fill.red { background: var(--accent); }
+  .bar-fill.orange { background: var(--orange); }
+
+  .day-compare { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+  .day-header { display: grid; grid-template-columns: 1fr 1fr; }
+  .day-hd { padding: 14px 20px; font-weight: 600; font-size: 14px; text-align: center; }
+  .day-hd.active { background: var(--primary); color: white; }
+  .day-hd.inactive { background: #F1F5F9; color: var(--text-light); }
+  .day-table { padding: 16px 20px; }
+  .day-insight { background: #F8FAFC; border-radius: 8px; padding: 12px 16px; margin-top: 12px; font-size: 12px; color: var(--text-light); line-height: 1.6; }
+
+  .channel-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .channel-card { background: #F8FAFC; border-radius: 10px; padding: 14px; text-align: center; }
+  .channel-name { font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; }
+  .channel-count { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .channel-top { font-size: 11px; color: var(--text-light); line-height: 1.5; }
+
+  .level-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .level-card { border-radius: 10px; padding: 14px; }
+  .level-card.lv1 { background: #E3F2FD; }
+  .level-card.lv2 { background: #E8F5E9; }
+  .level-card.lv3 { background: #FFF8E1; }
+  .level-card.lv4 { background: #FCE4EC; }
+  .level-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  .level-name.lv1 { color: #1565C0; }
+  .level-name.lv2 { color: #2E7D32; }
+  .level-name.lv3 { color: #E65100; }
+  .level-name.lv4 { color: #880E4F; }
+  .level-count { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .level-tag { font-size: 11px; background: rgba(255,255,255,0.7); border-radius: 8px; padding: 4px 8px; margin: 2px; display: inline-block; color: var(--text); }
+
+  .footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 12px; }
+
+  .emotion-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .emotion-item { background: #FFF9F9; border: 1px solid #FFCDD2; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #C62828; line-height: 1.6; }
+  .emotion-label { font-weight: 600; margin-bottom: 4px; font-size: 11px; }
+
+  #chart_type, #chart_day, #chart_platform { width: 100%; height: 260px; }
+  #chart_hour { width: 100%; height: 160px; }
+  #chart_level { width: 100%; height: 240px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="tag">数据报告 · v3</div>
+  <h1>开心消消乐 · 客服工单分析</h1>
+  <p>分析周期：2026-04-20 ～ 2026-04-21 &nbsp;|&nbsp; 数据来源：LLM问题分类(extinfo) + 用户原始描述(msgs)</p>
+</div>
+
+<!-- KPI 总览 -->
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="label">总工单量</div>
+    <div class="value">1,042</div>
+    <div class="sub">2天累计</div>
+  </div>
+  <div class="kpi highlight">
+    <div class="label">有效问题（去辱骂）</div>
+    <div class="value">954</div>
+    <div class="sub">占总量 91.5%</div>
+  </div>
+  <div class="kpi">
+    <div class="label">日均问题</div>
+    <div class="value">521</div>
+    <div class="sub">4月20日 569 / 4月21日 473</div>
+  </div>
+  <div class="kpi">
+    <div class="label">负面情绪工单</div>
+    <div class="value">149</div>
+    <div class="sub">占 14.3%（含辱骂/投诉威胁）</div>
+  </div>
+</div>
+
+<!-- 图表行：问题类型 + 小时分布 -->
+<div class="section">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">问题类型分布（TOP15 by extinfo）</div>
+      <div id="chart_type"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">24小时提问量分布</div>
+      <div id="chart_hour"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 用户核心痛点 -->
+<div class="section">
+  <div class="section-title">用户核心痛点分析</div>
+  <div class="pain-section">
+    <div class="pain-row">
+      <div class="pain-chip red">充值扣费 133条</div>
+      <div class="pain-chip orange">账号解绑换绑 156条</div>
+      <div class="pain-chip blue">关卡体验 52条</div>
+      <div class="pain-chip green">广告问题 56条</div>
+      <div class="pain-chip purple">账号找回 19条</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:32%">痛点类型</th>
+          <th>典型诉求</th>
+          <th style="width:20%">占比</th>
+          <th style="width:30%">用户原声示例</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag-pill red">充值扣费</span></td>
+          <td>充值未到账 / 错误扣费 / 未授权消费</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill red" style="width:72%"></div></div>72%</div></td>
+          <td>"钱充了，币不给我什么意思？"</td>
+        </tr>
+        <tr>
+          <td><span class="tag-pill orange">账号解绑换绑</span></td>
+          <td>换手机后绑定 / 解绑第三方账号 / 换号</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:84%"></div></div>84%</div></td>
+          <td>"换手机了，旧手机号不用了，需要换绑"</td>
+        </tr>
+        <tr>
+          <td><span class="tag-pill green">广告问题</span></td>
+          <td>广告无法播放 / 无奖励道具 / 自动跳转</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill orange" style="width:62%"></div></div>62%</div></td>
+          <td>"看广告给步数，看完了五分钟还不给，卸载了"</td>
+        </tr>
+        <tr>
+          <td><span class="tag-pill blue">关卡体验</span></td>
+          <td>连胜中断 / 关卡难度异常 / 关卡数据回退</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:51%"></div></div>51%</div></td>
+          <td>"连胜被莫名断了，十几次都过不去"</td>
+        </tr>
+        <tr>
+          <td><span class="tag-pill purple">账号找回</span></td>
+          <td>换机后账号丢失 / 非刷机账号丢失</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill orange" style="width:43%"></div></div>43%</div></td>
+          <td>"换了手机（或刷机）之后账号丢失了"</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="day-insight">
+      💡 <b>关键洞察：</b>充值未到账（97条）和更换绑定手机号（119条）是最高频单项诉求，合计占有效问题的 23%。广告问题虽然只有 56 条，但每条平均情绪强度极高，多伴随辱骂和投诉威胁，是舆情风险最高的问题类型。
+    </div>
+  </div>
+</div>
+
+<!-- 两日对比 -->
+<div class="section">
+  <div class="section-title">两日问题对比</div>
+  <div class="day-compare">
+    <div class="day-header">
+      <div class="day-hd active">📅 4月20日（569条）</div>
+      <div class="day-hd inactive">📅 4月21日（473条）</div>
+    </div>
+    <div class="day-table">
+      <table>
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>问题类型</th>
+            <th>4月20日</th>
+            <th>4月21日</th>
+            <th>变化</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rank red">1</span></td>
+            <td>无意义辱骂内容</td>
+            <td>63</td>
+            <td>—</td>
+            <td><span class="tag-pill red">↓ 明显减少</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank">2</span></td>
+            <td>更换绑定手机号</td>
+            <td>63</td>
+            <td>56</td>
+            <td><span class="tag-pill">基本持平</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank">3</span></td>
+            <td>充值未到</td>
+            <td>55</td>
+            <td>42</td>
+            <td><span class="tag-pill">-23%</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank">4</span></td>
+            <td>申请退费</td>
+            <td>52</td>
+            <td>30</td>
+            <td><span class="tag-pill red">-42% ⬇</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank">5</span></td>
+            <td>解绑QQ/微信/微博</td>
+            <td>38</td>
+            <td>26</td>
+            <td><span class="tag-pill">-32%</span></td>
+          </tr>
+          <tr>
+            <td><span class="rank orange">6</span></td>
+            <td>未分类（extinfo缺失）</td>
+            <td>1</td>
+            <td>40</td>
+            <td><span class="tag-pill red">⚠ 激增！</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="day-insight">
+        💡 <b>两日对比洞察：</b>4月21日"无意义辱骂"从63条降到0，说明前一天可能有大规模情绪事件（活动翻车或误扣费集中爆发）。申请退费下降42%是正常回落，但<b>4月21日出现了40条未分类</b>，说明当天部分工单LLM判断失败——可能是用户描述格式不同或问题类型偏冷门，值得排查当天的业务变动。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 渠道分布 -->
+<div class="section">
+  <div class="section-title">各渠道问题分布</div>
+  <div class="card">
+    <div class="channel-grid">
+      <div class="channel-card">
+        <div class="channel-name">华为</div>
+        <div class="channel-count">168</div>
+        <div class="channel-top">①账号换绑 ②充值未到 ③关卡难度</div>
+      </div>
+      <div class="channel-card">
+        <div class="channel-name">vivo/OPPO</div>
+        <div class="channel-count">165</div>
+        <div class="channel-top">①充值问题 ②账号换绑 ③关卡异常</div>
+      </div>
+      <div class="channel-card">
+        <div class="channel-name">应用宝</div>
+        <div class="channel-count">165</div>
+        <div class="channel-top">①充值问题 ②账号换绑 ③关卡问题</div>
+      </div>
+      <div class="channel-card">
+        <div class="channel-name">小米</div>
+        <div class="channel-count">152</div>
+        <div class="channel-top">①账号换绑 ②充值未到 ③关卡难度</div>
+      </div>
+      <div class="channel-card">
+        <div class="channel-name">OPPO</div>
+        <div class="channel-count">137</div>
+        <div class="channel-top">①充值问题 ②账号换绑 ③广告问题</div>
+      </div>
+    </div>
+    <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px">
+      <div style="background:#F8FAFC;border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--text-light);margin-bottom:4px">华为渠道特点</div>
+        <div style="font-size:12px;font-weight:600;color:var(--primary)">关卡难度问题占比明显高于其他渠道</div>
+      </div>
+      <div style="background:#F8FAFC;border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--text-light);margin-bottom:4px">OPPO渠道特点</div>
+        <div style="font-size:12px;font-weight:600;color:var(--primary)">广告问题占比相对突出</div>
+      </div>
+      <div style="background:#F8FAFC;border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--text-light);margin-bottom:4px">vivo/OPPO双渠道</div>
+        <div style="font-size:12px;font-weight:600;color:var(--primary)">充值未到问题集中，需检查支付通道</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 用户等级分层 -->
+<div class="section">
+  <div class="section-title">不同等级玩家的问题结构</div>
+  <div class="level-grid">
+    <div class="level-card lv1">
+      <div class="level-name lv1">低等级 (1-1000)</div>
+      <div class="level-count">144人</div>
+      <div class="level-tag">账号丢失 44条</div>
+      <div class="level-tag">解绑第三方 14条</div>
+      <div class="level-tag">申请退费 10条</div>
+    </div>
+    <div class="level-card lv2">
+      <div class="level-name lv2">中级 (1001-5000)</div>
+      <div class="level-count">251人</div>
+      <div class="level-tag">换绑手机 44条</div>
+      <div class="level-tag">连胜中断 12条</div>
+      <div class="level-tag">充值未到 20条</div>
+    </div>
+    <div class="level-card lv3">
+      <div class="level-name lv3">中高级 (5001-10000)</div>
+      <div class="level-count">210人</div>
+      <div class="level-tag">换绑手机 37条</div>
+      <div class="level-tag">充值未到 29条</div>
+      <div class="level-tag">解绑三方 12条</div>
+    </div>
+    <div class="level-card lv4">
+      <div class="level-name lv4">高级 (10001+) ← 主力</div>
+      <div class="level-count">436人</div>
+      <div class="level-tag">申请退费 49条</div>
+      <div class="level-tag">充值未到 46条</div>
+      <div class="level-tag">辱骂内容 32条</div>
+    </div>
+  </div>
+  <div class="day-insight" style="margin-top:14px">
+    💡 <b>等级画像：</b>高等级玩家（10001关卡以上）占有效用户的42%，却是退费诉求的主力（49条），且情绪最激烈——他们是投入最多金钱和时间的核心用户，一旦体验受挫投诉强度最高。低等级玩家最大痛点是"换手机后账号丢失"，本质是账号绑定体系对新手引导不足。建议对高等级用户建立专属客服通道。
+  </div>
+</div>
+
+<!-- 情绪分析 -->
+<div class="section">
+  <div class="section-title">负面情绪工单典型样本（149条）</div>
+  <div class="emotion-list">
+    <div class="emotion-item">
+      <div class="emotion-label">🍼 儿童误充值退款</div>
+      孩子偷玩游戏充值，申请退款。"2026.4.17和18号晚上，7岁孩子不知道怎充了很多笔，我是孩子妈妈，要申请退款"</div>
+    <div class="emotion-item">
+      <div class="emotion-label">👴 老人误操作充值</div>
+      老年用户误触充值。"我是70岁老人，晚上7时在玩消消乐时误操作充值了20元，申请退款"</div>
+    </div>
+    <div class="emotion-item">
+      <div class="emotion-label">📺 广告欺骗性体验</div>
+      广告看完不发放奖励，引爆情绪。"看广告给步数，告诉我看10秒，我看了五分钟还不给，卸载了，你们就是骗人"</div>
+    </div>
+    <div class="emotion-item">
+      <div class="emotion-label">💸 疑似乱扣费</div>
+      无感知扣费，要求解释。"十多年老玩家，遭遇乱扣费，这让我们怎么能开心玩消消乐？"</div>
+    </div>
+    <div class="emotion-item">
+      <div class="emotion-label">🚫 无预警封号</div>
+      被封号但不明原因，不接受处罚。"满级了提示我作弊，作弊了应该封我号啊，怎么还判我输？"</div>
+    </div>
+    <div class="emotion-item">
+      <div class="emotion-label">😤 关卡体验受挫</div>
+      高难度关卡连续失败导致流失。"我玩不过，怀凝人生了，放弃不玩了，玩消消大战好玩"</div>
+    </div>
+  </div>
+</div>
+
+<!-- ECharts图表 -->
+<script>
+  // 问题类型饼图
+  var chartType = echarts.init(document.getElementById('chart_type'));
+  chartType.setOption({
+    tooltip: { trigger: 'item', formatter: '{b}: {c}条 ({d}%)' },
+    legend: { orient: 'vertical', right: 10, top: 'center', textStyle: { fontSize: 11 }, itemWidth: 10, itemHeight: 10 },
+    color: ['#5B7FD6','#FF6B6B','#FF9F43','#4CAF50','#9C27B0','#00BCD4','#795548','#607D8B','#E91E63','#3F51B5','#009688','#FFC107','#F44336','#673AB7','#03A9F4'],
+    series: [{
+      type: 'pie', radius: ['35%', '70%'],
+      center: ['35%','50%'],
+      itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
+      label: { show: false },
+      data: [
+        { value: 119, name: '更换绑定手机号' },
+        { value: 97, name: '充值未到' },
+        { value: 88, name: '无意义辱骂' },
+        { value: 82, name: '申请退费' },
+        { value: 64, name: '解绑第三方账号' },
+        { value: 41, name: '未分类' },
+        { value: 38, name: '换机后账号丢失' },
+        { value: 36, name: '关卡难度' },
+        { value: 36, name: '连胜中断' },
+        { value: 28, name: '没有广告' },
+        { value: 25, name: '解绑手机号' },
+        { value: 22, name: '关卡异常' },
+        { value: 21, name: '资源丢失' },
+        { value: 21, name: '充值记录' },
+        { value: 20, name: '换绑其他问题' }
+      ]
+    }]
+  });
+
+  // 小时分布
+  var chartHour = echarts.init(document.getElementById('chart_hour'));
+  chartHour.setOption({
+    tooltip: { trigger: 'axis' },
+    grid: { left: 40, right: 20, top: 10, bottom: 30 },
+    xAxis: { type: 'category', data: ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'], axisLabel: { fontSize: 11 }, axisLine: { lineStyle: { color: '#E2E8F0' } }, splitLine: { show: false } },
+    yAxis: { type: 'value', axisLabel: { fontSize: 11 }, splitLine: { lineStyle: { color: '#F1F5F9' } }, name: '提问量' },
+    series: [{ type: 'bar', data: [38,21,8,3,5,6,13,24,50,80,69,57,46,55,56,54,58,74,48,61,64,63,45,44], itemStyle: { color: '#5B7FD6', borderRadius: [3,3,0,0] }, barWidth: '60%' }]
+  });
+
+  window.addEventListener('resize', function() {
+    chartType.resize();
+    chartHour.resize();
+  });
+</script>
+
+<div class="footer">
+  数据来源：开心消消乐客服工单系统 · 2026-04-20 ~ 2026-04-21 · 共1,042条
+</div>
+
+</body>
+</html>
