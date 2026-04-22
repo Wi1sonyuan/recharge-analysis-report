@@ -333,39 +333,107 @@
 
 <!-- 用户等级分层 -->
 <div class="section">
-  <div class="section-title">不同等级玩家的问题结构</div>
-  <div class="level-grid">
-    <div class="level-card lv1">
-      <div class="level-name lv1">低等级 (1-1000)</div>
-      <div class="level-count">144人</div>
-      <div class="level-tag">账号丢失 44条</div>
-      <div class="level-tag">解绑第三方 14条</div>
-      <div class="level-tag">申请退费 10条</div>
+  <div class="section-title">每类问题里，不同等级用户各占多少？</div>
+  <div class="card" style="padding:16px 20px">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:20%">问题类型</th>
+          <th style="width:7%">总计</th>
+          <th style="width:15%">低级<br><span style="font-weight:400;font-size:10px;color:#718096">(1-1000)</span></th>
+          <th style="width:15%">中级<br><span style="font-weight:400;font-size:10px;color:#718096">(1001-5000)</span></th>
+          <th style="width:15%">中高级<br><span style="font-weight:400;font-size:10px;color:#718096">(5001-10000)</span></th>
+          <th style="width:15%">高级<br><span style="font-weight:400;font-size:10px;color:#718096">(10001+)</span></th>
+          <th>主力群体特征</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>账号丢失（换机/刷机）</td>
+          <td>59</td>
+          <td><span class="bar-fill" style="width:82%;background:#1565C0;display:block;height:6px;border-radius:3px;margin-bottom:2px"></span><span style="font-size:11px;font-weight:700;color:#1565C0">82%</span></td>
+          <td>6</td>
+          <td>4</td>
+          <td>4</td>
+          <td><span class="tag-pill" style="background:#E3F2FD;color:#1565C0">新手流失重灾区</span></td>
+        </tr>
+        <tr>
+          <td>更换绑定手机号</td>
+          <td>119</td>
+          <td>10%</td>
+          <td>37%</td>
+          <td>31%</td>
+          <td>22%</td>
+          <td><span class="tag-pill">各等级均匀分布</span></td>
+        </tr>
+        <tr>
+          <td>解绑第三方账号</td>
+          <td>64</td>
+          <td>22%</td>
+          <td>30%</td>
+          <td>19%</td>
+          <td>30%</td>
+          <td><span class="tag-pill">分布均匀</span></td>
+        </tr>
+        <tr>
+          <td>充值未到账</td>
+          <td>97</td>
+          <td>2%</td>
+          <td>21%</td>
+          <td>30%</td>
+          <td><span class="bar-fill red" style="width:83%;display:block;height:6px;border-radius:3px;margin-bottom:2px"></span><span style="font-size:11px;font-weight:700;color:#C62828">47%</span></td>
+          <td><span class="tag-pill red">高等级玩家充值未到最受伤</span></td>
+        </tr>
+        <tr>
+          <td>申请退费</td>
+          <td>82</td>
+          <td>12%</td>
+          <td>13%</td>
+          <td>15%</td>
+          <td><span class="bar-fill red" style="width:92%;display:block;height:6px;border-radius:3px;margin-bottom:2px"></span><span style="font-size:11px;font-weight:700;color:#C62828">60%</span></td>
+          <td><span class="tag-pill red">高等级玩家退费诉求最强烈</span></td>
+        </tr>
+        <tr>
+          <td>关卡难度</td>
+          <td>36</td>
+          <td>11%</td>
+          <td>25%</td>
+          <td>19%</td>
+          <td><span class="bar-fill" style="width:76%;background:#E65100;display:block;height:6px;border-radius:3px;margin-bottom:2px"></span><span style="font-size:11px;font-weight:700;color:#E65100">44%</span></td>
+          <td><span class="tag-pill" style="background:#FFF8E1;color:#E65100">高等级玩家关卡难度反馈集中</span></td>
+        </tr>
+        <tr>
+          <td>连胜中断</td>
+          <td>36</td>
+          <td>11%</td>
+          <td>33%</td>
+          <td>17%</td>
+          <td>39%</td>
+          <td><span class="tag-pill" style="background:#FFF8E1;color:#E65100">中高/高等级玩家连胜执念最强</span></td>
+        </tr>
+        <tr>
+          <td>广告问题</td>
+          <td>56</td>
+          <td>9%</td>
+          <td>15%</td>
+          <td>21%</td>
+          <td><span class="bar-fill red" style="width:88%;display:block;height:6px;border-radius:3px;margin-bottom:2px"></span><span style="font-size:11px;font-weight:700;color:#C62828">61%</span></td>
+          <td><span class="tag-pill red">高等级玩家看广告次数多，投诉概率高</span></td>
+        </tr>
+        <tr>
+          <td>无意义辱骂</td>
+          <td>88</td>
+          <td>5%</td>
+          <td><span class="bar-fill" style="width:78%;background:#2E7D32;display:block;height:6px;border-radius:3px;margin-bottom:2px"></span><span style="font-size:11px;font-weight:700;color:#2E7D32">43%</span></td>
+          <td>16%</td>
+          <td>36%</td>
+          <td><span class="tag-pill" style="background:#FFF0F0;color:#C62828">中级玩家辱骂情绪最高</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="day-insight">
+      💡 <b>关键洞察：</b>新手（低级）换机后账号丢失比例高达82%，是典型的新手流失场景——换手机/刷机是新手最容易踩的坑，但账号绑定引导不足。<b>高等级玩家（10001+）在充值扣费、退费、广告问题</b>上占比超过50%，这类用户投入大、维权意识强，是舆情风险最高的人群。
     </div>
-    <div class="level-card lv2">
-      <div class="level-name lv2">中级 (1001-5000)</div>
-      <div class="level-count">251人</div>
-      <div class="level-tag">换绑手机 44条</div>
-      <div class="level-tag">连胜中断 12条</div>
-      <div class="level-tag">充值未到 20条</div>
-    </div>
-    <div class="level-card lv3">
-      <div class="level-name lv3">中高级 (5001-10000)</div>
-      <div class="level-count">210人</div>
-      <div class="level-tag">换绑手机 37条</div>
-      <div class="level-tag">充值未到 29条</div>
-      <div class="level-tag">解绑三方 12条</div>
-    </div>
-    <div class="level-card lv4">
-      <div class="level-name lv4">高级 (10001+) ← 主力</div>
-      <div class="level-count">436人</div>
-      <div class="level-tag">申请退费 49条</div>
-      <div class="level-tag">充值未到 46条</div>
-      <div class="level-tag">辱骂内容 32条</div>
-    </div>
-  </div>
-  <div class="day-insight" style="margin-top:14px">
-    💡 <b>等级画像：</b>高等级玩家（10001关卡以上）占有效用户的42%，却是退费诉求的主力（49条），且情绪最激烈——他们是投入最多金钱和时间的核心用户，一旦体验受挫投诉强度最高。低等级玩家最大痛点是"换手机后账号丢失"，本质是账号绑定体系对新手引导不足。建议对高等级用户建立专属客服通道。
   </div>
 </div>
 
