@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>客服提问分析报告 · 开心消消乐 v2</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6fa; color: #1a1a2e; }
+
+  .header {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 36px 48px;
+  }
+  .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .header p { font-size: 14px; opacity: 0.9; }
+  .header .tags { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .header .tag {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 28px 24px; }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .kpi {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 0 0 12px 12px;
+  }
+  .kpi.blue::after { background: #4facfe; }
+  .kpi.green::after { background: #00b894; }
+  .kpi.orange::after { background: #fd9644; }
+  .kpi.red::after { background: #eb3b5a; }
+  .kpi.purple::after { background: #8854d0; }
+  .kpi.dark::after { background: #2d3436; }
+
+  .kpi .val { font-size: 32px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+  .kpi.blue .val { color: #0984e3; }
+  .kpi.green .val { color: #00b894; }
+  .kpi.orange .val { color: #fd9644; }
+  .kpi.red .val { color: #eb3b5a; }
+  .kpi.purple .val { color: #8854d0; }
+  .kpi.dark .val { color: #2d3436; }
+  .kpi .lbl { font-size: 12px; color: #999; }
+  .kpi .sub { font-size: 11px; color: #bbb; margin-top: 4px; }
+
+  .insight-box {
+    background: linear-gradient(135deg, #f0f9ff 0%, #fff8f0 100%);
+    border: 1px solid #ddeeff;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 28px;
+  }
+  .insight-box h3 { font-size: 15px; margin-bottom: 14px; color: #333; }
+  .insight-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+  .insight-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+  .dot-danger { background: #eb3b5a; }
+  .dot-warn { background: #fd9644; }
+  .dot-info { background: #0984e3; }
+  .dot-good { background: #00b894; }
+  .insight-text { font-size: 13px; line-height: 1.8; color: #444; }
+
+  .section-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+  }
+  .section-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    border-radius: 2px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+  .full { margin-bottom: 20px; }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .card-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: #444; }
+  .chart { width: 100%; }
+  .chart-h { height: 320px; }
+  .chart-m { height: 280px; }
+  .chart-s { height: 240px; }
+
+  /* Comparison table */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .compare-table th {
+    background: #f8fbff;
+    padding: 10px 12px;
+    text-align: center;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 2px solid #ddeeff;
+  }
+  .compare-table th:first-child { text-align: left; }
+  .compare-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #444;
+    text-align: center;
+  }
+  .compare-table td:first-child { text-align: left; font-weight: 500; }
+  .compare-table tr:hover td { background: #fafbff; }
+  .mismatch-tag {
+    display: inline-block;
+    background: #fff3e0;
+    color: #e65100;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+  .match-tag {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+
+  /* Level bars */
+  .level-section { margin-bottom: 20px; }
+  .level-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 140px;
+    margin-bottom: 8px;
+  }
+  .level-bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+  }
+  .level-bar-outer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .level-bar {
+    width: 100%;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+  }
+  .level-bar.low { background: #74b9ff; }
+  .level-bar.mid { background: #a29bfe; }
+  .level-bar.midhigh { background: #fd9644; }
+  .level-bar.high { background: #eb3b5a; }
+  .level-label { font-size: 11px; color: #888; margin-top: 6px; text-align: center; }
+  .level-count { font-size: 11px; color: #aaa; }
+
+  /* Word cloud substitute - tag list */
+  .word-tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .word-tag {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    background: #f0f2f5;
+    color: #555;
+    border: 1px solid #e8e8e8;
+  }
+  .word-tag.size-xl { font-size: 17px; padding: 8px 18px; background: #eb3b5a; color: white; border-color: #eb3b5a; }
+  .word-tag.size-lg { font-size: 15px; padding: 7px 16px; background: #fd9644; color: white; border-color: #fd9644; }
+  .word-tag.size-md { font-size: 13px; background: #4facfe; color: white; border-color: #4facfe; }
+  .word-tag.size-sm { font-size: 12px; background: #a29bfe; color: white; border-color: #a29bfe; }
+
+  /* Negative samples */
+  .neg-item {
+    background: #fff5f5;
+    border: 1px solid #ffe0e0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #c0392b;
+    line-height: 1.6;
+  }
+  .neg-label {
+    font-size: 11px;
+    color: #e74c3c;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .footer { text-align: center; padding: 24px; color: #bbb; font-size: 12px; }
+
+  @media (max-width: 900px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .header { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 客服用户提问分析报告 v2</h1>
+  <p>开心消消乐 · 基于 LLM(extinfo) 分类 + 用户等级分层分析</p>
+  <div class="tags">
+    <span class="tag">📅 2026-04-20 ~ 04-21</span>
+    <span class="tag">📋 1,042 条工单</span>
+    <span class="tag">🎯 extinfo 一级分类</span>
+    <span class="tag">⚠️ 用户自选 vs LLM 差异 46.6%</span>
+    <span class="tag">🕐 生成 2026-04-22</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- KPI -->
+  <div class="kpi-row">
+    <div class="kpi blue">
+      <div class="val">1,042</div>
+      <div class="lbl">工单总量</div>
+      <div class="sub">2天合计</div>
+    </div>
+    <div class="kpi red">
+      <div class="val">46.6%</div>
+      <div class="lbl">用户自选 vs LLM 判断差异率</div>
+      <div class="sub">top_id 准确性存疑</div>
+    </div>
+    <div class="kpi orange">
+      <div class="val">436</div>
+      <div class="lbl">平均回复时长（分钟）</div>
+      <div class="sub">中位数 229.6 分钟</div>
+    </div>
+    <div class="kpi purple">
+      <div class="val">14.3%</div>
+      <div class="lbl">负面情绪工单占比</div>
+      <div class="sub">含骂人/威胁/投诉等</div>
+    </div>
+    <div class="kpi green">
+      <div class="val">41.8%</div>
+      <div class="lbl">高等级玩家(10001+)占比</div>
+      <div class="sub">436/1042</div>
+    </div>
+    <div class="kpi dark">
+      <div class="val">19条</div>
+      <div class="lbl">封号用户(reporter=0)</div>
+      <div class="sub">占比 1.8%</div>
+    </div>
+  </div>
+
+  <!-- 关键洞察 -->
+  <div class="insight-box">
+    <h3>🔍 关键洞察</h3>
+    <div class="insight-item">
+      <div class="insight-dot dot-danger"></div>
+      <div class="insight-text"><strong>高等级玩家(10001+)是主力提问群体</strong>，占 41.8%，但他们的问题 TOP1 是"申请退费"(49条)，其次是"充值未到"(46条)——高投入玩家的充值类问题极其突出，是退款风险最高群体。</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-dot dot-warn"></div>
+      <div class="insight-text"><strong>低等级玩家(1-1000)的问题结构完全不同</strong>，TOP1 是"换了手机后账号丢失"(31条)，说明新手换机/重装后账号找回是最痛的需求，远超其他类型。</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-dot dot-info"></div>
+      <div class="insight-text"><strong>top_id（用户自选）准确率仅 53.4%</strong>，有 466 条工单的用户自选分类和 LLM 判断完全不同。例如用户选了"功能异常"，LLM 判断实际是"连胜中断"或"资源丢失"——这说明<strong>自选分类表单设计有问题，用户选不明白</strong>。</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-dot dot-good"></div>
+      <div class="insight-text"><strong>账号解绑换绑(228条) 是全量 TOP1 问题</strong>，超过充值问题(219条)。其中低等级玩家主要是账号找回，高/中高级玩家主要是换手机号和第三方账号解绑，需求层次清晰。</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-dot dot-warn"></div>
+      <div class="insight-text"><strong>14.3% 的工单含有明显负面情绪</strong>（149条），其中封号用户(reporter=0)虽然只有19条，但6条是解封申诉，情绪浓度极高，需要专项处理机制。</div>
+    </div>
+  </div>
+
+  <!-- 洞察 end -->
+
+  <!-- 用户等级分布 -->
+  <div class="section-title">👤 用户等级与提问类型分析</div>
+  <div class="full">
+    <div class="card">
+      <div class="card-title">各等级段用户人数分布</div>
+      <div class="level-bars">
+        <div class="level-bar-wrap">
+          <div class="level-bar low" style="height: 52px; background: #74b9ff;">
+            <span>144</span>
+          </div>
+          <div class="level-label">低级<br>1-1000</div>
+          <div class="level-count">13.8%</div>
+        </div>
+        <div class="level-bar-wrap">
+          <div class="level-bar mid" style="height: 80px; background: #a29bfe;">
+            <span>251</span>
+          </div>
+          <div class="level-label">中级<br>1001-5000</div>
+          <div class="level-count">24.1%</div>
+        </div>
+        <div class="level-bar-wrap">
+          <div class="level-bar midhigh" style="height: 67px; background: #fd9644;">
+            <span>210</span>
+          </div>
+          <div class="level-label">中高级<br>5001-10000</div>
+          <div class="level-count">20.2%</div>
+        </div>
+        <div class="level-bar-wrap">
+          <div class="level-bar high" style="height: 100px; background: #eb3b5a;">
+            <span>436</span>
+          </div>
+          <div class="level-label">高级<br>10001+</div>
+          <div class="level-count">41.8%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">高级玩家(10001+) 问题类型 TOP5</div>
+      <table class="compare-table">
+        <thead><tr><th>问题类型</th><th>数量</th><th>占比</th></tr></thead>
+        <tbody>
+          <tr><td>充值问题-申请退费</td><td>49</td><td>11.2%</td></tr>
+          <tr><td>充值问题-充值未到</td><td>46</td><td>10.6%</td></tr>
+          <tr><td>无意义辱骂内容</td><td>32</td><td>7.3%</td></tr>
+          <tr><td>账号解绑换绑-更换手机号</td><td>26</td><td>6.0%</td></tr>
+          <tr><td>账号解绑换绑-解绑QQ/微信</td><td>19</td><td>4.4%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">低级玩家(1-1000) 问题类型 TOP5</div>
+      <table class="compare-table">
+        <thead><tr><th>问题类型</th><th>数量</th><th>占比</th></tr></thead>
+        <tbody>
+          <tr><td>换了手机后账号丢失</td><td>31</td><td>21.5%</td></tr>
+          <tr><td>账号解绑-解绑QQ/微信</td><td>14</td><td>9.7%</td></tr>
+          <tr><td>没换手机但账号丢失</td><td>13</td><td>9.0%</td></tr>
+          <tr><td>账号解绑-更换手机号</td><td>12</td><td>8.3%</td></tr>
+          <tr><td>充值问题-申请退费</td><td>10</td><td>6.9%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 问题分类对比 -->
+  <div class="section-title">📋 问题分类：用户自选 vs LLM 智能判断对比</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">LLM(extinfo) 问题类型分布 TOP15</div>
+      <div id="extinfoChart" class="chart chart-h"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">用户自选(top_id) vs LLM(extinfo) 差异分析</div>
+      <div id="compareChart" class="chart chart-h"></div>
+    </div>
+  </div>
+
+  <!-- topid vs extinfo 详细对比 -->
+  <div class="full">
+    <div class="card">
+      <div class="card-title">top_id vs extinfo 差异样本（用户选了A，实际是B）</div>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>用户自选(top_id)</th>
+            <th>LLM判断(extinfo)</th>
+            <th>状态</th>
+            <th>用户描述摘要</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>关卡难度反馈</td>
+            <td>关卡问题-关卡难度</td>
+            <td><span class="match-tag">一致</span></td>
+            <td>打了好久，就是不出彩星，后台控制了吧</td>
+          </tr>
+          <tr>
+            <td>功能异常</td>
+            <td>游戏资源-资源丢失</td>
+            <td><span class="mismatch-tag">不一致</span></td>
+            <td>长期未登录后出现31450的异常风车币</td>
+          </tr>
+          <tr>
+            <td>功能异常</td>
+            <td>关卡问题-连胜中断</td>
+            <td><span class="mismatch-tag">不一致</span></td>
+            <td>退了之后，登录数据无法恢复</td>
+          </tr>
+          <tr>
+            <td>广告问题反馈</td>
+            <td>广告问题-自动跳转</td>
+            <td><span class="mismatch-tag">不一致</span></td>
+            <td>yy广告无限弹出，关了游戏还要弹出</td>
+          </tr>
+          <tr>
+            <td>充值问题</td>
+            <td>充值问题-充值未到</td>
+            <td><span class="match-tag">一致</span></td>
+            <td>钱充了，币不给我什么意思？</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;font-size:12px;color:#999;">
+        ⚠️ 总差异率 46.6%（466/1001条），建议优化表单设计或直接用 LLM(extinfo) 作为工单分类依据。
+      </div>
+    </div>
+  </div>
+
+  <!-- 时间 & 平台 -->
+  <div class="section-title">📈 时间与渠道分布</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">用户提问时间分布（24小时）</div>
+      <div id="hourChart" class="chart chart-m"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">渠道/平台分布</div>
+      <div id="platformChart" class="chart chart-m"></div>
+    </div>
+  </div>
+
+  <!-- 负面情绪样本 -->
+  <div class="section-title">😠 负面情绪工单样本（共 149 条，占 14.3%）</div>
+  <div class="full">
+    <div class="card">
+      <div class="card-title">典型负面情绪工单（随机抽取）</div>
+      <div class="neg-item">
+        <div class="neg-label">封号用户 · 解封申诉</div>
+        同意清空全部关卡、周赛记录，同意再次作弊永久封号（用户申诉解封）
+      </div>
+      <div class="neg-item">
+        <div class="neg-label">广告问题 · 强烈不满</div>
+        看广告给免费步数，必须让点进应用，点进去说让看十秒就可以，我他妈看了五分钟还不给，真是傻逼，怪不得没人玩，卸载了
+      </div>
+      <div class="neg-item">
+        <div class="neg-label">广告问题 · 威胁投诉</div>
+        我账号长期无法观看广告，所有权限、网络、缓存、重装都试过了，完全没用。我是开心消消乐的玩家，付不付费都是你们的用户，功能异常就应该你们解决。如果继续推诿不处理，我会直接在12315和各大平台投诉。
+      </div>
+      <div class="neg-item">
+        <div class="neg-label">充值退费 · 误操作</div>
+        我是70岁老人，今天晚上7时在玩消消乐游戏时误操作充值了20元，申请退款。谢谢！
+      </div>
+      <div class="neg-item">
+        <div class="neg-label">充值退费 · 未成年人</div>
+        2026.4.17号和18号晚上，是一个7岁孩子玩开心消消乐，不知道怎么弄的发现付了很多笔款，我是孩子妈妈，要申请退款，谢谢。
+      </div>
+    </div>
+  </div>
+
+  <!-- 关键词 -->
+  <div class="section-title">🔑 用户诉求高频词（已过滤无意义内容）</div>
+  <div class="full">
+    <div class="card">
+      <div class="card-title">有效诉求关键词（来自"具体描述"文本，按频率排序）</div>
+      <div class="word-tag-list" id="wordTags"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">数据来源：开心消消乐客服工单系统 · extinfo(LLM分类) · lastlevel关卡数分层 · 生成于 2026-04-22</div>
+
+<script>
+// ====== 数据 ======
+const hourData = [38,21,8,3,5,6,13,24,50,80,69,57,46,55,56,54,58,74,48,61,64,63,45,44];
+const hourLabels = Array.from({length:24},(_,i)=>i+':00');
+
+const platformData = [
+  {name:'华为', value:168},
+  {name:'vivo(bbk)', value:165},
+  {name:'官方版(he)', value:165},
+  {name:'小米', value:152},
+  {name:'oppo', value:137},
+  {name:'荣耀(oh)', value:99},
+  {name:'honor', value:72},
+  {name:'应用宝', value:48},
+  {name:'taptap', value:8},
+  {name:'三星', value:8},
+];
+
+const extinfoData = [
+  {name:'更换绑定手机号', value:119},
+  {name:'充值未到', value:97},
+  {name:'无意义辱骂', value:88},
+  {name:'申请退费', value:82},
+  {name:'解绑QQ/微信', value:64},
+  {name:'换手机账号丢失', value:38},
+  {name:'关卡难度', value:36},
+  {name:'连胜中断', value:36},
+  {name:'广告无', value:28},
+  {name:'解绑手机号', value:25},
+  {name:'关卡异常', value:22},
+  {name:'资源丢失', value:21},
+  {name:'账号无原因丢失', value:21},
+  {name:'充值记录', value:21},
+  {name:'解绑其他', value:20},
+];
+
+// top_id vs extinfo 对比（相同大类的合并）
+const compareData = [
+  {name:'充值问题', topid:249, extinfo:219, color:'#eb3b5a'},
+  {name:'账号解绑换绑', topid:233, extinfo:228, color:'#4facfe'},
+  {name:'其他/反馈', topid:174, extinfo:88+20+41, color:'#95a5a6'},
+  {name:'功能异常', topid:106, extinfo:22+21+13, color:'#fd9644'},
+  {name:'找回账号', topid:72, extinfo:38+21, color:'#00b894'},
+  {name:'关卡异常', topid:47, extinfo:36+36+22, color:'#a29bfe'},
+  {name:'广告问题', topid:34, extinfo:28+18, color:'#8854d0'},
+  {name:'意见建议', topid:76, extinfo:13, color:'#fdcb6e'},
+  {name:'账号解封', topid:8, extinfo:10, color:'#d63031'},
+];
+
+// 有效关键词（过滤掉纯脏话）
+const wordTags = [
+  {text:'充值', size:'size-md'},
+  {text:'退款', size:'size-md'},
+  {text:'解绑', size:'size-md'},
+  {text:'账号', size:'size-md'},
+  {text:'连胜', size:'size-sm'},
+  {text:'广告', size:'size-sm'},
+  {text:'关卡', size:'size-sm'},
+  {text:'扣费', size:'size-sm'},
+  {text:'未到账', size:'size-sm'},
+  {text:'孩子充值', size:'size-sm'},
+  {text:'黑屏', size:'size-sm'},
+  {text:'闪退', size:'size-sm'},
+  {text:'换手机', size:'size-sm'},
+  {text:'异常', size:'size-sm'},
+  {text:'作弊', size:'size-sm'},
+  {text:'封号', size:'size-sm'},
+  {text:'更新', size:'size-sm'},
+  {text:'难度', size:'size-sm'},
+  {text:'领取', size:'size-sm'},
+  {text:'资源', size:'size-sm'},
+  {text:'道具', size:'size-sm'},
+  {text:'登录', size:'size-sm'},
+  {text:'魔力鸟', size:'size-sm'},
+];
+
+// ====== Charts ======
+
+// extinfo 条形图
+const extinfoChart = echarts.init(document.getElementById('extinfoChart'));
+extinfoChart.setOption({
+  tooltip: { trigger:'axis', axisPointer:{type:'shadow'} },
+  grid: {left:'2%', right:'10%', containLabel:true, top:10, bottom:10},
+  xAxis: { type:'value', splitLine:{lineStyle:{color:'#f0f0f0'}} },
+  yAxis: {
+    type:'category',
+    data: extinfoData.map(d=>d.name).reverse(),
+    axisLabel:{fontSize:11, color:'#555'}
+  },
+  series: [{
+    type:'bar',
+    data: extinfoData.map(d=>d.value).reverse(),
+    barMaxWidth:22,
+    itemStyle: {
+      color: (p) => ['#eb3b5a','#fd9644','#fdcb6e','#a29bfe','#4facfe','#00b894','#8854d0','#d63031'][p.dataIndex%8],
+      borderRadius:[0,3,3,0]
+    },
+    label:{show:true, position:'right', fontSize:11, color:'#888'}
+  }]
+});
+
+// 对比图
+const compareChart = echarts.init(document.getElementById('compareChart'));
+compareChart.setOption({
+  tooltip: { trigger:'axis', axisPointer:{type:'shadow'} },
+  legend: { top:0, textStyle:{fontSize:12} },
+  grid: {left:'2%', right:'4%', containLabel:true, top:30, bottom:10},
+  xAxis: {
+    type:'category',
+    data: compareData.map(d=>d.name),
+    axisLabel:{fontSize:11, color:'#555', rotate:15}
+  },
+  yAxis: { type:'value', splitLine:{lineStyle:{color:'#f0f0f0'}} },
+  series: [
+    {
+      name:'用户自选(top_id)',
+      type:'bar',
+      data: compareData.map(d=>d.topid),
+      barMaxWidth:24,
+      itemStyle:{color:'#fd9644', borderRadius:[3,3,0,0]},
+      label:{show:true, fontSize:10, position:'top'}
+    },
+    {
+      name:'LLM判断(extinfo)',
+      type:'bar',
+      data: compareData.map(d=>d.extinfo),
+      barMaxWidth:24,
+      itemStyle:{color:'#4facfe', borderRadius:[3,3,0,0]},
+      label:{show:true, fontSize:10, position:'top'}
+    }
+  ]
+});
+
+// 小时图
+const hourChart = echarts.init(document.getElementById('hourChart'));
+hourChart.setOption({
+  tooltip: { trigger:'axis' },
+  grid: {left:'3%', right:'3%', top:20, bottom:20, containLabel:true},
+  xAxis: {
+    type:'category',
+    data: hourLabels,
+    axisLabel:{fontSize:10, interval:1, color:'#888'}
+  },
+  yAxis: { type:'value', splitLine:{lineStyle:{color:'#f0f0f0'}} },
+  series: [{
+    type:'bar',
+    data: hourData,
+    barMaxWidth:24,
+    itemStyle: {
+      color: (p) => {
+        const h = p.dataIndex;
+        if(h>=9&&h<=11) return '#eb3b5a';
+        if(h>=17&&h<=21) return '#fd9644';
+        if(h>=0&&h<=5) return '#95a5a6';
+        return '#4facfe';
+      },
+      borderRadius:[3,3,0,0]
+    }
+  }]
+});
+
+// 平台图
+const platformChart = echarts.init(document.getElementById('platformChart'));
+platformChart.setOption({
+  tooltip: { trigger:'item', formatter:'{b}: {c} ({d}%)' },
+  legend: { orient:'vertical', right:10, top:'center', textStyle:{fontSize:11} },
+  series: [{
+    type:'pie',
+    radius:['35%','65%'],
+    center:['38%','50%'],
+    data: platformData.map(d=>({...d, itemStyle:{color: ['#eb3b5a','#fd9644','#4facfe','#a29bfe','#00b894','#8854d0','#d63031','#fdcb6e','#74b9ff','#636e72'][platformData.indexOf(d)%10]}})),
+    label:{show:false}
+  }]
+});
+
+// 词云替代
+const wordTagEl = document.getElementById('wordTags');
+wordTags.forEach(w => {
+  const span = document.createElement('span');
+  span.className = 'word-tag ' + w.size;
+  span.textContent = w.text;
+  wordTagEl.appendChild(span);
+});
+
+// resize
+window.addEventListener('resize', ()=>{
+  [extinfoChart, compareChart, hourChart, platformChart].forEach(c=>c.resize());
+});
+</script>
+</body>
+</html>
