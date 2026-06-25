@@ -3,324 +3,161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Magic系列推广运营分析 · 2026.06.24</title>
+<title>社群充值全系列分析 · 2026.06.24</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #F7F5F2;
-    --card: #FFFFFF;
-    --border: rgba(0,0,0,0.06);
-    --text: #1A1A1A;
-    --text-2: #6B6B6B;
-    --text-3: #A0A0A0;
-    --accent: #2563EB;
-    --accent-soft: #EEF2FF;
-    --red: #DC2626;
-    --red-soft: #FEF2F2;
-    --green: #059669;
-    --green-soft: #ECFDF5;
-    --amber: #D97706;
-    --amber-soft: #FFFBEB;
-    --violet: #7C3AED;
-    --radius: 16px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.04);
-    --shadow-lg: 0 4px 6px rgba(0,0,0,0.03), 0 12px 24px rgba(0,0,0,0.06);
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  .container { max-width: 1120px; margin: 0 auto; padding: 48px 28px 96px; }
-
-  /* Header */
-  .header { margin-bottom: 40px; }
-  .header-tag {
-    display: inline-block;
-    background: var(--accent);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 100px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .header h1 {
-    font-family: 'DM Serif Display', Georgia, serif;
-    font-size: 40px;
-    font-weight: 400;
-    color: var(--text);
-    line-height: 1.2;
-    margin-bottom: 10px;
-    letter-spacing: -0.5px;
-  }
-  .header .meta { font-size: 14px; color: var(--text-2); }
-
-  /* KPI Strip */
-  .kpi-strip {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-    margin-bottom: 40px;
-  }
-  .kpi-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-    transition: box-shadow 0.2s, transform 0.2s;
-  }
-  .kpi-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-  .kpi-label { font-size: 12px; color: var(--text-3); font-weight: 500; letter-spacing: 0.3px; margin-bottom: 8px; }
-  .kpi-value { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
-  .kpi-sub { font-size: 12px; color: var(--text-3); margin-top: 6px; }
-  .kpi-value.red { color: var(--red); }
-  .kpi-value.green { color: var(--green); }
-  .kpi-value.accent { color: var(--accent); }
-  .kpi-card.accent-card {
-    background: linear-gradient(135deg, #1E3A8A, #2563EB);
-    border: none;
-  }
-  .kpi-card.accent-card .kpi-label { color: rgba(255,255,255,0.7); }
-  .kpi-card.accent-card .kpi-value { color: #fff; }
-  .kpi-card.accent-card .kpi-sub { color: rgba(255,255,255,0.5); }
-
-  /* Section */
-  .section { margin-bottom: 48px; }
-  .section-head {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-  }
-  .section-num {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--accent);
-    background: var(--accent-soft);
-    padding: 4px 12px;
-    border-radius: 100px;
-    letter-spacing: 0.5px;
-  }
-  .section-head h2 {
-    font-family: 'DM Serif Display', Georgia, serif;
-    font-size: 24px;
-    font-weight: 400;
-    color: var(--text);
-  }
-
-  /* Card */
-  .card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 28px;
-    margin-bottom: 16px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-  }
-  .card h3 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: var(--text);
-    letter-spacing: 0.2px;
-  }
-
-  /* Insight / Note Box */
-  .insight {
-    padding: 16px 20px;
-    border-radius: 12px;
-    font-size: 14px;
-    margin: 16px 0;
-    line-height: 1.7;
-  }
-  .insight.accent { background: var(--accent-soft); border-left: 3px solid var(--accent); }
-  .insight.red { background: var(--red-soft); border-left: 3px solid var(--red); }
-  .insight.green { background: var(--green-soft); border-left: 3px solid var(--green); }
-  .insight.amber { background: var(--amber-soft); border-left: 3px solid var(--amber); }
-  .insight.note { background: #F8F7F5; border-left: 3px solid #D4D0CC; font-size: 13px; color: var(--text-2); }
-  .insight strong { color: var(--text); }
-
-  /* Tables */
-  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-  th {
-    text-align: left;
-    padding: 10px 12px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-3);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid #E5E5E5;
-  }
-  td { padding: 10px 12px; border-bottom: 1px solid #F2F2F2; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: #FAFAF8; }
-  .text-right { text-align: right; }
-  .text-red { color: var(--red); font-weight: 600; }
-  .text-green { color: var(--green); font-weight: 600; }
-  .text-accent { color: var(--accent); font-weight: 600; }
-
-  /* Chart */
-  .chart-box { width: 100%; height: 360px; margin: 8px 0; }
-  .chart-box.tall { height: 420px; }
-  .chart-source { font-size: 11px; color: var(--text-3); margin-top: 8px; }
-
-  /* Todo */
-  .todo-list { list-style: none; counter-reset: todo; }
-  .todo-list li {
-    counter-increment: todo;
-    padding: 16px 16px 16px 56px;
-    border-bottom: 1px solid #F2F2F2;
-    font-size: 14px;
-    position: relative;
-    line-height: 1.7;
-  }
-  .todo-list li:last-child { border-bottom: none; }
-  .todo-list li::before {
-    content: counter(todo);
-    position: absolute;
-    left: 16px;
-    top: 16px;
-    width: 28px;
-    height: 28px;
-    background: linear-gradient(135deg, #2563EB, #7C3AED);
-    color: #fff;
-    border-radius: 50%;
-    font-size: 13px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .todo-list li strong { color: var(--accent); }
-
-  /* Two-col */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-  /* Conclusion */
-  .conclusion-box {
-    background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);
-    color: #fff;
-    padding: 32px;
-    border-radius: var(--radius);
-    margin-top: 24px;
-    box-shadow: var(--shadow-lg);
-  }
-  .conclusion-box h3 { color: #fff; font-size: 18px; margin-bottom: 14px; font-family: 'DM Serif Display', serif; font-weight: 400; }
-  .conclusion-box p { color: rgba(255,255,255,0.88); font-size: 14px; line-height: 1.85; }
-  .conclusion-box strong { color: #fff; }
-
-  /* Footer */
-  .footer {
-    margin-top: 64px;
-    padding-top: 24px;
-    border-top: 1px solid #E5E3E0;
-    font-size: 12px;
-    color: var(--text-3);
-    text-align: center;
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
-    .two-col { grid-template-columns: 1fr; }
-    .header h1 { font-size: 30px; }
-    .container { padding: 28px 16px 64px; }
-  }
-  @media (max-width: 480px) {
-    .kpi-strip { grid-template-columns: 1fr; }
-  }
+:root{--bg:#F7F5F2;--card:#FFF;--border:rgba(0,0,0,.06);--text:#1A1A1A;--t2:#6B6B6B;--t3:#A0A0A0;--accent:#2563EB;--accent-soft:#EEF2FF;--red:#DC2626;--red-soft:#FEF2F2;--green:#059669;--green-soft:#ECFDF5;--amber:#D97706;--amber-soft:#FFFBEB;--violet:#7C3AED;--radius:16px;--shadow:0 1px 3px rgba(0,0,0,.04),0 6px 16px rgba(0,0,0,.04);--shadow-lg:0 4px 6px rgba(0,0,0,.03),0 12px 24px rgba(0,0,0,.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
+.container{max-width:1120px;margin:0 auto;padding:48px 28px 96px}
+.header{margin-bottom:40px}
+.header-tag{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
+.header h1{font-family:'DM Serif Display',Georgia,serif;font-size:40px;font-weight:400;line-height:1.2;margin-bottom:10px;letter-spacing:-.5px}
+.header .meta{font-size:14px;color:var(--t2)}
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:40px}
+.kpi-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.kpi-card.accent-card{background:linear-gradient(135deg,#1E3A8A,#2563EB);border:none}
+.kpi-label{font-size:11px;color:var(--t3);font-weight:500;letter-spacing:.3px;margin-bottom:6px}
+.kpi-value{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi-sub{font-size:11px;color:var(--t3);margin-top:4px}
+.kpi-value.red{color:var(--red)}.kpi-value.green{color:var(--green)}.kpi-value.accent{color:var(--accent)}
+.accent-card .kpi-label{color:rgba(255,255,255,.7)}.accent-card .kpi-value{color:#fff}.accent-card .kpi-sub{color:rgba(255,255,255,.5)}
+.section{margin-bottom:48px}
+.section-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.section-num{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 12px;border-radius:100px;letter-spacing:.5px}
+.section-head h2{font-family:'DM Serif Display',Georgia,serif;font-size:24px;font-weight:400}
+.card{background:var(--card);border-radius:var(--radius);padding:28px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.card h3{font-size:14px;font-weight:700;margin-bottom:16px;letter-spacing:.2px}
+.insight{padding:16px 20px;border-radius:12px;font-size:14px;margin:16px 0;line-height:1.7}
+.insight.accent{background:var(--accent-soft);border-left:3px solid var(--accent)}
+.insight.red{background:var(--red-soft);border-left:3px solid var(--red)}
+.insight.green{background:var(--green-soft);border-left:3px solid var(--green)}
+.insight.amber{background:var(--amber-soft);border-left:3px solid var(--amber)}
+.insight.note{background:#F8F7F5;border-left:3px solid #D4D0CC;font-size:13px;color:var(--t2)}
+.insight strong{color:var(--text)}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #E5E5E5}
+td{padding:10px 12px;border-bottom:1px solid #F2F2F2}
+tr:last-child td{border-bottom:none}tr:hover td{background:#FAFAF8}
+.text-right{text-align:right}.text-red{color:var(--red);font-weight:600}.text-green{color:var(--green);font-weight:600}.text-accent{color:var(--accent);font-weight:600}
+.chart-box{width:100%;height:360px;margin:8px 0}
+.chart-source{font-size:11px;color:var(--t3);margin-top:8px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.todo-list{list-style:none;counter-reset:todo}
+.todo-list li{counter-increment:todo;padding:16px 16px 16px 56px;border-bottom:1px solid #F2F2F2;font-size:14px;position:relative;line-height:1.7}
+.todo-list li:last-child{border-bottom:none}
+.todo-list li::before{content:counter(todo);position:absolute;left:16px;top:16px;width:28px;height:28px;background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;border-radius:50%;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.todo-list li strong{color:var(--accent)}
+.conclusion-box{background:linear-gradient(135deg,#1E3A8A 0%,#7C3AED 100%);color:#fff;padding:32px;border-radius:var(--radius);margin-top:24px;box-shadow:var(--shadow-lg)}
+.conclusion-box h3{color:#fff;font-size:18px;margin-bottom:14px;font-family:'DM Serif Display',serif;font-weight:400}
+.conclusion-box p{color:rgba(255,255,255,.88);font-size:14px;line-height:1.85}
+.conclusion-box strong{color:#fff}
+.divider{height:1px;background:#E5E3E0;margin:48px 0}
+.sub-label{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.sub-label::after{content:'';flex:1;height:1px;background:#E5E3E0}
+.footer{margin-top:64px;padding-top:24px;border-top:1px solid #E5E3E0;font-size:12px;color:var(--t3);text-align:center}
+@media(max-width:768px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.header h1{font-size:30px}.container{padding:28px 16px 64px}}
+@media(max-width:480px){.kpi-strip{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="container">
 
-<!-- Header -->
 <div class="header">
   <span class="header-tag">运营分析报告</span>
-  <h1>Magic系列推广运营分析</h1>
-  <p class="meta">2026年1月 — 6月23日 · 已发货订单 · magicbird1 / 2 / 3 / shequn_magicbird</p>
+  <h1>社群充值全系列分析</h1>
+  <p class="meta">2026年1月 — 6月23日 · 已发货订单 · Magic系列 + VIP组全量</p>
 </div>
 
-<!-- KPI Strip -->
+<div class="conclusion-box" style="margin-bottom:40px">
+  <h3>⚡ 核心结论</h3>
+  <p>
+    <strong>全系列499万，日均2.8万，5-6月已企稳。</strong>4月全渠道同步下滑10%，6月日均回到5月水平，大盘无持续恶化。<br><br>
+    <strong>两个组的短板不同：</strong><br>
+    · <strong>Magic组（85万）</strong>— 客单价低是定位预期，核心问题是<strong>用户留不住</strong>（36.8%只来1个月）+ <strong>礼包档位上不去</strong>（73%集中在3元档）+ <strong>CD提醒缺失</strong>（28.5%窗口期用户流失）<br>
+    · <strong>VIP组（414万）</strong>— 体量大但同样存在<strong>新用户萎缩</strong>问题，且<strong>高价商品券匹配度差</strong>（500+商品用户手里没有500-50券，用的是100-10小券）<br><br>
+    <strong>共性问题：</strong>两组都是63-74%的用户当天复购（即时性消费），企微触达窗口短；月度留存63-75%，新用户流入持续下滑。<br><br>
+    <strong>下半年重点：</strong>① 建CD提醒 + ② 完善画像推动升级 + ③ 大券定向发给高价用户 + ④ 持续引流扩大用户池
+  </p>
+</div>
+
 <div class="kpi-strip">
-  <div class="kpi-card accent-card">
-    <div class="kpi-label">总销售额</div>
-    <div class="kpi-value">85.37万</div>
-    <div class="kpi-sub">目标 100万</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">完成率</div>
-    <div class="kpi-value red">85.4%</div>
-    <div class="kpi-sub">缺口 14.63万</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">总订单</div>
-    <div class="kpi-value">238,208</div>
-    <div class="kpi-sub">日均 1,369 单</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">去重用户</div>
-    <div class="kpi-value">7,374</div>
-    <div class="kpi-sub">人均消费 ¥115.77</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">平均客单价</div>
-    <div class="kpi-value accent">¥3.58</div>
-    <div class="kpi-sub">低价定位 · 符合预期</div>
-  </div>
+  <div class="kpi-card accent-card"><div class="kpi-label">全系列收入</div><div class="kpi-value">499万</div><div class="kpi-sub">日均 28,688元</div></div>
+  <div class="kpi-card"><div class="kpi-label">Magic组</div><div class="kpi-value accent">85.37万</div><div class="kpi-sub">238K单 · 7,374人</div></div>
+  <div class="kpi-card"><div class="kpi-label">VIP组</div><div class="kpi-value accent">413.8万</div><div class="kpi-sub">135K单 · 3,216人</div></div>
+  <div class="kpi-card"><div class="kpi-label">Magic 客单价</div><div class="kpi-value">¥3.58</div><div class="kpi-sub">低价定位</div></div>
+  <div class="kpi-card"><div class="kpi-label">VIP 客单价</div><div class="kpi-value">¥30.73</div><div class="kpi-sub">中高付费</div></div>
+  <div class="kpi-card"><div class="kpi-label">两组用券率</div><div class="kpi-value">0.9% / 5.7%</div><div class="kpi-sub">Magic / VIP</div></div>
 </div>
 
-<!-- 01 -->
+<div class="sub-label">PART 1 · 全系列共性分析</div>
+
 <div class="section">
-  <div class="section-head"><span class="section-num">01</span><h2>月度收入趋势</h2></div>
-  <div class="card">
-    <h3>Magic系列月度收入构成（万元）</h3>
-    <div id="chart_monthly" class="chart-box"></div>
-    <p class="chart-source">数据来源：item-purchase · 已发货订单</p>
-  </div>
+  <div class="section-head"><span class="section-num">01</span><h2>月度收入趋势：4月下滑后企稳</h2></div>
   <div class="two-col">
     <div class="card">
-      <h3>日均收入趋势</h3>
+      <h3>全系列月度收入（万元）</h3>
+      <div id="c1" class="chart-box" style="height:300px"></div>
+    </div>
+    <div class="card">
+      <h3>日均收入对比</h3>
       <table>
-        <tr><th>月份</th><th class="text-right">天数</th><th class="text-right">总额</th><th class="text-right">日均</th><th class="text-right">环比</th></tr>
-        <tr><td>1月</td><td class="text-right">31</td><td class="text-right">15.72万</td><td class="text-right">5,070</td><td class="text-right">—</td></tr>
-        <tr><td>2月</td><td class="text-right">28</td><td class="text-right">13.66万</td><td class="text-right">4,879</td><td class="text-right text-red">-3.8%</td></tr>
-        <tr><td>3月</td><td class="text-right">31</td><td class="text-right">16.95万</td><td class="text-right text-accent">5,467</td><td class="text-right text-green">+12.0%</td></tr>
-        <tr><td>4月</td><td class="text-right">30</td><td class="text-right">14.61万</td><td class="text-right">4,870</td><td class="text-right text-red">-10.9%</td></tr>
-        <tr><td>5月</td><td class="text-right">31</td><td class="text-right">13.85万</td><td class="text-right">4,467</td><td class="text-right text-red">-8.3%</td></tr>
-        <tr><td>6月</td><td class="text-right">23</td><td class="text-right">10.58万</td><td class="text-right text-green">4,601</td><td class="text-right text-green">+3.0%</td></tr>
+        <tr><th>月份</th><th class="text-right">全系列</th><th class="text-right">Magic</th><th class="text-right">VIP</th></tr>
+        <tr><td>1月</td><td class="text-right">26,734</td><td class="text-right">5,070</td><td class="text-right">21,664</td></tr>
+        <tr><td>2月</td><td class="text-right">32,361</td><td class="text-right">4,879</td><td class="text-right text-accent">27,482</td></tr>
+        <tr><td>3月</td><td class="text-right text-accent">30,765</td><td class="text-right text-accent">5,467</td><td class="text-right">25,298</td></tr>
+        <tr><td>4月</td><td class="text-right text-red">27,650</td><td class="text-right">4,870</td><td class="text-right">22,780</td></tr>
+        <tr><td>5月</td><td class="text-right">27,231</td><td class="text-right">4,467</td><td class="text-right">22,764</td></tr>
+        <tr><td>6月</td><td class="text-right text-green">27,369</td><td class="text-right text-green">4,601</td><td class="text-right">22,769</td></tr>
       </table>
-      <div class="insight note" style="margin-top:12px">6月数据截至23日，日均4,601元高于5月的4,467元，趋势未下降。</div>
-    </div>
-    <div class="card">
-      <h3>各 Promoter 月度趋势</h3>
-      <div id="chart_promoter_monthly" class="chart-box" style="height:320px"></div>
+      <div class="insight note" style="margin-top:12px">6月数据截至23日，日均收入与5月持平，趋势未下降。两组4月同步下滑约10%，5-6月企稳。</div>
     </div>
   </div>
 </div>
 
-<!-- 02 -->
 <div class="section">
-  <div class="section-head"><span class="section-num">02</span><h2>Promoter 结构拆解</h2></div>
+  <div class="section-head"><span class="section-num">02</span><h2>用户生命周期：两组都面临「只来1个月」的问题</h2></div>
   <div class="two-col">
     <div class="card">
-      <h3>Promoter 收入占比</h3>
-      <div id="chart_promoter_pie" class="chart-box" style="height:300px"></div>
+      <h3>Magic 用户活跃月数</h3>
+      <div id="c2a" class="chart-box" style="height:280px"></div>
     </div>
     <div class="card">
-      <h3>各 Promoter 核心指标</h3>
+      <h3>VIP 用户活跃月数</h3>
+      <div id="c2b" class="chart-box" style="height:280px"></div>
+    </div>
+  </div>
+  <div class="insight"><strong>共性：</strong>两组都有约36%的用户只活跃1个月就流失。差异在于VIP的长期用户（6个月全在）占20.7%，Magic只有15.0%——说明VIP的高客单价带来更强粘性。</div>
+</div>
+
+<div class="section">
+  <div class="section-head"><span class="section-num">03</span><h2>购买间隔：69-71%复购发生在当天</h2></div>
+  <div class="two-col">
+    <div class="card">
+      <h3>Magic 购买间隔</h3>
+      <div id="c3a" class="chart-box" style="height:280px"></div>
+    </div>
+    <div class="card">
+      <h3>VIP 购买间隔</h3>
+      <div id="c3b" class="chart-box" style="height:280px"></div>
+    </div>
+  </div>
+  <div class="insight amber"><strong>共性：</strong>两组都是即时性消费（当天复购69-71%），说明购买行为发生在游戏内精力/资源消耗的瞬间。企微消息在这个窗口之后才到达，错过了最佳转化时机。</div>
+</div>
+
+<div class="divider"></div>
+<div class="sub-label">PART 2 · MAGIC 系列分析</div>
+
+<div class="section">
+  <div class="section-head"><span class="section-num">04</span><h2>Magic Promoter 结构与商品</h2></div>
+  <div class="two-col">
+    <div class="card">
+      <h3>Promoter 收入构成</h3>
+      <div id="c4a" class="chart-box" style="height:300px"></div>
+    </div>
+    <div class="card">
+      <h3>Magic 核心指标</h3>
       <table>
         <tr><th>Promoter</th><th class="text-right">销售额</th><th class="text-right">订单</th><th class="text-right">客单价</th></tr>
         <tr><td>magicbird1</td><td class="text-right text-accent">36.27万</td><td class="text-right">89,391</td><td class="text-right">4.06</td></tr>
@@ -328,221 +165,231 @@
         <tr><td>shequn_magicbird</td><td class="text-right">16.59万</td><td class="text-right">52,308</td><td class="text-right">3.17</td></tr>
         <tr><td>magicbird2</td><td class="text-right">8.49万</td><td class="text-right">29,099</td><td class="text-right">2.92</td></tr>
       </table>
-      <div class="insight note" style="margin-top:12px">bird2用户量约为 bird1/3 的一半，客单价最低。bird1 + bird3 + bird2 峰值约15.5万/月。</div>
-    </div>
-  </div>
-</div>
-
-<!-- 03 -->
-<div class="section">
-  <div class="section-head"><span class="section-num">03</span><h2>全渠道走势对标</h2></div>
-  <div class="card">
-    <h3>各 Promoter 月度环比变化</h3>
-    <div id="chart_all_promoters_mom" class="chart-box"></div>
-    <p class="chart-source">所有 Promoter 均经历4月下滑后企稳，非 Magic 独有现象</p>
-  </div>
-  <div class="insight">
-    <strong>大盘走势一致：</strong>4月全渠道同步下跌约10%，5-6月企稳。zimi、dudu 等大基数 Promoter 同样回落，Magic 基数小，同样跌幅对目标冲击更显著。
-  </div>
-</div>
-
-<!-- 04 -->
-<div class="section">
-  <div class="section-head"><span class="section-num">04</span><h2>商品结构分析</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>商品收入占比</h3>
-      <div id="chart_product_pie" class="chart-box" style="height:320px"></div>
-    </div>
-    <div class="card">
-      <h3>商品核心指标</h3>
-      <table>
-        <tr><th>商品</th><th class="text-right">收入</th><th class="text-right">占比</th><th class="text-right">订单</th><th class="text-right">客单价</th></tr>
-        <tr><td>每周特惠礼包</td><td class="text-right text-accent">35.49万</td><td class="text-right">41.6%</td><td class="text-right">32,594</td><td class="text-right">10.89</td></tr>
-        <tr><td>10分钟无限精力</td><td class="text-right">18.84万</td><td class="text-right">22.1%</td><td class="text-right">188,917</td><td class="text-right">1.00</td></tr>
-        <tr><td>188个风车币</td><td class="text-right">6.16万</td><td class="text-right">7.2%</td><td class="text-right">3,808</td><td class="text-right">16.19</td></tr>
-        <tr><td>62个风车币</td><td class="text-right">5.09万</td><td class="text-right">6.0%</td><td class="text-right">9,431</td><td class="text-right">5.40</td></tr>
-        <tr><td>340个风车币</td><td class="text-right">4.95万</td><td class="text-right">5.8%</td><td class="text-right">1,833</td><td class="text-right">26.99</td></tr>
-        <tr><td>1568个风车币</td><td class="text-right">4.41万</td><td class="text-right">5.2%</td><td class="text-right">405</td><td class="text-right">108.88</td></tr>
-        <tr><td>其他礼包/风车币</td><td class="text-right">10.43万</td><td class="text-right">12.1%</td><td class="text-right">3,395</td><td class="text-right">—</td></tr>
-      </table>
+      <div class="insight note" style="margin-top:12px">bird2用户量约为bird1/3的一半，bird1+bird3峰值约15.5万/月。</div>
     </div>
   </div>
   <div class="card">
-    <h3>特惠礼包档位分布（73% 集中在 3 元档）</h3>
-    <div id="chart_bundle_tiers" class="chart-box" style="height:280px"></div>
-    <p class="chart-source">54.5% 的用户只买过 1 个档位，仅 0.6% 买齐 6 个档位</p>
+    <h3>Magic 商品收入占比 &amp; 特惠礼包档位</h3>
+    <div class="two-col">
+      <div id="c4b" class="chart-box" style="height:300px"></div>
+      <div id="c4c" class="chart-box" style="height:300px"></div>
+    </div>
+    <p class="chart-source">73%礼包订单集中在3元档 · 54.5%用户只买过1个档位</p>
   </div>
 </div>
 
-<!-- 05 -->
 <div class="section">
-  <div class="section-head"><span class="section-num">05</span><h2>用户生命周期</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>用户活跃月数分布</h3>
-      <div id="chart_lifecycle" class="chart-box" style="height:300px"></div>
-    </div>
-    <div class="card">
-      <h3>月度用户流动</h3>
-      <table>
-        <tr><th>过渡</th><th class="text-right">留存率</th><th class="text-right">流失</th><th class="text-right">新增</th><th class="text-right">净变化</th></tr>
-        <tr><td>1→2月</td><td class="text-right">63.4%</td><td class="text-right text-red">-1,327</td><td class="text-right text-green">+677</td><td class="text-right text-red">-650</td></tr>
-        <tr><td>2→3月</td><td class="text-right text-green">74.5%</td><td class="text-right text-red">-759</td><td class="text-right text-green">+1,660</td><td class="text-right text-green">+901</td></tr>
-        <tr><td>3→4月</td><td class="text-right">66.4%</td><td class="text-right text-red">-1,302</td><td class="text-right text-green">+968</td><td class="text-right text-red">-334</td></tr>
-        <tr><td>4→5月</td><td class="text-right">71.6%</td><td class="text-right text-red">-1,005</td><td class="text-right text-green">+843</td><td class="text-right text-red">-162</td></tr>
-        <tr><td>5→6月</td><td class="text-right">70.8%</td><td class="text-right text-red">-989</td><td class="text-right text-green">+814</td><td class="text-right text-red">-175</td></tr>
-      </table>
-    </div>
-  </div>
-  <div class="card">
-    <h3>新用户流入持续萎缩</h3>
-    <div id="chart_new_users" class="chart-box" style="height:300px"></div>
-  </div>
-  <div class="insight red">
-    <strong>核心问题：</strong>除2→3月外均为净流失。新用户从1月的3,627人萎缩至6月仅495人。100万目标的缺口本质是<strong>用户规模</strong>不足。
-  </div>
-</div>
-
-<!-- 06 -->
-<div class="section">
-  <div class="section-head"><span class="section-num">06</span><h2>用户回购与收入集中度</h2></div>
+  <div class="section-head"><span class="section-num">05</span><h2>Magic 用户回购与收入集中度</h2></div>
   <div class="two-col">
     <div class="card">
       <h3>购买频次分层</h3>
-      <div id="chart_freq" class="chart-box" style="height:300px"></div>
+      <div id="c5a" class="chart-box" style="height:300px"></div>
     </div>
     <div class="card">
-      <h3>各分层贡献</h3>
+      <h3>各分层收入贡献</h3>
       <table>
-        <tr><th>分层</th><th class="text-right">人数</th><th class="text-right">占比</th><th class="text-right">收入</th><th class="text-right">人均</th></tr>
-        <tr><td>1次</td><td class="text-right">1,577</td><td class="text-right">21.4%</td><td class="text-right">1.28万</td><td class="text-right">8元</td></tr>
-        <tr><td>2-5次</td><td class="text-right">1,713</td><td class="text-right">23.2%</td><td class="text-right">4.33万</td><td class="text-right">25元</td></tr>
-        <tr><td>6-20次</td><td class="text-right">1,683</td><td class="text-right">22.8%</td><td class="text-right">16.29万</td><td class="text-right">97元</td></tr>
-        <tr><td>21-50次</td><td class="text-right">1,078</td><td class="text-right">14.6%</td><td class="text-right text-accent">20.27万</td><td class="text-right">188元</td></tr>
-        <tr><td>51-100次</td><td class="text-right">677</td><td class="text-right">9.2%</td><td class="text-right">11.69万</td><td class="text-right">173元</td></tr>
-        <tr><td><strong>100+次</strong></td><td class="text-right"><strong>646</strong></td><td class="text-right"><strong>8.8%</strong></td><td class="text-right"><strong>31.50万</strong></td><td class="text-right"><strong>488元</strong></td></tr>
+        <tr><th>分层</th><th class="text-right">人数</th><th class="text-right">收入占比</th><th class="text-right">人均</th></tr>
+        <tr><td>1次</td><td class="text-right">1,577</td><td class="text-right">1.5%</td><td class="text-right">8元</td></tr>
+        <tr><td>2-5次</td><td class="text-right">1,713</td><td class="text-right">5.1%</td><td class="text-right">25元</td></tr>
+        <tr><td>6-20次</td><td class="text-right">1,683</td><td class="text-right">19.1%</td><td class="text-right">97元</td></tr>
+        <tr><td>21-50次</td><td class="text-right">1,078</td><td class="text-right text-accent">23.7%</td><td class="text-right">188元</td></tr>
+        <tr><td>51-100次</td><td class="text-right">677</td><td class="text-right">13.7%</td><td class="text-right">173元</td></tr>
+        <tr><td><strong>100+次</strong></td><td class="text-right"><strong>646</strong></td><td class="text-right text-red"><strong>36.9%</strong></td><td class="text-right"><strong>488元</strong></td></tr>
       </table>
+      <div class="insight red" style="margin-top:12px">Top 10%用户(737人)贡献73%收入。</div>
     </div>
   </div>
-  <div class="card">
-    <h3>收入集中度</h3>
-    <div id="chart_concentration" class="chart-box" style="height:260px"></div>
-    <p class="chart-source">Top 10% 用户（737人）贡献 73% 收入，Top 20% 贡献 84.5%</p>
-  </div>
-  <div class="insight red">
-    <strong>结构风险：</strong>646位高频用户贡献36.9%收入。44.6%的用户购买≤5次，人均消费仅17元。<strong>扩大中腰部用户群</strong>是突破100万的关键杠杆。
-  </div>
-</div>
-
-<!-- 07 -->
-<div class="section">
-  <div class="section-head"><span class="section-num">07</span><h2>首购路径与购买间隔</h2></div>
   <div class="card">
     <h3>首购商品 → 后续行为</h3>
     <table>
-      <tr><th>首购商品</th><th class="text-right">人数</th><th class="text-right">回购率</th><th class="text-right">买过其他商品</th><th class="text-right">人均消费</th></tr>
+      <tr><th>首购商品</th><th class="text-right">人数</th><th class="text-right">回购率</th><th class="text-right">交叉购买</th><th class="text-right">人均消费</th></tr>
       <tr><td>10分钟无限精力</td><td class="text-right">2,740</td><td class="text-right text-green">87.7%</td><td class="text-right text-green">63.6%</td><td class="text-right text-accent">127元</td></tr>
       <tr><td>每周特惠礼包</td><td class="text-right text-accent">4,195</td><td class="text-right">74.0%</td><td class="text-right">44.1%</td><td class="text-right">80元</td></tr>
-      <tr><td>62个风车币</td><td class="text-right">132</td><td class="text-right">72.7%</td><td class="text-right">60.6%</td><td class="text-right">192元</td></tr>
       <tr><td>188个风车币</td><td class="text-right">49</td><td class="text-right">79.6%</td><td class="text-right text-green">77.6%</td><td class="text-right">522元</td></tr>
-      <tr><td>340个风车币</td><td class="text-right">51</td><td class="text-right">78.4%</td><td class="text-right">70.6%</td><td class="text-right">418元</td></tr>
     </table>
-  </div>
-  <div class="two-col">
-    <div class="card">
-      <h3>购买间隔分布</h3>
-      <div id="chart_gap" class="chart-box" style="height:300px"></div>
-    </div>
-    <div class="card">
-      <h3>精力首购 → 次购间隔</h3>
-      <div id="chart_energy_gap" class="chart-box" style="height:300px"></div>
-    </div>
-  </div>
-  <div class="insight green">
-    <strong>精力是最佳入口：</strong>首购精力的用户回购率87.7%，人均消费127元，远超礼包首购用户。69%的复购发生在当天，说明购买行为是即时性的。
   </div>
 </div>
 
-<!-- 08 -->
 <div class="section">
-  <div class="section-head"><span class="section-num">08</span><h2>优惠券效果分析</h2></div>
+  <div class="section-head"><span class="section-num">06</span><h2>Magic 留存与流失</h2></div>
+  <div class="card">
+    <div class="two-col">
+      <div>
+        <h3>月度用户流动</h3>
+        <table>
+          <tr><th>过渡</th><th class="text-right">留存率</th><th class="text-right">流失</th><th class="text-right">新增</th><th class="text-right">净变化</th></tr>
+          <tr><td>1→2月</td><td class="text-right">63.4%</td><td class="text-right text-red">-1,327</td><td class="text-right text-green">+677</td><td class="text-right text-red">-650</td></tr>
+          <tr><td>2→3月</td><td class="text-right text-green">74.5%</td><td class="text-right text-red">-759</td><td class="text-right text-green">+1,660</td><td class="text-right text-green">+901</td></tr>
+          <tr><td>3→4月</td><td class="text-right">66.4%</td><td class="text-right text-red">-1,302</td><td class="text-right text-green">+968</td><td class="text-right text-red">-334</td></tr>
+          <tr><td>4→5月</td><td class="text-right">71.6%</td><td class="text-right text-red">-1,005</td><td class="text-right text-green">+843</td><td class="text-right text-red">-162</td></tr>
+          <tr><td>5→6月</td><td class="text-right">70.8%</td><td class="text-right text-red">-989</td><td class="text-right text-green">+814</td><td class="text-right text-red">-175</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>流失用户最后购买</h3>
+        <div id="c6" class="chart-box" style="height:280px"></div>
+      </div>
+    </div>
+    <div class="insight red">53%流失用户最后买的是礼包（非精力），礼包是一次性消费。CD到期后第6天购买量回升——但没有CD提醒，28.5%窗口期用户流失。</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><span class="section-num">07</span><h2>Magic 优惠券：用券率0.9%，周五效应明显</h2></div>
   <div class="two-col">
     <div class="card">
       <h3>各商品用券率</h3>
-      <div id="chart_coupon_rate" class="chart-box" style="height:300px"></div>
+      <div id="c7a" class="chart-box" style="height:300px"></div>
     </div>
     <div class="card">
-      <h3>月度用券率</h3>
+      <h3>500+商品券匹配问题</h3>
       <table>
-        <tr><th>月份</th><th class="text-right">用券单</th><th class="text-right">用券率</th><th class="text-right">用券金额</th></tr>
-        <tr><td>1月</td><td class="text-right">391</td><td class="text-right">0.9%</td><td class="text-right">2.43万</td></tr>
-        <tr><td>2月</td><td class="text-right">434</td><td class="text-right">1.5%</td><td class="text-right">3.24万</td></tr>
-        <tr><td>3月</td><td class="text-right text-accent">804</td><td class="text-right text-accent">1.8%</td><td class="text-right text-accent">4.17万</td></tr>
-        <tr><td>4月</td><td class="text-right">232</td><td class="text-right">0.5%</td><td class="text-right">3.15万</td></tr>
-        <tr><td>5月</td><td class="text-right">165</td><td class="text-right">0.4%</td><td class="text-right">2.41万</td></tr>
-        <tr><td>6月</td><td class="text-right">211</td><td class="text-right">0.7%</td><td class="text-right">1.57万</td></tr>
+        <tr><th>商品</th><th class="text-right">用券率</th><th class="text-right">折扣率</th><th>说明</th></tr>
+        <tr><td>至尊礼包(517元)</td><td class="text-right">43%</td><td class="text-right text-red">2.3%</td><td>用的120减12</td></tr>
+        <tr><td>8068风车币(578元)</td><td class="text-right">19%</td><td class="text-right text-red">2.9%</td><td>用的小券</td></tr>
+        <tr><td>超大礼包(135元)</td><td class="text-right">69%</td><td class="text-right text-green">8.1%</td><td>111减11匹配</td></tr>
+        <tr><td>1568风车币(110元)</td><td class="text-right">60%</td><td class="text-right text-green">9.8%</td><td>111减11匹配</td></tr>
       </table>
-      <div class="insight note" style="margin-top:12px">整体用券率0.9%，高价商品用券率60-69%（超大礼包、豪华礼包），券被「本来就会买的用户」使用。0.99券用于破冰绑定商城，带动增量有限。</div>
+      <div class="insight amber" style="margin-top:12px">500-50券整期仅用7次。用户手里只有100-10的小券，500+商品折扣率<3%，用户不care。应定向发大券。</div>
     </div>
   </div>
 </div>
 
-<!-- 09 -->
+<div class="divider"></div>
+<div class="sub-label">PART 3 · VIP 组分析</div>
+
 <div class="section">
-  <div class="section-head"><span class="section-num">09</span><h2>流失用户分析</h2></div>
+  <div class="section-head"><span class="section-num">08</span><h2>VIP Promoter 结构与月度趋势</h2></div>
   <div class="two-col">
     <div class="card">
-      <h3>流失用户最后购买的商品</h3>
-      <div id="chart_churn_product" class="chart-box" style="height:300px"></div>
+      <h3>VIP 各 Promoter 月度收入（万元）</h3>
+      <div id="c8a" class="chart-box" style="height:300px"></div>
     </div>
     <div class="card">
-      <h3>月度流失用户特征</h3>
+      <h3>VIP 核心指标</h3>
       <table>
-        <tr><th>过渡</th><th class="text-right">流失</th><th class="text-right">人均消费</th><th>特征</th></tr>
-        <tr><td>1→2月</td><td class="text-right text-red">1,327</td><td class="text-right">23元</td><td>精力+低价礼包</td></tr>
-        <tr><td>2→3月</td><td class="text-right">759</td><td class="text-right">37元</td><td>略高价值</td></tr>
-        <tr><td>3→4月</td><td class="text-right text-red">1,302</td><td class="text-right">26元</td><td>精力+低价礼包</td></tr>
-        <tr><td>4→5月</td><td class="text-right">1,005</td><td class="text-right">19元</td><td>更低价值</td></tr>
-        <tr><td>5→6月</td><td class="text-right">989</td><td class="text-right">15元</td><td>最低价值</td></tr>
+        <tr><th>Promoter</th><th class="text-right">月均</th><th>趋势</th></tr>
+        <tr><td>zimi</td><td class="text-right text-accent">~38万</td><td>3月高峰后回落</td></tr>
+        <tr><td>dudu</td><td class="text-right">~17.6万</td><td>3月高峰后回落</td></tr>
+        <tr><td>momohu</td><td class="text-right">~9万</td><td>波动较大</td></tr>
+        <tr><td>lixiong</td><td class="text-right">~3.2万</td><td>逐月下滑</td></tr>
       </table>
     </div>
   </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><span class="section-num">09</span><h2>VIP 商品结构：高价商品占比远超 Magic</h2></div>
   <div class="card">
-    <h3>礼包购买后 7 天内的后续行为</h3>
+    <h3>VIP 商品收入 TOP 10</h3>
     <table>
-      <tr><th>时间</th><th class="text-right">订单量</th><th>TOP 3 行为</th></tr>
-      <tr><td>当天</td><td class="text-right text-accent">21,237</td><td>精力 (17,009) · 礼包 (3,758) · 62风车币 (185)</td></tr>
-      <tr><td>1天后</td><td class="text-right">15,540</td><td>精力 (13,380) · 礼包 (1,728) · 62风车币 (168)</td></tr>
-      <tr><td>2-5天</td><td class="text-right">~54,000</td><td>精力占比 85%+，稳定低频</td></tr>
-      <tr><td>6天后</td><td class="text-right text-accent">15,668</td><td>精力 (13,407) · 礼包 (1,857) · 回购量回升</td></tr>
+      <tr><th>商品</th><th class="text-right">收入</th><th class="text-right">占比</th><th class="text-right">订单</th></tr>
+      <tr><td>每周特惠礼包</td><td class="text-right text-accent">205.1万</td><td class="text-right">49.6%</td><td class="text-right">14,382</td></tr>
+      <tr><td>8068个风车币</td><td class="text-right">58.1万</td><td class="text-right">14.0%</td><td class="text-right">1,003</td></tr>
+      <tr><td>至尊礼包</td><td class="text-right">36.2万</td><td class="text-right">8.7%</td><td class="text-right">693</td></tr>
+      <tr><td>1568个风车币</td><td class="text-right">18.5万</td><td class="text-right">4.5%</td><td class="text-right">1,661</td></tr>
+      <tr><td>超大礼包</td><td class="text-right">17.3万</td><td class="text-right">4.2%</td><td class="text-right">1,270</td></tr>
+      <tr><td>丰富礼包</td><td class="text-right">14.3万</td><td class="text-right">3.5%</td><td class="text-right">2,353</td></tr>
+      <tr><td>340个风车币</td><td class="text-right">14.2万</td><td class="text-right">3.4%</td><td class="text-right">5,244</td></tr>
+      <tr><td>豪华礼包</td><td class="text-right">13.7万</td><td class="text-right">3.3%</td><td class="text-right">490</td></tr>
+      <tr><td>3168个风车币</td><td class="text-right">10.7万</td><td class="text-right">2.6%</td><td class="text-right">478</td></tr>
+      <tr><td>10分钟无限精力</td><td class="text-right">9.3万</td><td class="text-right">2.3%</td><td class="text-right">93,375</td></tr>
     </table>
-  </div>
-  <div class="insight amber">
-    <strong>发现：</strong>53%流失用户的最后购买是礼包（非精力），礼包是一次性消费。CD到期后第6天购买量回升，但目前没有CD提醒机制，28.5%的窗口期用户未被触达。
+    <div class="insight"><strong>与Magic的核心差异：</strong>VIP的8068风车币(580元)和至尊礼包(522元)分别占14%和8.7%，合计22.7%。Magic这两个只占3.6%。VIP的收入支柱是高价商品，而非低价精力。</div>
   </div>
 </div>
 
-<!-- 10 -->
 <div class="section">
-  <div class="section-head"><span class="section-num">10</span><h2>下半年运营优化清单</h2></div>
+  <div class="section-head"><span class="section-num">10</span><h2>VIP 用户回购：Top 10% 贡献 68.3%</h2></div>
+  <div class="two-col">
+    <div class="card">
+      <h3>VIP 购买频次分层</h3>
+      <table>
+        <tr><th>分层</th><th class="text-right">人数</th><th class="text-right">收入占比</th><th class="text-right">人均</th></tr>
+        <tr><td>1次</td><td class="text-right">675</td><td class="text-right">0.9%</td><td class="text-right">58元</td></tr>
+        <tr><td>2-5次</td><td class="text-right">711</td><td class="text-right">4.7%</td><td class="text-right">273元</td></tr>
+        <tr><td>6-20次</td><td class="text-right text-accent">743</td><td class="text-right text-accent">23.6%</td><td class="text-right">1,317元</td></tr>
+        <tr><td>21-50次</td><td class="text-right">463</td><td class="text-right text-red">37.6%</td><td class="text-right text-red">3,365元</td></tr>
+        <tr><td>51-100次</td><td class="text-right">230</td><td class="text-right">14.5%</td><td class="text-right">2,613元</td></tr>
+        <tr><td>100+次</td><td class="text-right">394</td><td class="text-right">18.5%</td><td class="text-right">1,947元</td></tr>
+      </table>
+      <div class="insight" style="margin-top:12px">VIP的收入主力在21-50次(37.6%)，而非Magic的100+次(36.9%)。说明VIP用户购买频次适中但客单价高。</div>
+    </div>
+    <div class="card">
+      <h3>VIP 留存率</h3>
+      <table>
+        <tr><th>过渡</th><th class="text-right">留存率</th><th class="text-right">流失</th><th class="text-right">新增</th><th class="text-right">净变化</th></tr>
+        <tr><td>1→2月</td><td class="text-right">71.3%</td><td class="text-right text-red">-483</td><td class="text-right text-green">+470</td><td class="text-right text-red">-13</td></tr>
+        <tr><td>2→3月</td><td class="text-right text-green">73.9%</td><td class="text-right text-red">-436</td><td class="text-right text-green">+503</td><td class="text-right text-green">+67</td></tr>
+        <tr><td>3→4月</td><td class="text-right">71.9%</td><td class="text-right text-red">-487</td><td class="text-right text-green">+341</td><td class="text-right text-red">-146</td></tr>
+        <tr><td>4→5月</td><td class="text-right">73.9%</td><td class="text-right text-red">-414</td><td class="text-right text-green">+407</td><td class="text-right text-red">-7</td></tr>
+        <tr><td>5→6月</td><td class="text-right">73.5%</td><td class="text-right text-red">-420</td><td class="text-right text-green">+330</td><td class="text-right text-red">-90</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><span class="section-num">11</span><h2>VIP 优惠券：用券率5.7%，周五高达15.1%</h2></div>
+  <div class="two-col">
+    <div class="card">
+      <h3>VIP 用券率 TOP 商品</h3>
+      <div id="c11a" class="chart-box" style="height:300px"></div>
+    </div>
+    <div class="card">
+      <h3>VIP 周五券效应</h3>
+      <div id="c11b" class="chart-box" style="height:300px"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>VIP 高价商品券匹配度</h3>
+    <table>
+      <tr><th>商品</th><th class="text-right">用券率</th><th>主力券</th><th class="text-right">折扣率</th><th>诊断</th></tr>
+      <tr><td>超大礼包(135元)</td><td class="text-right text-green">54%</td><td>120减12(383次)</td><td class="text-right text-green">8.9%</td><td>券匹配</td></tr>
+      <tr><td>1568风车币(110元)</td><td class="text-right text-green">43%</td><td>100减10(286次)</td><td class="text-right text-green">9.1%</td><td>券匹配</td></tr>
+      <tr><td>至尊礼包(522元)</td><td class="text-right">47%</td><td>120减12(147次)</td><td class="text-right text-red">2.3%</td><td>大券不够</td></tr>
+      <tr><td>8068风车币(578元)</td><td class="text-right">27%</td><td>120减12(127次)</td><td class="text-right text-red">2.1%</td><td>大券不够</td></tr>
+    </table>
+    <div class="insight amber">VIP的500+商品（至尊、8068）用券率47%和27%，但主力券是120减12，折扣率仅2%。与Magic同一问题：<strong>用户手里没有匹配的大券</strong>。</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+<div class="sub-label">PART 4 · MAGIC vs VIP 对比</div>
+
+<div class="section">
+  <div class="section-head"><span class="section-num">12</span><h2>关键指标对比</h2></div>
+  <div class="card">
+    <table>
+      <tr><th>指标</th><th class="text-right">Magic</th><th class="text-right">VIP</th><th>差异</th></tr>
+      <tr><td>总收入</td><td class="text-right">85.37万</td><td class="text-right text-accent">413.8万</td><td>VIP是Magic的4.8倍</td></tr>
+      <tr><td>总订单</td><td class="text-right text-accent">238,208</td><td class="text-right">134,616</td><td>Magic订单多但单价低</td></tr>
+      <tr><td>去重用户</td><td class="text-right text-accent">7,374</td><td class="text-right">3,216</td><td>Magic用户池更大</td></tr>
+      <tr><td>客单价</td><td class="text-right">¥3.58</td><td class="text-right text-accent">¥30.73</td><td>VIP是Magic的8.6倍</td></tr>
+      <tr><td>人均消费</td><td class="text-right">¥116</td><td class="text-right text-accent">¥1,286</td><td>VIP是Magic的11倍</td></tr>
+      <tr><td>用券率</td><td class="text-right">0.9%</td><td class="text-right text-accent">5.7%</td><td>VIP券分发更充分</td></tr>
+      <tr><td>1个月流失率</td><td class="text-right">36.8%</td><td class="text-right">35.4%</td><td>几乎一致</td></tr>
+      <tr><td>6个月全在</td><td class="text-right">15.0%</td><td class="text-right text-accent">20.7%</td><td>VIP长期用户更多</td></tr>
+      <tr><td>Top 10%贡献</td><td class="text-right">73.0%</td><td class="text-right">68.3%</td><td>Magic更集中</td></tr>
+      <tr><td>当天复购率</td><td class="text-right">69.1%</td><td class="text-right">71.4%</td><td>几乎一致</td></tr>
+      <tr><td>精力收入占比</td><td class="text-right text-accent">22.1%</td><td class="text-right">2.3%</td><td>Magic靠精力引流</td></tr>
+      <tr><td>500+商品占比</td><td class="text-right">3.6%</td><td class="text-right text-accent">22.7%</td><td>VIP靠高价商品</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+<div class="sub-label">PART 5 · 下半年运营建议</div>
+
+<div class="section">
+  <div class="section-head"><span class="section-num">13</span><h2>优化清单</h2></div>
   <div class="card">
     <ol class="todo-list">
-      <li><strong>建礼包 CD 提醒标签</strong> — 记录每个用户上次礼包购买时间，第 6 天触发企微提醒，按上次档位推升级（3元→6元→12元），把 28.5%「CD 后才买」的用户拉回来</li>
-      <li><strong>完善用户画像，推动档位升级</strong> — 按购买次数 + 礼包档位 + 活跃状态分层，54.5% 只买 1 个档位的用户是最大的升级空间，给低价档老用户发阶梯升级券（限时 48h）</li>
-      <li><strong>持续增加引流</strong> — 在游戏中继续挖掘有前置充值需求的用户来企微绑定充值中心，用 0.99 破冰券完成首绑，48h 内推 62 风车币做二次转化</li>
+      <li><strong>建礼包 CD 提醒标签</strong> — 两组通用。记录用户上次礼包购买时间，第6天企微提醒，按上次档位推升级。Magic：3元→6元→12元；VIP：低价档→高价档。</li>
+      <li><strong>完善用户画像，推动档位升级</strong> — Magic：54.5%只买1个档位，阶梯升级券（限时48h）。VIP：21-50次用户人均3,365元是收入主力，重点维护。</li>
+      <li><strong>大券定向发给高价用户</strong> — 两组通用。至尊礼包/8068风车币用户手里只有100-10小券，500-50券应定向发给买过500+商品的用户和买过3次+1568风车币的用户。</li>
+      <li><strong>持续增加引流</strong> — 两组通用。在游戏中继续挖掘有前置充值需求的用户来企微绑定充值中心。Magic用0.99破冰券完成首绑，48h内推62风车币做二次转化。</li>
     </ol>
-  </div>
-
-  <div class="conclusion-box">
-    <h3>核心结论</h3>
-    <p>
-      Magic系列未达100万，根因不是客单价低（定位预期），而是<strong>三个结构性短板叠加</strong>：<br>
-      ① <strong>用户留不住</strong> — 36.8% 只来1个月，每月净流失，新用户从3,627人萎缩到495人；<br>
-      ② <strong>礼包档位上不去</strong> — 73% 订单集中在3元档，54.5% 用户只买过1个档位；<br>
-      ③ <strong>CD提醒缺失</strong> — 7天复购节奏天然存在，但缺少触达闭环，28.5% 窗口期用户流失。<br><br>
-      三个杠杆分别对应<strong>用户规模、客单价、复购频次</strong>，下半年重点突破这三个方向，100万可期。
-    </p>
   </div>
 </div>
 
@@ -550,200 +397,42 @@
 </div>
 
 <script>
-const C = ['#2563EB','#7C3AED','#059669','#DC2626','#D97706','#64748B','#EC4899','#0EA5E9'];
-const grid = { left: 56, right: 16, top: 38, bottom: 28 };
+const C=['#2563EB','#7C3AED','#059669','#DC2626','#D97706','#64748B','#EC4899','#0EA5E9'];
+const G={left:56,right:16,top:38,bottom:28};
+const tip={backgroundColor:'#fff',borderColor:'#E5E5E5',textStyle:{color:'#1A1A1A',fontSize:12}};
+const ax={axisLine:{lineStyle:{color:'#E5E5E5'}},axisLabel:{color:'#6B6B6B'}};
+const sy={splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}},axisLabel:{color:'#6B6B6B'}};
+const leg={top:0,textStyle:{fontSize:11,color:'#6B6B6B'},icon:'roundRect',itemWidth:12,itemHeight:8};
 
-// 01 Monthly
-echarts.init(document.getElementById('chart_monthly')).setOption({
-  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: '#fff', borderColor: '#E5E5E5', textStyle: { color: '#1A1A1A', fontSize: 12 } },
-  legend: { data: ['magicbird1','magicbird3','magicbird2','shequn'], top: 0, textStyle: { fontSize: 11, color: '#6B6B6B' }, icon: 'roundRect', itemWidth: 12, itemHeight: 8 },
-  grid,
-  xAxis: { type: 'category', data: ['1月','2月','3月','4月','5月','6月'], axisLine: { lineStyle: { color: '#E5E5E5' } }, axisLabel: { color: '#6B6B6B' } },
-  yAxis: { type: 'value', name: '万', nameTextStyle: { color: '#A0A0A0' }, splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } }, axisLabel: { color: '#6B6B6B' } },
-  series: [
-    { name:'magicbird1', type:'bar', stack:'t', data:[1.6,5.8,7.0,10.4,6.7,4.7], itemStyle:{ color: C[0], borderRadius: [0,0,0,0] }, barWidth: 32 },
-    { name:'magicbird3', type:'bar', stack:'t', data:[1.6,4.9,6.6,1.8,4.8,4.2], itemStyle:{ color: C[1] } },
-    { name:'magicbird2', type:'bar', stack:'t', data:[0.4,1.4,1.8,1.7,1.9,1.3], itemStyle:{ color: C[2] } },
-    { name:'shequn', type:'bar', stack:'t', data:[12.1,1.7,1.5,0.6,0.4,0.3], itemStyle:{ color: C[3], borderRadius: [4,4,0,0] } }
-  ]
-});
+echarts.init(document.getElementById('c1')).setOption({tooltip:{trigger:'axis',...tip},legend:{data:['Magic','VIP'],...leg},grid:G,xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月'],...ax},yAxis:{type:'value',name:'万',nameTextStyle:{color:'#A0A0A0'},...sy},series:[{name:'Magic',type:'bar',data:[15.72,13.66,16.95,14.61,13.85,10.58],itemStyle:{color:C[0],borderRadius:[4,4,0,0]},barWidth:28},{name:'VIP',type:'bar',data:[67.2,76.9,78.4,68.3,70.6,52.4],itemStyle:{color:C[1],borderRadius:[4,4,0,0]},barWidth:28}]});
 
-// 01 Promoter monthly
-echarts.init(document.getElementById('chart_promoter_monthly')).setOption({
-  tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E5E5E5', textStyle: { color: '#1A1A1A', fontSize: 12 } },
-  legend: { data: ['bird1','bird3','bird2'], top: 0, textStyle: { fontSize: 11, color: '#6B6B6B' }, icon: 'roundRect', itemWidth: 12, itemHeight: 8 },
-  grid,
-  xAxis: { type: 'category', data: ['1月','2月','3月','4月','5月','6月'], axisLine: { lineStyle: { color: '#E5E5E5' } }, axisLabel: { color: '#6B6B6B' } },
-  yAxis: { type: 'value', name: '万', nameTextStyle: { color: '#A0A0A0' }, splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } }, axisLabel: { color: '#6B6B6B' } },
-  series: [
-    { name:'bird1', type:'line', data:[1.6,5.8,7.0,10.4,6.7,4.7], lineStyle:{width:2.5,color:C[0]}, itemStyle:{color:C[0]}, symbol:'circle', symbolSize:6, smooth: true },
-    { name:'bird3', type:'line', data:[1.6,4.9,6.6,1.8,4.8,4.2], lineStyle:{width:2.5,color:C[1]}, itemStyle:{color:C[1]}, symbol:'circle', symbolSize:6, smooth: true },
-    { name:'bird2', type:'line', data:[0.4,1.4,1.8,1.7,1.9,1.3], lineStyle:{width:2,type:'dashed',color:C[2]}, itemStyle:{color:C[2]}, symbol:'circle', symbolSize:5, smooth: true }
-  ]
-});
+echarts.init(document.getElementById('c2a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月全'],...ax},yAxis:{type:'value',...sy},series:[{type:'bar',barWidth:28,data:[2712,1288,946,759,561,1108].map((v,i)=>({value:v,itemStyle:{color:i===0?'#DC2626':i===5?'#059669':'#2563EB',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B'}}]});
 
-// 02 Promoter pie
-echarts.init(document.getElementById('chart_promoter_pie')).setOption({
-  tooltip: { trigger: 'item', formatter: '{b}: {c}万 ({d}%)', backgroundColor: '#fff', borderColor: '#E5E5E5', textStyle: { color: '#1A1A1A' } },
-  series: [{ type:'pie', radius:['48%','74%'], center:['50%','54%'], itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 3 },
-    label: { formatter: '{b}\n{d}%', fontSize: 12, color: '#6B6B6B' },
-    emphasis: { label: { fontWeight: 'bold', fontSize: 14 } },
-    data: [
-      { value:36.27, name:'magicbird1', itemStyle:{color:C[0]} },
-      { value:24.02, name:'magicbird3', itemStyle:{color:C[1]} },
-      { value:16.59, name:'shequn', itemStyle:{color:C[3]} },
-      { value:8.49, name:'magicbird2', itemStyle:{color:C[2]} }
-    ]
-  }]
-});
+echarts.init(document.getElementById('c2b')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月全'],...ax},yAxis:{type:'value',...sy},series:[{type:'bar',barWidth:28,data:[1138,489,351,279,292,667].map((v,i)=>({value:v,itemStyle:{color:i===0?'#DC2626':i===5?'#059669':'#7C3AED',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B'}}]});
 
-// 03 All promoters MoM
-echarts.init(document.getElementById('chart_all_promoters_mom')).setOption({
-  tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E5E5E5', textStyle: { color: '#1A1A1A', fontSize: 12 } },
-  legend: { data: ['magic合计','zimi','dudu','momohu','lixiong'], top: 0, textStyle: { fontSize: 11, color: '#6B6B6B' }, icon: 'roundRect', itemWidth: 12, itemHeight: 8 },
-  grid,
-  xAxis: { type:'category', data:['1→2月','2→3月','3→4月','4→5月','5→6月'], axisLine:{lineStyle:{color:'#E5E5E5'}}, axisLabel:{color:'#6B6B6B'} },
-  yAxis: { type:'value', name:'%', nameTextStyle:{color:'#A0A0A0'}, splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}}, axisLabel:{color:'#6B6B6B',formatter:'{value}%'} },
-  series: [
-    { name:'magic合计', type:'line', data:[-3.8,12.0,-10.9,-8.3,3.0], lineStyle:{width:3}, itemStyle:{color:'#DC2626'}, symbol:'circle', symbolSize:7, smooth:true },
-    { name:'zimi', type:'line', data:[10.6,3.0,-8.9,6.4,-31.3], lineStyle:{width:2}, itemStyle:{color:C[4]}, symbol:'circle', symbolSize:5, smooth:true },
-    { name:'dudu', type:'line', data:[11.9,6.1,-15.8,-8.5,-16.1], lineStyle:{width:2}, itemStyle:{color:C[5]}, symbol:'circle', symbolSize:5, smooth:true },
-    { name:'momohu', type:'line', data:[50.7,-12.4,-16.2,15.7,-25.0], lineStyle:{width:2,type:'dashed'}, itemStyle:{color:C[6]}, symbol:'circle', symbolSize:5, smooth:true },
-    { name:'lixiong', type:'line', data:[0,16.8,-32.6,-6.3,-18.5], lineStyle:{width:2,type:'dashed'}, itemStyle:{color:C[7]}, symbol:'circle', symbolSize:5, smooth:true }
-  ]
-});
+echarts.init(document.getElementById('c3a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['当天','1天','2-3天','4-7天','8+天'],...ax},yAxis:{type:'value',name:'%',...sy,axisLabel:{formatter:'{value}%'}},series:[{type:'bar',barWidth:28,data:[69.1,11.4,4.5,7.8,7.3].map((v,i)=>({value:v,itemStyle:{color:i===0?C[0]:'#D1D5DB',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B',formatter:'{c}%'}}]});
 
-// 04 Product pie
-echarts.init(document.getElementById('chart_product_pie')).setOption({
-  tooltip: { trigger: 'item', formatter: '{b}: {c}万 ({d}%)', backgroundColor: '#fff', borderColor: '#E5E5E5', textStyle: { color: '#1A1A1A' } },
-  series: [{ type:'pie', radius:['44%','70%'], center:['50%','54%'], itemStyle:{borderRadius:5,borderColor:'#fff',borderWidth:3},
-    label: { formatter: '{b}\n{d}%', fontSize: 11, color: '#6B6B6B' },
-    data: [
-      { value:35.49, name:'特惠礼包', itemStyle:{color:C[0]} },
-      { value:18.84, name:'无限精力', itemStyle:{color:C[1]} },
-      { value:6.16, name:'188风车币', itemStyle:{color:C[2]} },
-      { value:5.09, name:'62风车币', itemStyle:{color:C[3]} },
-      { value:4.95, name:'340风车币', itemStyle:{color:C[4]} },
-      { value:4.41, name:'1568风车币', itemStyle:{color:C[5]} },
-      { value:10.43, name:'其他', itemStyle:{color:'#D1D5DB'} }
-    ]
-  }]
-});
+echarts.init(document.getElementById('c3b')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['当天','1天','2-3天','4-7天','8+天'],...ax},yAxis:{type:'value',name:'%',...sy,axisLabel:{formatter:'{value}%'}},series:[{type:'bar',barWidth:28,data:[71.4,11.2,3.9,7.2,6.3].map((v,i)=>({value:v,itemStyle:{color:i===0?C[1]:'#D1D5DB',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B',formatter:'{c}%'}}]});
 
-// 04 Bundle tiers
-echarts.init(document.getElementById('chart_bundle_tiers')).setOption({
-  tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E5E5E5', textStyle: { color: '#1A1A1A' } },
-  grid: { left: 80, right: 40, top: 16, bottom: 28 },
-  xAxis: { type: 'value', name: '订单数', nameTextStyle:{color:'#A0A0A0'}, splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}}, axisLabel:{color:'#6B6B6B'} },
-  yAxis: { type: 'category', data: ['3元','6元','12元','18元','45元','98元','158元','288元','388元','518元'].reverse(), axisLabel:{color:'#6B6B6B',fontSize:12} },
-  series: [{ type:'bar', barWidth: 18,
-    data: [23886,5505,722,404,174,261,322,23,27,34].reverse().map((v,i) => ({ value:v, itemStyle:{color: i>=7?C[0]:i>=4?C[1]:C[4], borderRadius:[0,4,4,0]} })),
-    label: { show:true, position:'right', fontSize:10, color:'#6B6B6B', formatter:p => p.value>100?p.value+'单':'' }
-  }]
-});
+echarts.init(document.getElementById('c4a')).setOption({tooltip:{trigger:'item',formatter:'{b}: {c}万 ({d}%)',...tip},series:[{type:'pie',radius:['48%','74%'],center:['50%','54%'],itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:3},label:{formatter:'{b}\n{d}%',fontSize:12,color:'#6B6B6B'},data:[{value:36.27,name:'bird1',itemStyle:{color:C[0]}},{value:24.02,name:'bird3',itemStyle:{color:C[1]}},{value:16.59,name:'shequn',itemStyle:{color:C[3]}},{value:8.49,name:'bird2',itemStyle:{color:C[2]}}]}]});
 
-// 05 Lifecycle
-echarts.init(document.getElementById('chart_lifecycle')).setOption({
-  tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E5E5E5', textStyle: { color: '#1A1A1A' } },
-  grid: { left: 56, right: 20, top: 16, bottom: 28 },
-  xAxis: { type:'category', data:['1个月','2个月','3个月','4个月','5个月','6个月全'], axisLine:{lineStyle:{color:'#E5E5E5'}}, axisLabel:{color:'#6B6B6B'} },
-  yAxis: { type:'value', name:'人', nameTextStyle:{color:'#A0A0A0'}, splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}}, axisLabel:{color:'#6B6B6B'} },
-  series: [{ type:'bar', barWidth: 36, data:[2712,1288,946,759,561,1108].map((v,i) => ({value:v,itemStyle:{color:i===0?'#DC2626':i===5?'#059669':'#2563EB',borderRadius:[6,6,0,0]}})),
-    label:{show:true,position:'top',fontSize:11,color:'#6B6B6B',formatter:p=>p.value+'人'}
-  }]
-});
+echarts.init(document.getElementById('c4b')).setOption({tooltip:{trigger:'item',formatter:'{b}: {c}万 ({d}%)',...tip},series:[{type:'pie',radius:['44%','70%'],center:['50%','54%'],itemStyle:{borderRadius:5,borderColor:'#fff',borderWidth:3},label:{formatter:'{b}\n{d}%',fontSize:10,color:'#6B6B6B'},data:[{value:35.49,name:'特惠礼包',itemStyle:{color:C[0]}},{value:18.84,name:'无限精力',itemStyle:{color:C[1]}},{value:6.16,name:'188币',itemStyle:{color:C[2]}},{value:5.09,name:'62币',itemStyle:{color:C[3]}},{value:10.23,name:'其他',itemStyle:{color:'#D1D5DB'}}]}]});
 
-// 05 New users
-echarts.init(document.getElementById('chart_new_users')).setOption({
-  tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E5E5E5', textStyle: { color: '#1A1A1A' } },
-  legend: { data:['总活跃','新增','回流/留存'], top:0, textStyle:{fontSize:11,color:'#6B6B6B'}, icon:'roundRect', itemWidth:12, itemHeight:8 },
-  grid,
-  xAxis: { type:'category', data:['1月','2月','3月','4月','5月','6月'], axisLine:{lineStyle:{color:'#E5E5E5'}}, axisLabel:{color:'#6B6B6B'} },
-  yAxis: { type:'value', name:'人', nameTextStyle:{color:'#A0A0A0'}, splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}}, axisLabel:{color:'#6B6B6B'} },
-  series: [
-    { name:'总活跃', type:'line', data:[3627,2977,3878,3544,3382,3207], lineStyle:{width:3}, itemStyle:{color:C[0]}, symbol:'circle', symbolSize:7, smooth:true },
-    { name:'新增', type:'bar', data:[3627,677,1313,756,506,495], itemStyle:{color:'#059669',borderRadius:[4,4,0,0]}, barWidth:24 },
-    { name:'回流/留存', type:'bar', data:[0,2300,2565,2788,2876,2712], itemStyle:{color:'#D1D5DB',borderRadius:[4,4,0,0]}, barWidth:24 }
-  ]
-});
+echarts.init(document.getElementById('c4c')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:60,right:20,top:10,bottom:28},xAxis:{type:'value',...sy},yAxis:{type:'category',data:['3元','6元','12元','18元','45元','98元','158元','388元','518元'].reverse(),axisLabel:{color:'#6B6B6B',fontSize:11}},series:[{type:'bar',barWidth:16,data:[23886,5505,722,404,174,261,322,27,34].reverse().map((v,i)=>({value:v,itemStyle:{color:i>=6?C[0]:i>=3?C[1]:C[4],borderRadius:[0,4,4,0]}})),label:{show:true,position:'right',fontSize:9,color:'#6B6B6B',formatter:p=>p.value>500?p.value+'单':''}}]});
 
-// 06 Frequency
-echarts.init(document.getElementById('chart_freq')).setOption({
-  tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E5E5E5', textStyle: { color: '#1A1A1A' } },
-  grid: { left: 80, right: 20, top: 16, bottom: 28 },
-  xAxis: { type:'value', name:'人', nameTextStyle:{color:'#A0A0A0'}, splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}}, axisLabel:{color:'#6B6B6B'} },
-  yAxis: { type:'category', data:['100+次','51-100次','21-50次','11-20次','6-10次','2-5次','1次'], axisLabel:{color:'#6B6B6B',fontSize:12} },
-  series: [{ type:'bar', barWidth:20, data:[646,677,1078,852,831,1713,1577].map((v,i)=>({value:v,itemStyle:{color:i<=1?'#DC2626':i<=3?C[0]:'#D1D5DB',borderRadius:[0,4,4,0]}})),
-    label:{show:true,position:'right',fontSize:10,color:'#6B6B6B'}
-  }]
-});
+echarts.init(document.getElementById('c5a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:70,right:16,top:16,bottom:28},xAxis:{type:'value',...sy},yAxis:{type:'category',data:['100+','51-100','21-50','11-20','6-10','2-5','1次'],axisLabel:{color:'#6B6B6B',fontSize:11}},series:[{type:'bar',barWidth:18,data:[646,677,1078,852,831,1713,1577].map((v,i)=>({value:v,itemStyle:{color:i<=1?'#DC2626':i<=3?C[0]:'#D1D5DB',borderRadius:[0,4,4,0]}})),label:{show:true,position:'right',fontSize:9,color:'#6B6B6B'}}]});
 
-// 06 Concentration
-echarts.init(document.getElementById('chart_concentration')).setOption({
-  tooltip: { trigger:'axis', backgroundColor:'#fff', borderColor:'#E5E5E5', textStyle:{color:'#1A1A1A'} },
-  grid: { left:60, right:20, top:16, bottom:28 },
-  xAxis: { type:'category', data:['Top 10%\n(737人)','Top 20%\n(1,474人)','Top 50%\n(3,687人)','全部\n(7,374人)'], axisLine:{lineStyle:{color:'#E5E5E5'}}, axisLabel:{color:'#6B6B6B'} },
-  yAxis: { type:'value', name:'%', max:100, nameTextStyle:{color:'#A0A0A0'}, splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}}, axisLabel:{color:'#6B6B6B',formatter:'{value}%'} },
-  series: [{ type:'bar', barWidth:48, data:[73.0,84.5,96.0,100].map((v,i)=>({value:v,itemStyle:{color:i===0?'#DC2626':i===1?C[0]:'#D1D5DB',borderRadius:[8,8,0,0]}})),
-    label:{show:true,position:'top',fontSize:12,fontWeight:'bold',color:'#1A1A1A',formatter:'{c}%'}
-  }]
-});
+echarts.init(document.getElementById('c6')).setOption({tooltip:{trigger:'item',formatter:'{b}: {c}人 ({d}%)',...tip},series:[{type:'pie',radius:['42%','68%'],center:['50%','54%'],itemStyle:{borderRadius:5,borderColor:'#fff',borderWidth:3},label:{formatter:'{b}\n{d}%',fontSize:11,color:'#6B6B6B'},data:[{value:2069,name:'特惠礼包',itemStyle:{color:'#DC2626'}},{value:1469,name:'无限精力',itemStyle:{color:C[0]}},{value:135,name:'62币',itemStyle:{color:C[1]}},{value:84,name:'头像框',itemStyle:{color:'#D1D5DB'}},{value:172,name:'其他',itemStyle:{color:'#F3F4F6'}}]}]});
 
-// 07 Gap
-echarts.init(document.getElementById('chart_gap')).setOption({
-  tooltip: { trigger:'axis', backgroundColor:'#fff', borderColor:'#E5E5E5', textStyle:{color:'#1A1A1A'} },
-  grid: { left:56, right:20, top:16, bottom:28 },
-  xAxis: { type:'category', data:['当天','1天','2-3天','4-7天','8-14天','15-30天','30+天'], axisLine:{lineStyle:{color:'#E5E5E5'}}, axisLabel:{color:'#6B6B6B'} },
-  yAxis: { type:'value', name:'%', nameTextStyle:{color:'#A0A0A0'}, splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}}, axisLabel:{color:'#6B6B6B',formatter:'{value}%'} },
-  series: [{ type:'bar', barWidth:28, data:[69.1,11.4,4.5,7.8,4.4,1.9,1.0].map((v,i)=>({value:v,itemStyle:{color:i===0?C[0]:i<=2?C[1]:'#D1D5DB',borderRadius:[6,6,0,0]}})),
-    label:{show:true,position:'top',fontSize:10,color:'#6B6B6B',formatter:'{c}%'}
-  }]
-});
+echarts.init(document.getElementById('c7a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:110,right:30,top:10,bottom:28},xAxis:{type:'value',name:'%',max:75,...sy,axisLabel:{formatter:'{value}%'}},yAxis:{type:'category',data:['精力','62币','340币','188币','礼包','丰富礼包','至尊礼包','8068币','豪华礼包','1568币','超大礼包'].reverse(),axisLabel:{color:'#6B6B6B',fontSize:10}},series:[{type:'bar',barWidth:14,data:[0.3,0.2,0.9,1.3,3.5,8.5,43.3,18.5,51.6,60.0,69.1].reverse().map(v=>({value:v,itemStyle:{color:v>20?'#DC2626':v>5?C[4]:C[0],borderRadius:[0,4,4,0]}})),label:{show:true,position:'right',fontSize:9,color:'#6B6B6B',formatter:'{c}%'}}]});
 
-// 07 Energy gap
-echarts.init(document.getElementById('chart_energy_gap')).setOption({
-  tooltip: { trigger:'axis', backgroundColor:'#fff', borderColor:'#E5E5E5', textStyle:{color:'#1A1A1A'} },
-  grid: { left:56, right:20, top:16, bottom:28 },
-  xAxis: { type:'category', data:['当天','1天','2-3天','4-7天','8-14天','15-30天','30+天'], axisLine:{lineStyle:{color:'#E5E5E5'}}, axisLabel:{color:'#6B6B6B'} },
-  yAxis: { type:'value', name:'%', nameTextStyle:{color:'#A0A0A0'}, splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}}, axisLabel:{color:'#6B6B6B',formatter:'{value}%'} },
-  series: [{ type:'bar', barWidth:28, data:[68.5,7.5,4.1,7.7,4.5,3.8,4.0].map((v,i)=>({value:v,itemStyle:{color:i===0?'#059669':i<=2?C[1]:'#D1D5DB',borderRadius:[6,6,0,0]}})),
-    label:{show:true,position:'top',fontSize:10,color:'#6B6B6B',formatter:'{c}%'}
-  }]
-});
+echarts.init(document.getElementById('c8a')).setOption({tooltip:{trigger:'axis',...tip},legend:{data:['zimi','dudu','momohu','lixiong'],...leg},grid:G,xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月'],...ax},yAxis:{type:'value',name:'万',nameTextStyle:{color:'#A0A0A0'},...sy},series:[{name:'zimi',type:'line',data:[37.3,41.3,42.5,38.7,41.2,28.3],lineStyle:{width:2.5},itemStyle:{color:C[0]},symbol:'circle',symbolSize:6,smooth:true},{name:'dudu',type:'line',data:[17.6,19.7,20.9,17.6,16.1,13.5],lineStyle:{width:2.5},itemStyle:{color:C[1]},symbol:'circle',symbolSize:6,smooth:true},{name:'momohu',type:'line',data:[7.5,11.3,9.9,8.3,9.6,7.2],lineStyle:{width:2},itemStyle:{color:C[2]},symbol:'circle',symbolSize:5,smooth:true},{name:'lixiong',type:'line',data:[3.7,3.7,4.3,2.9,2.7,2.2],lineStyle:{width:2,type:'dashed'},itemStyle:{color:C[4]},symbol:'circle',symbolSize:5,smooth:true}]});
 
-// 08 Coupon rate
-echarts.init(document.getElementById('chart_coupon_rate')).setOption({
-  tooltip: { trigger:'axis', backgroundColor:'#fff', borderColor:'#E5E5E5', textStyle:{color:'#1A1A1A'} },
-  grid: { left:110, right:30, top:10, bottom:28 },
-  xAxis: { type:'value', name:'%', max:75, nameTextStyle:{color:'#A0A0A0'}, splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}}, axisLabel:{color:'#6B6B6B',formatter:'{value}%'} },
-  yAxis: { type:'category', data:['精力','62币','340币','188币','礼包','丰富礼包','至尊礼包','8068币','豪华礼包','1568币','超大礼包'].reverse(), axisLabel:{color:'#6B6B6B',fontSize:11} },
-  series: [{ type:'bar', barWidth:16, data:[0.3,0.2,0.9,1.3,3.5,8.5,43.3,18.5,51.6,60.0,69.1].reverse().map(v=>({value:v,itemStyle:{color:v>20?'#DC2626':v>5?C[4]:C[0],borderRadius:[0,4,4,0]}})),
-    label:{show:true,position:'right',fontSize:10,color:'#6B6B6B',formatter:'{c}%'}
-  }]
-});
+echarts.init(document.getElementById('c11a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:120,right:30,top:10,bottom:28},xAxis:{type:'value',name:'%',max:70,...sy,axisLabel:{formatter:'{value}%'}},yAxis:{type:'category',data:['精力','188币','丰富礼包','8068币','礼包','1568币','豪华礼包','至尊礼包','超大礼包','6368币','3168币'].reverse(),axisLabel:{color:'#6B6B6B',fontSize:10}},series:[{type:'bar',barWidth:14,data:[0.5,2.2,8.3,27.3,32.8,42.5,45.7,47.3,53.8,58.6,62.3].reverse().map(v=>({value:v,itemStyle:{color:v>30?'#DC2626':v>10?C[4]:C[1],borderRadius:[0,4,4,0]}})),label:{show:true,position:'right',fontSize:9,color:'#6B6B6B',formatter:'{c}%'}}]});
 
-// 09 Churn pie
-echarts.init(document.getElementById('chart_churn_product')).setOption({
-  tooltip: { trigger:'item', formatter:'{b}: {c}人 ({d}%)', backgroundColor:'#fff', borderColor:'#E5E5E5', textStyle:{color:'#1A1A1A'} },
-  series: [{ type:'pie', radius:['42%','68%'], center:['50%','54%'], itemStyle:{borderRadius:5,borderColor:'#fff',borderWidth:3},
-    label:{formatter:'{b}\n{d}%',fontSize:11,color:'#6B6B6B'},
-    data:[
-      { value:2069, name:'特惠礼包', itemStyle:{color:'#DC2626'} },
-      { value:1469, name:'无限精力', itemStyle:{color:C[0]} },
-      { value:135, name:'62风车币', itemStyle:{color:C[1]} },
-      { value:84, name:'头像框', itemStyle:{color:'#D1D5DB'} },
-      { value:172, name:'其他', itemStyle:{color:'#F3F4F6'} }
-    ]
-  }]
-});
+echarts.init(document.getElementById('c11b')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['周一','周二','周三','周四','周五','周六','周日'],...ax},yAxis:{type:'value',name:'%',...sy,axisLabel:{formatter:'{value}%'}},series:[{type:'bar',barWidth:28,data:[3.1,3.0,2.3,1.9,15.1,6.8,4.0].map((v,i)=>({value:v,itemStyle:{color:i===4?'#DC2626':'#7C3AED',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B',formatter:'{c}%'}}]});
 
-// Resize
-window.addEventListener('resize', function() {
-  document.querySelectorAll('.chart-box').forEach(function(el) {
-    var inst = echarts.getInstanceByDom(el);
-    if (inst) inst.resize();
-  });
-});
+window.addEventListener('resize',function(){document.querySelectorAll('.chart-box').forEach(function(el){var i=echarts.getInstanceByDom(el);if(i)i.resize()})});
 </script>
 </body>
 </html>
