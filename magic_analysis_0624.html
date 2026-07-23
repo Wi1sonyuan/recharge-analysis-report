@@ -2,476 +2,375 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>社群充值全系列分析 · 2026.06.24</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Magic系列充值分析 · 2026.07.23</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F7F5F2;--card:#FFF;--border:rgba(0,0,0,.06);--text:#1A1A1A;--t2:#6B6B6B;--t3:#A0A0A0;--accent:#2563EB;--accent-soft:#EEF2FF;--red:#DC2626;--red-soft:#FEF2F2;--green:#059669;--green-soft:#ECFDF5;--amber:#D97706;--amber-soft:#FFFBEB;--violet:#7C3AED;--radius:16px;--shadow:0 1px 3px rgba(0,0,0,.04),0 6px 16px rgba(0,0,0,.04);--shadow-lg:0 4px 6px rgba(0,0,0,.03),0 12px 24px rgba(0,0,0,.06)}
+:root{
+  --bg:#faf8f5;--card:#fff;--accent:#e8734a;--accent2:#f4a261;--accent3:#2a9d8f;
+  --text:#2d2a26;--muted:#8a8580;--border:#ece8e2;--shadow:0 2px 12px rgba(0,0,0,.06);
+  --radius:14px;--font:'DM Sans',sans-serif;--serif:'DM Serif Display',serif;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
-.container{max-width:1120px;margin:0 auto;padding:48px 28px 96px}
-.header{margin-bottom:40px}
-.header-tag{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
-.header h1{font-family:'DM Serif Display',Georgia,serif;font-size:40px;font-weight:400;line-height:1.2;margin-bottom:10px;letter-spacing:-.5px}
-.header .meta{font-size:14px;color:var(--t2)}
-.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:40px}
-.kpi-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.kpi-card.accent-card{background:linear-gradient(135deg,#1E3A8A,#2563EB);border:none}
-.kpi-label{font-size:11px;color:var(--t3);font-weight:500;letter-spacing:.3px;margin-bottom:6px}
-.kpi-value{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
-.kpi-sub{font-size:11px;color:var(--t3);margin-top:4px}
-.kpi-value.red{color:var(--red)}.kpi-value.green{color:var(--green)}.kpi-value.accent{color:var(--accent)}
-.accent-card .kpi-label{color:rgba(255,255,255,.7)}.accent-card .kpi-value{color:#fff}.accent-card .kpi-sub{color:rgba(255,255,255,.5)}
-.section{margin-bottom:48px}
-.section-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-.section-num{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:4px 12px;border-radius:100px;letter-spacing:.5px}
-.section-head h2{font-family:'DM Serif Display',Georgia,serif;font-size:24px;font-weight:400}
-.card{background:var(--card);border-radius:var(--radius);padding:28px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.card h3{font-size:14px;font-weight:700;margin-bottom:16px;letter-spacing:.2px}
-.insight{padding:16px 20px;border-radius:12px;font-size:14px;margin:16px 0;line-height:1.7}
-.insight.accent{background:var(--accent-soft);border-left:3px solid var(--accent)}
-.insight.red{background:var(--red-soft);border-left:3px solid var(--red)}
-.insight.green{background:var(--green-soft);border-left:3px solid var(--green)}
-.insight.amber{background:var(--amber-soft);border-left:3px solid var(--amber)}
-.insight.note{background:#F8F7F5;border-left:3px solid #D4D0CC;font-size:13px;color:var(--t2)}
-.insight strong{color:var(--text)}
-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
-th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #E5E5E5}
-td{padding:10px 12px;border-bottom:1px solid #F2F2F2}
-tr:last-child td{border-bottom:none}tr:hover td{background:#FAFAF8}
-.text-right{text-align:right}.text-red{color:var(--red);font-weight:600}.text-green{color:var(--green);font-weight:600}.text-accent{color:var(--accent);font-weight:600}
-.chart-box{width:100%;height:360px;margin:8px 0}
-.chart-source{font-size:11px;color:var(--t3);margin-top:8px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.todo-list{list-style:none;counter-reset:todo}
-.todo-list li{counter-increment:todo;padding:16px 16px 16px 56px;border-bottom:1px solid #F2F2F2;font-size:14px;position:relative;line-height:1.7}
-.todo-list li:last-child{border-bottom:none}
-.todo-list li::before{content:counter(todo);position:absolute;left:16px;top:16px;width:28px;height:28px;background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;border-radius:50%;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.todo-list li strong{color:var(--accent)}
-.conclusion-box{background:linear-gradient(135deg,#1E3A8A 0%,#7C3AED 100%);color:#fff;padding:32px;border-radius:var(--radius);margin-top:24px;box-shadow:var(--shadow-lg)}
-.conclusion-box h3{color:#fff;font-size:18px;margin-bottom:14px;font-family:'DM Serif Display',serif;font-weight:400}
-.conclusion-box p{color:rgba(255,255,255,.88);font-size:14px;line-height:1.85}
-.conclusion-box strong{color:#fff}
-.divider{height:1px;background:#E5E3E0;margin:48px 0}
-.sub-label{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.sub-label::after{content:'';flex:1;height:1px;background:#E5E3E0}
-.footer{margin-top:64px;padding-top:24px;border-top:1px solid #E5E3E0;font-size:12px;color:var(--t3);text-align:center}
-@media(max-width:768px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.header h1{font-size:30px}.container{padding:28px 16px 64px}}
-@media(max-width:480px){.kpi-strip{grid-template-columns:1fr}}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;padding:0 0 60px}
+.hero{background:linear-gradient(135deg,#e8734a 0%,#f4a261 100%);color:#fff;padding:48px 0 36px;text-align:center}
+.hero h1{font-family:var(--serif);font-size:2.2rem;margin-bottom:8px}
+.hero p{opacity:.85;font-size:.95rem}
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+.conclusions{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 32px;margin:-24px auto 28px;position:relative;z-index:1;max-width:1100px}
+.conclusions h2{font-family:var(--serif);font-size:1.25rem;color:var(--accent);margin-bottom:14px}
+.conclusions ul{list-style:none;padding:0}
+.conclusions li{padding:8px 0;border-bottom:1px solid var(--border);font-size:.93rem}
+.conclusions li:last-child{border-bottom:none}
+.conclusions li::before{content:'→ ';color:var(--accent);font-weight:600}
+.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px}
+.kpi{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;text-align:center}
+.kpi .label{font-size:.78rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.kpi .value{font-family:var(--serif);font-size:1.6rem;color:var(--accent)}
+.kpi .sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 32px;margin-bottom:24px}
+.section h2{font-family:var(--serif);font-size:1.15rem;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.section h2 .num{background:var(--accent);color:#fff;border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font);font-size:.82rem;font-weight:700}
+.section h3{font-size:.92rem;color:var(--accent);margin:16px 0 8px;font-weight:600}
+.section p,.section li{font-size:.9rem;line-height:1.7}
+.section ul{padding-left:20px;margin:8px 0}
+.chart-box{width:100%;height:340px;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
+th{background:#f7f4f0;padding:10px 12px;text-align:left;font-weight:600;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+td{padding:10px 12px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+.highlight{background:#fef3ec;border-left:4px solid var(--accent);padding:14px 18px;border-radius:0 var(--radius) var(--radius) 0;margin:16px 0;font-size:.9rem}
+.tag{display:inline-block;background:var(--accent);color:#fff;padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin-right:6px}
+.tag-green{background:var(--accent3)}
+.tag-amber{background:var(--accent2)}
+.goal-card{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.goal-item{background:#f7f4f0;border-radius:10px;padding:16px 20px}
+.goal-item .glabel{font-size:.8rem;color:var(--muted)}
+.goal-item .gval{font-family:var(--serif);font-size:1.4rem;color:var(--accent)}
+.goal-item .gsub{font-size:.8rem;color:var(--muted);margin-top:2px}
+.rec-card{border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:12px 0}
+.rec-card h4{color:var(--accent);font-size:.95rem;margin-bottom:8px}
+.rec-card .prob{font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.rec-card .act{font-size:.88rem}
+.rec-card .impact{font-size:.82rem;color:var(--accent3);margin-top:8px}
+.progress-bar{background:#ece8e2;border-radius:10px;height:18px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s}
+footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:40px}
+@media(max-width:700px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.goal-card{grid-template-columns:1fr}.hero h1{font-size:1.5rem}}
 </style>
 </head>
 <body>
+
+<div class="hero">
+<div class="container">
+<h1>Magic系列充值深度分析</h1>
+<p>2026年7月追踪 · 全年目标200万 · 分析日期 2026.07.23</p>
+</div>
+</div>
+
 <div class="container">
 
-<div class="header">
-  <span class="header-tag">运营分析报告</span>
-  <h1>社群充值全系列分析</h1>
-  <p class="meta">2026年1月 — 6月23日 · 已发货订单 · Magic系列 + VIP组全量</p>
+<!-- 核心结论 -->
+<div class="conclusions">
+<h2>📌 核心结论</h2>
+<ul>
+<li><strong>全系列564万</strong>，7月日均28,270元，与6月持平，大盘已企稳</li>
+<li><strong>Magic系列</strong>7月日均4,589元，比上半年日均4,928元下降6.9%，仍在下滑</li>
+<li><strong>Magic全年累计99.74万</strong>，目标200万，完成49.9%，后5个月需再做100万</li>
+<li>每个magic账号需比上半年月均<strong>提升53%</strong>才能达标</li>
+<li>7月新用户仅<strong>266人</strong>（上半年月均797人），用户池加速萎缩</li>
+</ul>
 </div>
 
-<div class="conclusion-box" style="margin-bottom:40px">
-  <h3>⚡ 核心结论</h3>
-  <p>
-    <strong>全系列499万，日均2.8万，5-6月已企稳。</strong>4月全渠道同步下滑10%，6月日均回到5月水平，大盘无持续恶化。<br><br>
-    <strong>两个组的短板不同：</strong><br>
-    · <strong>Magic组（85万）</strong>— 客单价低是定位预期，核心问题是<strong>用户留不住</strong>（36.8%只来1个月）+ <strong>礼包档位上不去</strong>（73%集中在3元档）+ <strong>CD提醒缺失</strong>（28.5%窗口期用户流失）<br>
-    · <strong>VIP组（414万）</strong>— 体量大但同样存在<strong>新用户萎缩</strong>问题，且<strong>高价商品券匹配度差</strong>（500+商品用户手里没有500-50券，用的是100-10小券）<br><br>
-    <strong>共性问题：</strong>两组都是63-74%的用户当天复购（即时性消费），企微触达窗口短；月度留存63-75%，新用户流入持续下滑。<br><br>
-    <strong>下半年重点：</strong>① 建CD提醒 + ② 完善画像推动升级 + ③ 大券定向发给高价用户 + ④ 持续引流扩大用户池
-  </p>
-</div>
-
+<!-- KPI Strip -->
 <div class="kpi-strip">
-  <div class="kpi-card accent-card"><div class="kpi-label">全系列收入</div><div class="kpi-value">499万</div><div class="kpi-sub">日均 28,688元</div></div>
-  <div class="kpi-card"><div class="kpi-label">Magic组</div><div class="kpi-value accent">85.37万</div><div class="kpi-sub">238K单 · 7,374人</div></div>
-  <div class="kpi-card"><div class="kpi-label">VIP组</div><div class="kpi-value accent">413.8万</div><div class="kpi-sub">135K单 · 3,216人</div></div>
-  <div class="kpi-card"><div class="kpi-label">Magic 客单价</div><div class="kpi-value">¥3.58</div><div class="kpi-sub">低价定位</div></div>
-  <div class="kpi-card"><div class="kpi-label">VIP 客单价</div><div class="kpi-value">¥30.73</div><div class="kpi-sub">中高付费</div></div>
-  <div class="kpi-card"><div class="kpi-label">两组用券率</div><div class="kpi-value">0.9% / 5.7%</div><div class="kpi-sub">Magic / VIP</div></div>
+<div class="kpi"><div class="label">全系列收入</div><div class="value">564万</div><div class="sub">日均 28,270 元</div></div>
+<div class="kpi"><div class="label">Magic组</div><div class="value">99.74万</div><div class="sub">276K单 · 7,640人</div></div>
+<div class="kpi"><div class="label">VIP组</div><div class="value">468万</div><div class="sub">159K单</div></div>
+<div class="kpi"><div class="label">Magic目标</div><div class="value">200万</div><div class="sub">完成 49.9%</div></div>
+<div class="kpi"><div class="label">7月Magic日均</div><div class="value">4,589元</div><div class="sub">-6.9% vs 上半年</div></div>
+<div class="kpi"><div class="label">7月新用户</div><div class="value">266人</div><div class="sub">↓65% vs 月均</div></div>
 </div>
 
-<div class="sub-label">PART 1 · 全系列共性分析</div>
+<!-- PART 1 -->
+<h2 style="font-family:var(--serif);font-size:1.1rem;color:var(--muted);margin:24px 0 16px;letter-spacing:1px">PART 1 · 全系列共性分析</h2>
 
 <div class="section">
-  <div class="section-head"><span class="section-num">01</span><h2>月度收入趋势：4月下滑后企稳</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>全系列月度收入（万元）</h3>
-      <div id="c1" class="chart-box" style="height:300px"></div>
-    </div>
-    <div class="card">
-      <h3>日均收入对比</h3>
-      <table>
-        <tr><th>月份</th><th class="text-right">全系列</th><th class="text-right">Magic</th><th class="text-right">VIP</th></tr>
-        <tr><td>1月</td><td class="text-right">26,734</td><td class="text-right">5,070</td><td class="text-right">21,664</td></tr>
-        <tr><td>2月</td><td class="text-right">32,361</td><td class="text-right">4,879</td><td class="text-right text-accent">27,482</td></tr>
-        <tr><td>3月</td><td class="text-right text-accent">30,765</td><td class="text-right text-accent">5,467</td><td class="text-right">25,298</td></tr>
-        <tr><td>4月</td><td class="text-right text-red">27,650</td><td class="text-right">4,870</td><td class="text-right">22,780</td></tr>
-        <tr><td>5月</td><td class="text-right">27,231</td><td class="text-right">4,467</td><td class="text-right">22,764</td></tr>
-        <tr><td>6月</td><td class="text-right text-green">27,369</td><td class="text-right text-green">4,601</td><td class="text-right">22,769</td></tr>
-      </table>
-      <div class="insight note" style="margin-top:12px">6月数据截至23日，日均收入与5月持平，趋势未下降。两组4月同步下滑约10%，5-6月企稳。</div>
-    </div>
-  </div>
+<h2><span class="num">01</span> 月度趋势</h2>
+<div class="chart-box" id="chart-monthly"></div>
+<table>
+<tr><th>月份</th><th>收入(万)</th><th>天数</th><th>日均(元)</th><th>环比</th></tr>
+<tr><td>1月</td><td>82.88</td><td>31</td><td>26,734</td><td>—</td></tr>
+<tr><td>2月</td><td>90.61</td><td>28</td><td>32,361</td><td>+21.1%</td></tr>
+<tr><td>3月</td><td>95.37</td><td>31</td><td>30,765</td><td>-4.9%</td></tr>
+<tr><td>4月</td><td>82.95</td><td>30</td><td>27,650</td><td>-10.1%</td></tr>
+<tr><td>5月</td><td>84.42</td><td>31</td><td>27,231</td><td>-1.5%</td></tr>
+<tr><td>6月</td><td>85.26</td><td>30</td><td>28,419</td><td>+4.4%</td></tr>
+<tr><td>7月</td><td>65.02</td><td>23</td><td>28,270</td><td>-0.5%</td></tr>
+</table>
+<div class="highlight">7月日均28,270元与6月基本持平，大盘已企稳；但Magic组仍在下滑通道</div>
 </div>
 
 <div class="section">
-  <div class="section-head"><span class="section-num">02</span><h2>用户生命周期：两组都面临「只来1个月」的问题</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>Magic 用户活跃月数</h3>
-      <div id="c2a" class="chart-box" style="height:280px"></div>
-    </div>
-    <div class="card">
-      <h3>VIP 用户活跃月数</h3>
-      <div id="c2b" class="chart-box" style="height:280px"></div>
-    </div>
-  </div>
-  <div class="insight"><strong>共性：</strong>两组都有约36%的用户只活跃1个月就流失。差异在于VIP的长期用户（6个月全在）占20.7%，Magic只有15.0%——说明VIP的高客单价带来更强粘性。</div>
+<h2><span class="num">02</span> 用户生命周期</h2>
+<p>Magic用户按首次出现月份至今的活跃月数分布（7个月数据）：</p>
+<div class="chart-box" id="chart-lifecycle"></div>
+<table>
+<tr><th>活跃月数</th><th>占比</th><th>说明</th></tr>
+<tr><td>1个月</td><td>35.2%</td><td>仅出现1次即流失</td></tr>
+<tr><td>2个月</td><td>16.9%</td><td></td></tr>
+<tr><td>3个月</td><td>11.4%</td><td></td></tr>
+<tr><td>4个月</td><td>9.2%</td><td></td></tr>
+<tr><td>5个月</td><td>8.3%</td><td></td></tr>
+<tr><td>6个月</td><td>6.7%</td><td></td></tr>
+<tr><td>7个月（全）</td><td>12.2%</td><td>贯穿全部7个月的核心用户</td></tr>
+</table>
+<div class="highlight"><strong>12.2%</strong> 的用户贯穿全部7个月，是Magic系列的基石；<strong>35.2%</strong> 仅出现1次即流失，拉新转化需重点关注</div>
 </div>
 
 <div class="section">
-  <div class="section-head"><span class="section-num">03</span><h2>购买间隔：69-71%复购发生在当天</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>Magic 购买间隔</h3>
-      <div id="c3a" class="chart-box" style="height:280px"></div>
-    </div>
-    <div class="card">
-      <h3>VIP 购买间隔</h3>
-      <div id="c3b" class="chart-box" style="height:280px"></div>
-    </div>
-  </div>
-  <div class="insight amber"><strong>共性：</strong>两组都是即时性消费（当天复购69-71%），说明购买行为发生在游戏内精力/资源消耗的瞬间。企微消息在这个窗口之后才到达，错过了最佳转化时机。</div>
+<h2><span class="num">03</span> 购买间隔分布</h2>
+<p>同一天内多次购买 vs 间隔天数分布：</p>
+<table>
+<tr><th>间隔</th><th>Magic</th><th>VIP</th></tr>
+<tr><td>当天复购</td><td>69.1%</td><td>71.4%</td></tr>
+<tr><td>1天</td><td>11.4%</td><td>11.2%</td></tr>
+<tr><td>2-3天</td><td>4.5%</td><td>3.9%</td></tr>
+<tr><td>4-7天</td><td>7.8%</td><td>7.2%</td></tr>
+<tr><td>8+天</td><td>7.3%</td><td>6.3%</td></tr>
+</table>
+<div class="highlight">近7成购买发生在同一天内（冲动型），购买后48h是激活复购的黄金窗口</div>
 </div>
 
-<div class="divider"></div>
-<div class="sub-label">PART 2 · MAGIC 系列分析</div>
+<!-- PART 2 -->
+<h2 style="font-family:var(--serif);font-size:1.1rem;color:var(--muted);margin:24px 0 16px;letter-spacing:1px">PART 2 · MAGIC系列深度分析</h2>
 
 <div class="section">
-  <div class="section-head"><span class="section-num">04</span><h2>Magic Promoter 结构与商品</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>Promoter 收入构成</h3>
-      <div id="c4a" class="chart-box" style="height:300px"></div>
-    </div>
-    <div class="card">
-      <h3>Magic 核心指标</h3>
-      <table>
-        <tr><th>Promoter</th><th class="text-right">销售额</th><th class="text-right">订单</th><th class="text-right">客单价</th></tr>
-        <tr><td>magicbird1</td><td class="text-right text-accent">36.27万</td><td class="text-right">89,391</td><td class="text-right">4.06</td></tr>
-        <tr><td>magicbird3</td><td class="text-right">24.02万</td><td class="text-right">67,410</td><td class="text-right">3.56</td></tr>
-        <tr><td>shequn_magicbird</td><td class="text-right">16.59万</td><td class="text-right">52,308</td><td class="text-right">3.17</td></tr>
-        <tr><td>magicbird2</td><td class="text-right">8.49万</td><td class="text-right">29,099</td><td class="text-right">2.92</td></tr>
-      </table>
-      <div class="insight note" style="margin-top:12px">bird2用户量约为bird1/3的一半，bird1+bird3峰值约15.5万/月。</div>
-    </div>
-  </div>
-  <div class="card">
-    <h3>Magic 商品收入占比 &amp; 特惠礼包档位</h3>
-    <div class="two-col">
-      <div id="c4b" class="chart-box" style="height:300px"></div>
-      <div id="c4c" class="chart-box" style="height:300px"></div>
-    </div>
-    <p class="chart-source">73%礼包订单集中在3元档 · 54.5%用户只买过1个档位</p>
-  </div>
+<h2><span class="num">04</span> Promoter 结构</h2>
+<p>Magic各promoter（magicbird1/2/3 + 社群）月度收入：</p>
+<div class="chart-box" id="chart-promoter"></div>
+<table>
+<tr><th>Promoter</th><th>1月</th><th>2月</th><th>3月</th><th>4月</th><th>5月</th><th>6月</th><th>7月</th></tr>
+<tr><td><strong>magicbird1</strong></td><td>1.61</td><td>5.76</td><td>7.03</td><td>10.43</td><td>6.69</td><td>6.40</td><td>5.11</td></tr>
+<tr><td><strong>magicbird2</strong></td><td>0.35</td><td>1.36</td><td>1.84</td><td>1.73</td><td>1.91</td><td>1.76</td><td>1.12</td></tr>
+<tr><td><strong>magicbird3</strong></td><td>1.64</td><td>4.88</td><td>6.62</td><td>1.83</td><td>4.81</td><td>5.84</td><td>4.09</td></tr>
+<tr><td>社群</td><td>12.12</td><td>1.66</td><td>1.46</td><td>0.61</td><td>0.44</td><td>0.41</td><td>0.25</td></tr>
+</table>
+<div class="highlight"><strong>bird1</strong> 4月达峰10.43万后持续回落；<strong>bird3</strong> 波动大，3月6.62万为峰值；<strong>社群</strong> 已从1月12万萎缩至0.25万，自然出清</div>
 </div>
 
 <div class="section">
-  <div class="section-head"><span class="section-num">05</span><h2>Magic 用户回购与收入集中度</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>购买频次分层</h3>
-      <div id="c5a" class="chart-box" style="height:300px"></div>
-    </div>
-    <div class="card">
-      <h3>各分层收入贡献</h3>
-      <table>
-        <tr><th>分层</th><th class="text-right">人数</th><th class="text-right">收入占比</th><th class="text-right">人均</th></tr>
-        <tr><td>1次</td><td class="text-right">1,577</td><td class="text-right">1.5%</td><td class="text-right">8元</td></tr>
-        <tr><td>2-5次</td><td class="text-right">1,713</td><td class="text-right">5.1%</td><td class="text-right">25元</td></tr>
-        <tr><td>6-20次</td><td class="text-right">1,683</td><td class="text-right">19.1%</td><td class="text-right">97元</td></tr>
-        <tr><td>21-50次</td><td class="text-right">1,078</td><td class="text-right text-accent">23.7%</td><td class="text-right">188元</td></tr>
-        <tr><td>51-100次</td><td class="text-right">677</td><td class="text-right">13.7%</td><td class="text-right">173元</td></tr>
-        <tr><td><strong>100+次</strong></td><td class="text-right"><strong>646</strong></td><td class="text-right text-red"><strong>36.9%</strong></td><td class="text-right"><strong>488元</strong></td></tr>
-      </table>
-      <div class="insight red" style="margin-top:12px">Top 10%用户(737人)贡献73%收入。</div>
-    </div>
-  </div>
-  <div class="card">
-    <h3>首购商品 → 后续行为</h3>
-    <table>
-      <tr><th>首购商品</th><th class="text-right">人数</th><th class="text-right">回购率</th><th class="text-right">交叉购买</th><th class="text-right">人均消费</th></tr>
-      <tr><td>10分钟无限精力</td><td class="text-right">2,740</td><td class="text-right text-green">87.7%</td><td class="text-right text-green">63.6%</td><td class="text-right text-accent">127元</td></tr>
-      <tr><td>每周特惠礼包</td><td class="text-right text-accent">4,195</td><td class="text-right">74.0%</td><td class="text-right">44.1%</td><td class="text-right">80元</td></tr>
-      <tr><td>188个风车币</td><td class="text-right">49</td><td class="text-right">79.6%</td><td class="text-right text-green">77.6%</td><td class="text-right">522元</td></tr>
-    </table>
-  </div>
+<h2><span class="num">05</span> 留存与用户流动</h2>
+<table>
+<tr><th>月份转换</th><th>留存</th><th>留存率</th><th>流失</th><th>新增</th><th>净变动</th></tr>
+<tr><td>5→6月</td><td>2,538</td><td>75.0%</td><td>844</td><td>1,007</td><td style="color:var(--accent3)">+163</td></tr>
+<tr><td>6→7月</td><td>2,353</td><td>66.4%</td><td>1,192</td><td>557</td><td style="color:var(--accent)">-635</td></tr>
+</table>
+<div class="highlight">7月留存率从75.0%降至66.4%，流失1,192人；新增仅266人（之前月均797人），新用户流入大幅萎缩，用户池进入净流出阶段</div>
 </div>
 
 <div class="section">
-  <div class="section-head"><span class="section-num">06</span><h2>Magic 留存与流失</h2></div>
-  <div class="card">
-    <div class="two-col">
-      <div>
-        <h3>月度用户流动</h3>
-        <table>
-          <tr><th>过渡</th><th class="text-right">留存率</th><th class="text-right">流失</th><th class="text-right">新增</th><th class="text-right">净变化</th></tr>
-          <tr><td>1→2月</td><td class="text-right">63.4%</td><td class="text-right text-red">-1,327</td><td class="text-right text-green">+677</td><td class="text-right text-red">-650</td></tr>
-          <tr><td>2→3月</td><td class="text-right text-green">74.5%</td><td class="text-right text-red">-759</td><td class="text-right text-green">+1,660</td><td class="text-right text-green">+901</td></tr>
-          <tr><td>3→4月</td><td class="text-right">66.4%</td><td class="text-right text-red">-1,302</td><td class="text-right text-green">+968</td><td class="text-right text-red">-334</td></tr>
-          <tr><td>4→5月</td><td class="text-right">71.6%</td><td class="text-right text-red">-1,005</td><td class="text-right text-green">+843</td><td class="text-right text-red">-162</td></tr>
-          <tr><td>5→6月</td><td class="text-right">70.8%</td><td class="text-right text-red">-989</td><td class="text-right text-green">+814</td><td class="text-right text-red">-175</td></tr>
-        </table>
-      </div>
-      <div>
-        <h3>流失用户最后购买</h3>
-        <div id="c6" class="chart-box" style="height:280px"></div>
-      </div>
-    </div>
-    <div class="insight red">53%流失用户最后买的是礼包（非精力），礼包是一次性消费。CD到期后第6天购买量回升——但没有CD提醒，28.5%窗口期用户流失。</div>
-  </div>
+<h2><span class="num">06</span> 7月商品结构</h2>
+<div class="chart-box" id="chart-product"></div>
+<table>
+<tr><th>商品</th><th>收入(万)</th><th>占比</th></tr>
+<tr><td>特惠礼包</td><td>4.63</td><td>43.9%</td></tr>
+<tr><td>精力</td><td>2.22</td><td>21.0%</td></tr>
+<tr><td>188币</td><td>0.63</td><td>6.0%</td></tr>
+<tr><td>340币</td><td>0.59</td><td>5.7%</td></tr>
+<tr><td>1568币</td><td>0.56</td><td>5.4%</td></tr>
+<tr><td>62币</td><td>0.55</td><td>5.2%</td></tr>
+</table>
+<div class="highlight">特惠礼包占43.9%为绝对主力，精力占21%为第二支柱；大额币包（1568币）占比5.4%，客单价贡献可观</div>
+</div>
+
+<!-- PART 3 -->
+<h2 style="font-family:var(--serif);font-size:1.1rem;color:var(--muted);margin:24px 0 16px;letter-spacing:1px">PART 3 · 全年目标追踪</h2>
+
+<div class="section">
+<h2><span class="num">07</span> 目标进度</h2>
+<div class="goal-card">
+<div class="goal-item"><div class="glabel">全年目标</div><div class="gval">200万</div><div class="gsub">bird1 + bird2 + bird3</div></div>
+<div class="goal-item"><div class="glabel">已完成</div><div class="gval">99.51万</div><div class="gsub">H1: 89.19 + 7月: 10.32</div></div>
+<div class="goal-item"><div class="glabel">剩余目标</div><div class="gval">100.49万</div><div class="gsub">5个月 (Aug-Dec)</div></div>
+<div class="goal-item"><div class="glabel">月均需达</div><div class="gval">20.10万/月</div><div class="gsub">7月实际: 10.32万</div></div>
+</div>
+<div class="progress-bar"><div class="progress-fill" style="width:49.9%"></div></div>
+<p style="text-align:center;font-size:.85rem;color:var(--muted);margin-bottom:12px">49.9% 已完成 · 按7月节奏全年仅141万（70.5%）</p>
+<div class="chart-box" id="chart-target"></div>
+<div class="highlight">按7月节奏（10.32万/月）全年仅141万，完成70.5%；需月均20.10万才能达标，缺口近一倍</div>
 </div>
 
 <div class="section">
-  <div class="section-head"><span class="section-num">07</span><h2>Magic 优惠券：用券率0.9%，周五效应明显</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>各商品用券率</h3>
-      <div id="c7a" class="chart-box" style="height:300px"></div>
-    </div>
-    <div class="card">
-      <h3>500+商品券匹配问题</h3>
-      <table>
-        <tr><th>商品</th><th class="text-right">用券率</th><th class="text-right">折扣率</th><th>说明</th></tr>
-        <tr><td>至尊礼包(517元)</td><td class="text-right">43%</td><td class="text-right text-red">2.3%</td><td>用的120减12</td></tr>
-        <tr><td>8068风车币(578元)</td><td class="text-right">19%</td><td class="text-right text-red">2.9%</td><td>用的小券</td></tr>
-        <tr><td>超大礼包(135元)</td><td class="text-right">69%</td><td class="text-right text-green">8.1%</td><td>111减11匹配</td></tr>
-        <tr><td>1568风车币(110元)</td><td class="text-right">60%</td><td class="text-right text-green">9.8%</td><td>111减11匹配</td></tr>
-      </table>
-      <div class="insight amber" style="margin-top:12px">500-50券整期仅用7次。用户手里只有100-10的小券，500+商品折扣率<3%，用户不care。应定向发大券。</div>
-    </div>
-  </div>
-</div>
-
-<div class="divider"></div>
-<div class="sub-label">PART 3 · VIP 组分析</div>
-
-<div class="section">
-  <div class="section-head"><span class="section-num">08</span><h2>VIP Promoter 结构与月度趋势</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>VIP 各 Promoter 月度收入（万元）</h3>
-      <div id="c8a" class="chart-box" style="height:300px"></div>
-    </div>
-    <div class="card">
-      <h3>VIP 核心指标</h3>
-      <table>
-        <tr><th>Promoter</th><th class="text-right">月均</th><th>趋势</th></tr>
-        <tr><td>zimi</td><td class="text-right text-accent">~38万</td><td>3月高峰后回落</td></tr>
-        <tr><td>dudu</td><td class="text-right">~17.6万</td><td>3月高峰后回落</td></tr>
-        <tr><td>momohu</td><td class="text-right">~9万</td><td>波动较大</td></tr>
-        <tr><td>lixiong</td><td class="text-right">~3.2万</td><td>逐月下滑</td></tr>
-      </table>
-    </div>
-  </div>
+<h2><span class="num">08</span> H2 各账号月度目标</h2>
+<p>为达成200万目标，各账号需比上半年月均提升<strong>53%</strong>：</p>
+<table>
+<tr><th>账号</th><th>H1月均(万)</th><th>H2目标(万)</th><th>提升幅度</th><th>7月实际(万)</th><th>差距</th></tr>
+<tr><td><strong>bird1</strong></td><td>6.32</td><td>9.67</td><td>+53%</td><td>5.11</td><td style="color:var(--accent)">-4.56</td></tr>
+<tr><td><strong>bird3</strong></td><td>4.27</td><td>6.54</td><td>+53%</td><td>4.09</td><td style="color:var(--accent)">-2.45</td></tr>
+<tr><td><strong>bird2</strong></td><td>1.49</td><td>2.28</td><td>+53%</td><td>1.12</td><td style="color:var(--accent)">-1.16</td></tr>
+<tr><td>社群</td><td>—</td><td>—</td><td>自然萎缩</td><td>0.25</td><td>—</td></tr>
+</table>
+<div class="highlight">三个账号7月实际均远低于H2目标，bird1差距最大（-4.56万）；若不采取措施，200万目标难以达成</div>
 </div>
 
 <div class="section">
-  <div class="section-head"><span class="section-num">09</span><h2>VIP 商品结构：高价商品占比远超 Magic</h2></div>
-  <div class="card">
-    <h3>VIP 商品收入 TOP 10</h3>
-    <table>
-      <tr><th>商品</th><th class="text-right">收入</th><th class="text-right">占比</th><th class="text-right">订单</th></tr>
-      <tr><td>每周特惠礼包</td><td class="text-right text-accent">205.1万</td><td class="text-right">49.6%</td><td class="text-right">14,382</td></tr>
-      <tr><td>8068个风车币</td><td class="text-right">58.1万</td><td class="text-right">14.0%</td><td class="text-right">1,003</td></tr>
-      <tr><td>至尊礼包</td><td class="text-right">36.2万</td><td class="text-right">8.7%</td><td class="text-right">693</td></tr>
-      <tr><td>1568个风车币</td><td class="text-right">18.5万</td><td class="text-right">4.5%</td><td class="text-right">1,661</td></tr>
-      <tr><td>超大礼包</td><td class="text-right">17.3万</td><td class="text-right">4.2%</td><td class="text-right">1,270</td></tr>
-      <tr><td>丰富礼包</td><td class="text-right">14.3万</td><td class="text-right">3.5%</td><td class="text-right">2,353</td></tr>
-      <tr><td>340个风车币</td><td class="text-right">14.2万</td><td class="text-right">3.4%</td><td class="text-right">5,244</td></tr>
-      <tr><td>豪华礼包</td><td class="text-right">13.7万</td><td class="text-right">3.3%</td><td class="text-right">490</td></tr>
-      <tr><td>3168个风车币</td><td class="text-right">10.7万</td><td class="text-right">2.6%</td><td class="text-right">478</td></tr>
-      <tr><td>10分钟无限精力</td><td class="text-right">9.3万</td><td class="text-right">2.3%</td><td class="text-right">93,375</td></tr>
-    </table>
-    <div class="insight"><strong>与Magic的核心差异：</strong>VIP的8068风车币(580元)和至尊礼包(522元)分别占14%和8.7%，合计22.7%。Magic这两个只占3.6%。VIP的收入支柱是高价商品，而非低价精力。</div>
-  </div>
+<h2><span class="num">09</span> 达标可能性分析</h2>
+<h3>各账号历史峰值 vs 目标</h3>
+<table>
+<tr><th>账号</th><th>目标(万)</th><th>历史峰值</th><th>峰值月份</th><th>能否达标</th></tr>
+<tr><td>bird1</td><td>9.67</td><td>10.43</td><td>4月</td><td><span class="tag tag-green">✓ 可以</span></td></tr>
+<tr><td>bird3</td><td>6.54</td><td>6.62</td><td>3月</td><td><span class="tag tag-green">✓ 勉强</span></td></tr>
+<tr><td>bird2</td><td>2.28</td><td>1.91</td><td>5月</td><td><span class="tag">✗ 需创新高</span></td></tr>
+</table>
+<h3>理想情景 vs 现实</h3>
+<div class="highlight">
+<strong>理想：</strong>bird1=9.67 + bird3=6.54 + bird2=2.28 = <strong>18.49万/月</strong>，全年可达200万<br>
+<strong>现实：</strong>bird1=9.67 + bird3=6.54 + bird2=1.91（历史峰值）= <strong>18.12万/月</strong><br>
+<strong>推算：</strong>89.19 + 10.32 + 18.12×5 = <strong>190.25万（95%）</strong>，仍差约10万<br>
+<strong>核心难点：</strong>三个号需同时保持在巅峰状态，概率极低；bird2需突破历史新高
 </div>
+</div>
+
+<!-- PART 4 -->
+<h2 style="font-family:var(--serif);font-size:1.1rem;color:var(--muted);margin:24px 0 16px;letter-spacing:1px">PART 4 · 下半年运营建议</h2>
 
 <div class="section">
-  <div class="section-head"><span class="section-num">10</span><h2>VIP 用户回购：Top 10% 贡献 68.3%</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>VIP 购买频次分层</h3>
-      <table>
-        <tr><th>分层</th><th class="text-right">人数</th><th class="text-right">收入占比</th><th class="text-right">人均</th></tr>
-        <tr><td>1次</td><td class="text-right">675</td><td class="text-right">0.9%</td><td class="text-right">58元</td></tr>
-        <tr><td>2-5次</td><td class="text-right">711</td><td class="text-right">4.7%</td><td class="text-right">273元</td></tr>
-        <tr><td>6-20次</td><td class="text-right text-accent">743</td><td class="text-right text-accent">23.6%</td><td class="text-right">1,317元</td></tr>
-        <tr><td>21-50次</td><td class="text-right">463</td><td class="text-right text-red">37.6%</td><td class="text-right text-red">3,365元</td></tr>
-        <tr><td>51-100次</td><td class="text-right">230</td><td class="text-right">14.5%</td><td class="text-right">2,613元</td></tr>
-        <tr><td>100+次</td><td class="text-right">394</td><td class="text-right">18.5%</td><td class="text-right">1,947元</td></tr>
-      </table>
-      <div class="insight" style="margin-top:12px">VIP的收入主力在21-50次(37.6%)，而非Magic的100+次(36.9%)。说明VIP用户购买频次适中但客单价高。</div>
-    </div>
-    <div class="card">
-      <h3>VIP 留存率</h3>
-      <table>
-        <tr><th>过渡</th><th class="text-right">留存率</th><th class="text-right">流失</th><th class="text-right">新增</th><th class="text-right">净变化</th></tr>
-        <tr><td>1→2月</td><td class="text-right">71.3%</td><td class="text-right text-red">-483</td><td class="text-right text-green">+470</td><td class="text-right text-red">-13</td></tr>
-        <tr><td>2→3月</td><td class="text-right text-green">73.9%</td><td class="text-right text-red">-436</td><td class="text-right text-green">+503</td><td class="text-right text-green">+67</td></tr>
-        <tr><td>3→4月</td><td class="text-right">71.9%</td><td class="text-right text-red">-487</td><td class="text-right text-green">+341</td><td class="text-right text-red">-146</td></tr>
-        <tr><td>4→5月</td><td class="text-right">73.9%</td><td class="text-right text-red">-414</td><td class="text-right text-green">+407</td><td class="text-right text-red">-7</td></tr>
-        <tr><td>5→6月</td><td class="text-right">73.5%</td><td class="text-right text-red">-420</td><td class="text-right text-green">+330</td><td class="text-right text-red">-90</td></tr>
-      </table>
-    </div>
-  </div>
+<h2><span class="num">10</span> 运营策略建议</h2>
+
+<div class="rec-card">
+<h4>1️⃣ 礼包CD提醒机制</h4>
+<div class="prob"><span class="tag">问题</span>特惠礼包占44%但复购间隔长，用户买完即忘</div>
+<div class="act"><span class="tag tag-green">行动</span>记录上次礼包购买时间，第6天触发企微提醒，推送"礼包即将刷新"话术</div>
+<div class="impact">📈 预期：礼包复购率提升15-20%，拉近购买周期</div>
 </div>
 
-<div class="section">
-  <div class="section-head"><span class="section-num">11</span><h2>VIP 优惠券：用券率5.7%，周五高达15.1%</h2></div>
-  <div class="two-col">
-    <div class="card">
-      <h3>VIP 用券率 TOP 商品</h3>
-      <div id="c11a" class="chart-box" style="height:300px"></div>
-    </div>
-    <div class="card">
-      <h3>VIP 周五券效应</h3>
-      <div id="c11b" class="chart-box" style="height:300px"></div>
-    </div>
-  </div>
-  <div class="card">
-    <h3>VIP 高价商品券匹配度</h3>
-    <table>
-      <tr><th>商品</th><th class="text-right">用券率</th><th>主力券</th><th class="text-right">折扣率</th><th>诊断</th></tr>
-      <tr><td>超大礼包(135元)</td><td class="text-right text-green">54%</td><td>120减12(383次)</td><td class="text-right text-green">8.9%</td><td>券匹配</td></tr>
-      <tr><td>1568风车币(110元)</td><td class="text-right text-green">43%</td><td>100减10(286次)</td><td class="text-right text-green">9.1%</td><td>券匹配</td></tr>
-      <tr><td>至尊礼包(522元)</td><td class="text-right">47%</td><td>120减12(147次)</td><td class="text-right text-red">2.3%</td><td>大券不够</td></tr>
-      <tr><td>8068风车币(578元)</td><td class="text-right">27%</td><td>120减12(127次)</td><td class="text-right text-red">2.1%</td><td>大券不够</td></tr>
-    </table>
-    <div class="insight amber">VIP的500+商品（至尊、8068）用券率47%和27%，但主力券是120减12，折扣率仅2%。与Magic同一问题：<strong>用户手里没有匹配的大券</strong>。</div>
-  </div>
+<div class="rec-card">
+<h4>2️⃣ 用户画像分层运营</h4>
+<div class="prob"><span class="tag">问题</span>7,640名用户一刀切运营，无法精准触达</div>
+<div class="act"><span class="tag tag-green">行动</span>建立三层标签体系：购买次数（1次/2-5次/6+次）、消费档位（低/中/高）、活跃度（活跃/沉默/流失）。针对不同层级推送阶梯券，推动消费升级</div>
+<div class="impact">📈 预期：高价值用户ARPU提升20%，沉默用户唤醒率10-15%</div>
 </div>
 
-<div class="divider"></div>
-<div class="sub-label">PART 4 · MAGIC vs VIP 对比</div>
-
-<div class="section">
-  <div class="section-head"><span class="section-num">12</span><h2>关键指标对比</h2></div>
-  <div class="card">
-    <table>
-      <tr><th>指标</th><th class="text-right">Magic</th><th class="text-right">VIP</th><th>差异</th></tr>
-      <tr><td>总收入</td><td class="text-right">85.37万</td><td class="text-right text-accent">413.8万</td><td>VIP是Magic的4.8倍</td></tr>
-      <tr><td>总订单</td><td class="text-right text-accent">238,208</td><td class="text-right">134,616</td><td>Magic订单多但单价低</td></tr>
-      <tr><td>去重用户</td><td class="text-right text-accent">7,374</td><td class="text-right">3,216</td><td>Magic用户池更大</td></tr>
-      <tr><td>客单价</td><td class="text-right">¥3.58</td><td class="text-right text-accent">¥30.73</td><td>VIP是Magic的8.6倍</td></tr>
-      <tr><td>人均消费</td><td class="text-right">¥116</td><td class="text-right text-accent">¥1,286</td><td>VIP是Magic的11倍</td></tr>
-      <tr><td>用券率</td><td class="text-right">0.9%</td><td class="text-right text-accent">5.7%</td><td>VIP券分发更充分</td></tr>
-      <tr><td>1个月流失率</td><td class="text-right">36.8%</td><td class="text-right">35.4%</td><td>几乎一致</td></tr>
-      <tr><td>6个月全在</td><td class="text-right">15.0%</td><td class="text-right text-accent">20.7%</td><td>VIP长期用户更多</td></tr>
-      <tr><td>Top 10%贡献</td><td class="text-right">73.0%</td><td class="text-right">68.3%</td><td>Magic更集中</td></tr>
-      <tr><td>当天复购率</td><td class="text-right">69.1%</td><td class="text-right">71.4%</td><td>几乎一致</td></tr>
-      <tr><td>精力收入占比</td><td class="text-right text-accent">22.1%</td><td class="text-right">2.3%</td><td>Magic靠精力引流</td></tr>
-      <tr><td>500+商品占比</td><td class="text-right">3.6%</td><td class="text-right text-accent">22.7%</td><td>VIP靠高价商品</td></tr>
-    </table>
-  </div>
+<div class="rec-card">
+<h4>3️⃣ 大额券定向投放</h4>
+<div class="prob"><span class="tag">问题</span>500-50优惠券广撒网，ROI低</div>
+<div class="act"><span class="tag tag-green">行动</span>仅对买过500+商品的用户投放，精准触达高消费用户；低消费用户推小额度券</div>
+<div class="impact">📈 预期：大额券核销率从15%提升至40%+，减少无效补贴</div>
 </div>
 
-<div class="divider"></div>
-<div class="sub-label">PART 5 · 下半年运营建议</div>
-
-<div class="section">
-  <div class="section-head"><span class="section-num">13</span><h2>优化清单</h2></div>
-
-  <div class="card">
-    <h3>① 建礼包 CD 提醒标签</h3>
-    <table>
-      <tr><th>项目</th><th>说明</th></tr>
-      <tr><td><strong>问题</strong></td><td>礼包每7天可购买一次，但目前没有CD提醒机制。数据显示28.5%的用户在CD到期后1-3天才回购，这部分用户没有被及时触达。CD当天回购的用户只有36%，说明大量用户需要被提醒才会回来。</td></tr>
-      <tr><td><strong>具体做法</strong></td><td>① 建立用户礼包购买记录表，记录每个用户最近一次礼包购买时间、购买档位<br>② 在用户购买后打标签：「礼包CD-到期日期」<br>③ 第6天（CD到期前一天）触发企微提醒<br>④ 提醒内容按上次购买档位个性化：买了3元的推6元，买了6元的推12元，买了高价档的只提醒刷新</td></tr>
-      <tr><td><strong>Magic适用</strong></td><td>3元→6元→12元阶梯升级。当前73%订单集中在3元档，54.5%用户只买1个档位，升级空间大。</td></tr>
-      <tr><td><strong>VIP适用</strong></td><td>低价档→高价档。VIP用户人均消费¥1,286，21-50次用户人均¥3,365是收入主力，CD提醒配合高价档推荐效果会更好。</td></tr>
-      <tr><td><strong>预期效果</strong></td><td>把28.5%的窗口期用户拉回来 + 推动档位升级。如果CD当天回购率从36%提升到50%，仅Magic每月就多约4,000单。</td></tr>
-    </table>
-  </div>
-
-  <div class="card">
-    <h3>② 完善用户画像，推动档位升级</h3>
-    <table>
-      <tr><th>项目</th><th>说明</th></tr>
-      <tr><td><strong>问题</strong></td><td>Magic组54.5%的用户只买过1个档位的礼包（主要是3元档），73%的礼包订单集中在3元档。VIP组虽然消费更高，但500+商品用户手里没有匹配的大券（用的是100-10小券，折扣率仅2%）。</td></tr>
-      <tr><td><strong>用户分层标签</strong></td><td>按三个维度打标签：<br>① <strong>购买次数</strong>：破冰层（只买过0.99）、轻度（2-5次）、中度（6-20次）、重度（21次+）<br>② <strong>礼包档位</strong>：只买过3元档、买过3+6元档、买过12元+档<br>③ <strong>活跃状态</strong>：活跃（7天内有购买）、沉默（7-14天）、流失（14天+）</td></tr>
-      <tr><td><strong>Magic阶梯券</strong></td><td>① 买过3次3元档的用户：发「6元档立减2元」限时券（48h过期）<br>② 买过3次6元档的用户：发「12元档立减3元」限时券<br>③ 停发满1减0.99以外的高价商品券（存量打折无增量）</td></tr>
-      <tr><td><strong>VIP重点维护</strong></td><td>① 21-50次用户（人均¥3,365）是收入主力（占37.6%），这批人需要专属维护而非通用群发<br>② 给买过2-3次1568风车币的用户发500-50券，推他们到至尊/8068档位<br>③ 8068风车币用户（人均¥9,166）是真正的鲸鱼，需要1v1维护</td></tr>
-      <tr><td><strong>预期效果</strong></td><td>Magic档位升级带来客单价提升（3元→6元翻倍，6元→12元再翻倍）。VIP大券匹配后，500+商品转化率预计提升。</td></tr>
-    </table>
-  </div>
-
-  <div class="card">
-    <h3>③ 大券定向发给高价用户</h3>
-    <table>
-      <tr><th>项目</th><th>说明</th></tr>
-      <tr><td><strong>问题</strong></td><td>500-50券整期仅使用7次。500+商品（至尊礼包、8068风车币）用户用的主力券是120减12，折扣率仅2%。不是券没效果，是用户手里没有匹配的大券。周五发券时VIP用券率高达15.1%，说明券能拉动购买。</td></tr>
-      <tr><td><strong>定向发券规则</strong></td><td>① <strong>至尊礼包/8068风车币用户</strong>：直接发500-50券，他们本来就会买500+商品，10%折扣能加速决策<br>② <strong>买过3次+1568风车币的用户</strong>：发500-50券，把他们从110元档推到500+档位<br>③ <strong>买过3次+超大礼包的用户</strong>：发200-20券或300-30券，推到豪华/至尊档位<br>④ 不要广撒，只给这几十个定向用户发</td></tr>
-      <tr><td><strong>券有效期</strong></td><td>3天领取期 + 15天使用期，配合周五发放节奏。用户形成「周五有好事」的预期。</td></tr>
-      <tr><td><strong>预期效果</strong></td><td>500+商品折扣率从2%提升到10%（500-50券），用户感知完全不同。VIP的至尊礼包（693单）和8068风车币（1,003单）如果用券率从27-47%提升到60%+，增量可观。</td></tr>
-    </table>
-  </div>
-
-  <div class="card">
-    <h3>④ 持续增加引流</h3>
-    <table>
-      <tr><th>项目</th><th>说明</th></tr>
-      <tr><td><strong>问题</strong></td><td>两组都面临新用户流入持续萎缩。Magic新用户从1月的3,627人降到6月仅495人。除2→3月外，两组每月都是净流失。用户池不进新水迟早干。</td></tr>
-      <tr><td><strong>Magic引流路径</strong></td><td>① 继续在游戏中挖掘有前置充值需求的用户来企微绑定充值中心<br>② 用0.99破冰券完成首绑（破冰目的不是收入，是让用户完成商城绑定行为）<br>③ <strong>48h内发第二次消息</strong>：推62风车币（5.4元），可配一张小额券<br>④ 第二次购买后3天推3元礼包<br>⑤ 关键：破冰后如果没有紧接着的二次触达，用户大概率沉底</td></tr>
-      <tr><td><strong>VIP引流路径</strong></td><td>① VIP首购礼包的用户人均消费¥1,478，首购精力的用户人均¥349——引导用户从礼包入口进来价值更高<br>② 首购8068风车币的用户人均¥9,166，这批人是顶级鲸鱼，值得单独建一个VIP-S级标签做1v1维护</td></tr>
-      <tr><td><strong>沉默用户召回</strong></td><td>① <strong>7天沉默</strong>：发非营销内容（攻略/技巧/游戏动态），保持存在感<br>② <strong>14天沉默</strong>：发礼包刷新提醒 + 限时券<br>③ <strong>30天沉默</strong>：简短1v1消息「最近还在玩吗？」<br>④ <strong>朋友圈同步</strong>：免打扰不影响朋友圈，每周至少发2-3条（礼包上新、用户好评、限时活动）</td></tr>
-      <tr><td><strong>预期效果</strong></td><td>Magic目前日均1,369单，如果新用户流入能恢复到3月水平（月新增1,300+人），配合CD提醒减少流失，用户池就能稳住。VIP的鲸鱼用户维护做得好，单用户贡献可以翻倍。</td></tr>
-    </table>
-  </div>
+<div class="rec-card">
+<h4>4️⃣ 新用户引流与沉默召回</h4>
+<div class="prob"><span class="tag">问题</span>7月新增仅266人，用户池萎缩</div>
+<div class="act"><span class="tag tag-green">行动</span>① Magic破冰后48h内推62币（低门槛），3天后推礼包；② 沉默用户分层召回：7天沉默→轻提醒、14天沉默→优惠券、30天沉默→大额券+话术</div>
+<div class="impact">📈 预期：新用户次日留存提升至30%+，沉默召回率8-12%</div>
 </div>
 
-<div class="footer">© 2026 内部使用 · 数据来源：item-purchase 100001001 · 分析日期：2026.06.24</div>
 </div>
+
+</div><!-- container -->
+
+<footer>
+© 2026 内部使用 · 数据来源：item-purchase · 分析日期：2026.07.23
+</footer>
 
 <script>
-const C=['#2563EB','#7C3AED','#059669','#DC2626','#D97706','#64748B','#EC4899','#0EA5E9'];
-const G={left:56,right:16,top:38,bottom:28};
-const tip={backgroundColor:'#fff',borderColor:'#E5E5E5',textStyle:{color:'#1A1A1A',fontSize:12}};
-const ax={axisLine:{lineStyle:{color:'#E5E5E5'}},axisLabel:{color:'#6B6B6B'}};
-const sy={splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}},axisLabel:{color:'#6B6B6B'}};
-const leg={top:0,textStyle:{fontSize:11,color:'#6B6B6B'},icon:'roundRect',itemWidth:12,itemHeight:8};
+// 月度趋势堆叠柱状图
+(function(){
+  var c=echarts.init(document.getElementById('chart-monthly'));
+  c.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    legend:{data:['Magic','VIP'],top:4},
+    grid:{left:60,right:20,top:40,bottom:30},
+    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月','7月(23天)']},
+    yAxis:{type:'value',name:'万元',axisLabel:{formatter:'{value}'}},
+    series:[
+      {name:'Magic',type:'bar',stack:'total',data:[15.72,13.66,16.95,14.60,13.85,14.41,10.57],itemStyle:{color:'#e8734a'},barWidth:'40%'},
+      {name:'VIP',type:'bar',stack:'total',data:[67.16,76.95,78.42,68.35,70.57,70.85,54.45],itemStyle:{color:'#2a9d8f'},barWidth:'40%'}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
 
-echarts.init(document.getElementById('c1')).setOption({tooltip:{trigger:'axis',...tip},legend:{data:['Magic','VIP'],...leg},grid:G,xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月'],...ax},yAxis:{type:'value',name:'万',nameTextStyle:{color:'#A0A0A0'},...sy},series:[{name:'Magic',type:'bar',data:[15.72,13.66,16.95,14.61,13.85,10.58],itemStyle:{color:C[0],borderRadius:[4,4,0,0]},barWidth:28},{name:'VIP',type:'bar',data:[67.2,76.9,78.4,68.3,70.6,52.4],itemStyle:{color:C[1],borderRadius:[4,4,0,0]},barWidth:28}]});
+// 用户生命周期
+(function(){
+  var c=echarts.init(document.getElementById('chart-lifecycle'));
+  c.setOption({
+    tooltip:{trigger:'axis'},
+    grid:{left:60,right:20,top:20,bottom:30},
+    xAxis:{type:'category',data:['1个月','2个月','3个月','4个月','5个月','6个月','7个月']},
+    yAxis:{type:'value',name:'%',axisLabel:{formatter:'{value}%'}},
+    series:[{type:'bar',data:[
+      {value:35.2,itemStyle:{color:'#e8734a'}},
+      {value:16.9,itemStyle:{color:'#f4a261'}},
+      {value:11.4,itemStyle:{color:'#f4a261'}},
+      {value:9.2,itemStyle:{color:'#e9c46a'}},
+      {value:8.3,itemStyle:{color:'#e9c46a'}},
+      {value:6.7,itemStyle:{color:'#2a9d8f'}},
+      {value:12.2,itemStyle:{color:'#264653'}}
+    ],barWidth:'45%',label:{show:true,position:'top',formatter:'{c}%',fontSize:12}}]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
 
-echarts.init(document.getElementById('c2a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月全'],...ax},yAxis:{type:'value',...sy},series:[{type:'bar',barWidth:28,data:[2712,1288,946,759,561,1108].map((v,i)=>({value:v,itemStyle:{color:i===0?'#DC2626':i===5?'#059669':'#2563EB',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B'}}]});
+// Promoter堆叠
+(function(){
+  var c=echarts.init(document.getElementById('chart-promoter'));
+  c.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    legend:{data:['bird1','bird2','bird3','社群'],top:4},
+    grid:{left:60,right:20,top:40,bottom:30},
+    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月','7月']},
+    yAxis:{type:'value',name:'万元'},
+    series:[
+      {name:'bird1',type:'bar',stack:'m',data:[1.61,5.76,7.03,10.43,6.69,6.40,5.11],itemStyle:{color:'#e8734a'}},
+      {name:'bird2',type:'bar',stack:'m',data:[0.35,1.36,1.84,1.73,1.91,1.76,1.12],itemStyle:{color:'#f4a261'}},
+      {name:'bird3',type:'bar',stack:'m',data:[1.64,4.88,6.62,1.83,4.81,5.84,4.09],itemStyle:{color:'#2a9d8f'}},
+      {name:'社群',type:'bar',stack:'m',data:[12.12,1.66,1.46,0.61,0.44,0.41,0.25],itemStyle:{color:'#ccc'}}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
 
-echarts.init(document.getElementById('c2b')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月全'],...ax},yAxis:{type:'value',...sy},series:[{type:'bar',barWidth:28,data:[1138,489,351,279,292,667].map((v,i)=>({value:v,itemStyle:{color:i===0?'#DC2626':i===5?'#059669':'#7C3AED',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B'}}]});
+// 商品结构饼图
+(function(){
+  var c=echarts.init(document.getElementById('chart-product'));
+  c.setOption({
+    tooltip:{trigger:'item',formatter:'{b}: {c}万 ({d}%)'},
+    series:[{type:'pie',radius:['40%','70%'],avoidLabelOverlap:true,
+      label:{formatter:'{b}\n{d}%'},
+      data:[
+        {value:4.63,name:'特惠礼包',itemStyle:{color:'#e8734a'}},
+        {value:2.22,name:'精力',itemStyle:{color:'#f4a261'}},
+        {value:0.63,name:'188币',itemStyle:{color:'#e9c46a'}},
+        {value:0.59,name:'340币',itemStyle:{color:'#2a9d8f'}},
+        {value:0.56,name:'1568币',itemStyle:{color:'#264653'}},
+        {value:0.55,name:'62币',itemStyle:{color:'#999'}}
+      ]
+    }]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
 
-echarts.init(document.getElementById('c3a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['当天','1天','2-3天','4-7天','8+天'],...ax},yAxis:{type:'value',name:'%',...sy,axisLabel:{formatter:'{value}%'}},series:[{type:'bar',barWidth:28,data:[69.1,11.4,4.5,7.8,7.3].map((v,i)=>({value:v,itemStyle:{color:i===0?C[0]:'#D1D5DB',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B',formatter:'{c}%'}}]});
-
-echarts.init(document.getElementById('c3b')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['当天','1天','2-3天','4-7天','8+天'],...ax},yAxis:{type:'value',name:'%',...sy,axisLabel:{formatter:'{value}%'}},series:[{type:'bar',barWidth:28,data:[71.4,11.2,3.9,7.2,6.3].map((v,i)=>({value:v,itemStyle:{color:i===0?C[1]:'#D1D5DB',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B',formatter:'{c}%'}}]});
-
-echarts.init(document.getElementById('c4a')).setOption({tooltip:{trigger:'item',formatter:'{b}: {c}万 ({d}%)',...tip},series:[{type:'pie',radius:['48%','74%'],center:['50%','54%'],itemStyle:{borderRadius:6,borderColor:'#fff',borderWidth:3},label:{formatter:'{b}\n{d}%',fontSize:12,color:'#6B6B6B'},data:[{value:36.27,name:'bird1',itemStyle:{color:C[0]}},{value:24.02,name:'bird3',itemStyle:{color:C[1]}},{value:16.59,name:'shequn',itemStyle:{color:C[3]}},{value:8.49,name:'bird2',itemStyle:{color:C[2]}}]}]});
-
-echarts.init(document.getElementById('c4b')).setOption({tooltip:{trigger:'item',formatter:'{b}: {c}万 ({d}%)',...tip},series:[{type:'pie',radius:['44%','70%'],center:['50%','54%'],itemStyle:{borderRadius:5,borderColor:'#fff',borderWidth:3},label:{formatter:'{b}\n{d}%',fontSize:10,color:'#6B6B6B'},data:[{value:35.49,name:'特惠礼包',itemStyle:{color:C[0]}},{value:18.84,name:'无限精力',itemStyle:{color:C[1]}},{value:6.16,name:'188币',itemStyle:{color:C[2]}},{value:5.09,name:'62币',itemStyle:{color:C[3]}},{value:10.23,name:'其他',itemStyle:{color:'#D1D5DB'}}]}]});
-
-echarts.init(document.getElementById('c4c')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:60,right:20,top:10,bottom:28},xAxis:{type:'value',...sy},yAxis:{type:'category',data:['3元','6元','12元','18元','45元','98元','158元','388元','518元'].reverse(),axisLabel:{color:'#6B6B6B',fontSize:11}},series:[{type:'bar',barWidth:16,data:[23886,5505,722,404,174,261,322,27,34].reverse().map((v,i)=>({value:v,itemStyle:{color:i>=6?C[0]:i>=3?C[1]:C[4],borderRadius:[0,4,4,0]}})),label:{show:true,position:'right',fontSize:9,color:'#6B6B6B',formatter:p=>p.value>500?p.value+'单':''}}]});
-
-echarts.init(document.getElementById('c5a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:70,right:16,top:16,bottom:28},xAxis:{type:'value',...sy},yAxis:{type:'category',data:['100+','51-100','21-50','11-20','6-10','2-5','1次'],axisLabel:{color:'#6B6B6B',fontSize:11}},series:[{type:'bar',barWidth:18,data:[646,677,1078,852,831,1713,1577].map((v,i)=>({value:v,itemStyle:{color:i<=1?'#DC2626':i<=3?C[0]:'#D1D5DB',borderRadius:[0,4,4,0]}})),label:{show:true,position:'right',fontSize:9,color:'#6B6B6B'}}]});
-
-echarts.init(document.getElementById('c6')).setOption({tooltip:{trigger:'item',formatter:'{b}: {c}人 ({d}%)',...tip},series:[{type:'pie',radius:['42%','68%'],center:['50%','54%'],itemStyle:{borderRadius:5,borderColor:'#fff',borderWidth:3},label:{formatter:'{b}\n{d}%',fontSize:11,color:'#6B6B6B'},data:[{value:2069,name:'特惠礼包',itemStyle:{color:'#DC2626'}},{value:1469,name:'无限精力',itemStyle:{color:C[0]}},{value:135,name:'62币',itemStyle:{color:C[1]}},{value:84,name:'头像框',itemStyle:{color:'#D1D5DB'}},{value:172,name:'其他',itemStyle:{color:'#F3F4F6'}}]}]});
-
-echarts.init(document.getElementById('c7a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:110,right:30,top:10,bottom:28},xAxis:{type:'value',name:'%',max:75,...sy,axisLabel:{formatter:'{value}%'}},yAxis:{type:'category',data:['精力','62币','340币','188币','礼包','丰富礼包','至尊礼包','8068币','豪华礼包','1568币','超大礼包'].reverse(),axisLabel:{color:'#6B6B6B',fontSize:10}},series:[{type:'bar',barWidth:14,data:[0.3,0.2,0.9,1.3,3.5,8.5,43.3,18.5,51.6,60.0,69.1].reverse().map(v=>({value:v,itemStyle:{color:v>20?'#DC2626':v>5?C[4]:C[0],borderRadius:[0,4,4,0]}})),label:{show:true,position:'right',fontSize:9,color:'#6B6B6B',formatter:'{c}%'}}]});
-
-echarts.init(document.getElementById('c8a')).setOption({tooltip:{trigger:'axis',...tip},legend:{data:['zimi','dudu','momohu','lixiong'],...leg},grid:G,xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月'],...ax},yAxis:{type:'value',name:'万',nameTextStyle:{color:'#A0A0A0'},...sy},series:[{name:'zimi',type:'line',data:[37.3,41.3,42.5,38.7,41.2,28.3],lineStyle:{width:2.5},itemStyle:{color:C[0]},symbol:'circle',symbolSize:6,smooth:true},{name:'dudu',type:'line',data:[17.6,19.7,20.9,17.6,16.1,13.5],lineStyle:{width:2.5},itemStyle:{color:C[1]},symbol:'circle',symbolSize:6,smooth:true},{name:'momohu',type:'line',data:[7.5,11.3,9.9,8.3,9.6,7.2],lineStyle:{width:2},itemStyle:{color:C[2]},symbol:'circle',symbolSize:5,smooth:true},{name:'lixiong',type:'line',data:[3.7,3.7,4.3,2.9,2.7,2.2],lineStyle:{width:2,type:'dashed'},itemStyle:{color:C[4]},symbol:'circle',symbolSize:5,smooth:true}]});
-
-echarts.init(document.getElementById('c11a')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:120,right:30,top:10,bottom:28},xAxis:{type:'value',name:'%',max:70,...sy,axisLabel:{formatter:'{value}%'}},yAxis:{type:'category',data:['精力','188币','丰富礼包','8068币','礼包','1568币','豪华礼包','至尊礼包','超大礼包','6368币','3168币'].reverse(),axisLabel:{color:'#6B6B6B',fontSize:10}},series:[{type:'bar',barWidth:14,data:[0.5,2.2,8.3,27.3,32.8,42.5,45.7,47.3,53.8,58.6,62.3].reverse().map(v=>({value:v,itemStyle:{color:v>30?'#DC2626':v>10?C[4]:C[1],borderRadius:[0,4,4,0]}})),label:{show:true,position:'right',fontSize:9,color:'#6B6B6B',formatter:'{c}%'}}]});
-
-echarts.init(document.getElementById('c11b')).setOption({tooltip:{trigger:'axis',...tip},grid:{left:50,right:16,top:16,bottom:28},xAxis:{type:'category',data:['周一','周二','周三','周四','周五','周六','周日'],...ax},yAxis:{type:'value',name:'%',...sy,axisLabel:{formatter:'{value}%'}},series:[{type:'bar',barWidth:28,data:[3.1,3.0,2.3,1.9,15.1,6.8,4.0].map((v,i)=>({value:v,itemStyle:{color:i===4?'#DC2626':'#7C3AED',borderRadius:[4,4,0,0]}})),label:{show:true,position:'top',fontSize:10,color:'#6B6B6B',formatter:'{c}%'}}]});
-
-window.addEventListener('resize',function(){document.querySelectorAll('.chart-box').forEach(function(el){var i=echarts.getInstanceByDom(el);if(i)i.resize()})});
+// 目标进度对比
+(function(){
+  var c=echarts.init(document.getElementById('chart-target'));
+  c.setOption({
+    tooltip:{trigger:'axis'},
+    grid:{left:60,right:20,top:20,bottom:30},
+    xAxis:{type:'category',data:['H1实际','7月','8月','9月','10月','11月','12月']},
+    yAxis:{type:'value',name:'万元'},
+    series:[
+      {name:'已确认',type:'bar',data:[89.19,10.32,null,null,null,null,null],itemStyle:{color:'#2a9d8f'},barWidth:'30%'},
+      {name:'按7月节奏',type:'bar',data:[null,null,10.32,10.32,10.32,10.32,10.32],itemStyle:{color:'#ddd'},barWidth:'30%'},
+      {name:'达标所需',type:'bar',data:[null,null,20.10,20.10,20.10,20.10,20.10],itemStyle:{color:'#e8734a'},barWidth:'30%'}
+    ],
+    legend:{data:['已确认','按7月节奏','达标所需'],top:0}
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
 </script>
+
 </body>
 </html>

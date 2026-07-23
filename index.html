@@ -2,74 +2,37 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>充值分析报告</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>社群充值全系列分析 · 2026.07.23</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f0f4f8;
-    color: #2d3748;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    padding: 60px 20px;
-  }
-  .container { max-width: 720px; width: 100%; }
-  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #1a202c; }
-  .subtitle { font-size: 14px; color: #718096; margin-bottom: 40px; }
-  .section-label { font-size: 13px; font-weight: 600; color: #a0aec0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-  .card-list { margin-bottom: 36px; }
-  .card {
-    display: flex; align-items: center; justify-content: space-between;
-    background: #fff; border-radius: 12px; padding: 20px 24px; margin-bottom: 10px;
-    text-decoration: none; color: inherit; border: 1px solid #e2e8f0; transition: all 0.2s;
-  }
-  .card:hover { border-color: #667eea; box-shadow: 0 4px 16px rgba(102,126,234,0.12); transform: translateY(-1px); }
-  .card-info h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-  .card-info p { font-size: 13px; color: #a0aec0; }
-  .card-badge { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
-  .badge-latest { background: #ebf4ff; color: #3182ce; }
-  .badge-activity { background: #fefcbf; color: #d69e2e; }
-  .footer { margin-top: 48px; font-size: 12px; color: #cbd5e0; text-align: center; }
+:root{--bg:#faf8f5;--card:#fff;--accent:#e8734a;--text:#2d2a26;--muted:#8a8580;--border:#ece8e2;--shadow:0 2px 12px rgba(0,0,0,.06);--radius:14px;--font:'DM Sans',sans-serif;--serif:'DM Serif Display',serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
+.hero{text-align:center;margin-bottom:40px}
+.hero h1{font-family:var(--serif);font-size:2.4rem;color:var(--accent);margin-bottom:8px}
+.hero p{color:var(--muted);font-size:1rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:900px;width:100%}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 32px;text-decoration:none;color:var(--text);transition:transform .2s,box-shadow .2s;border:1px solid var(--border)}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.card h2{font-family:var(--serif);font-size:1.2rem;color:var(--accent);margin-bottom:8px}
+.card p{font-size:.9rem;color:var(--muted);line-height:1.6}
+.card .tag{display:inline-block;background:#fef3ec;color:var(--accent);padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin-top:10px}
+footer{margin-top:48px;color:var(--muted);font-size:.8rem}
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>充值分析报告</h1>
-  <p class="subtitle">内部数据 · 仅供团队参考</p>
-
-  <div class="card-list">
-    <div class="section-label">订单分析</div>
-
-    <a class="card" href="magic_analysis_0624.html">
-      <div class="card-info">
-        <h3>社群充值全系列分析 · 2026.06.24</h3>
-        <p>Magic + VIP 全量分析 · 共性问题 · 分组对比 · 优惠券效果 · 运营优化清单</p>
-      </div>
-      <span class="card-badge badge-latest">最新</span>
-    </a>
-    <a class="card" href="order_analysis_0415.html">
-      <div class="card-info">
-        <h3>订单深度分析 · 2026.04.15</h3>
-        <p>社群组/VIP分组对比 · 优惠券策略 · 时段分析 · 运营建议</p>
-      </div>
-    </a>
-  </div>
-
-  <div class="card-list">
-    <div class="section-label">活动分析</div>
-
-    <a class="card" href="activity_analysis_v1.html">
-      <div class="card-info">
-        <h3>活动分析 v1</h3>
-        <p>积分兑换活动窗口期精准同比分析</p>
-      </div>
-      <span class="card-badge badge-activity">活动</span>
-    </a>
-  </div>
-
-  <div class="footer">© 2025 内部使用</div>
+<div class="hero">
+<h1>社群充值全系列分析</h1>
+<p>Magic + VIP 7月追踪 · 全年目标200万进度 · H2各账号月度目标 · 2026.07.23</p>
 </div>
+<div class="cards">
+<a class="card" href="magic_analysis_0624.html">
+<h2>📊 Magic系列深度分析</h2>
+<p>7月数据追踪、Promoter结构、用户留存、商品分析、全年200万目标进度、H2各账号月度目标与运营建议</p>
+<span class="tag">2026.07.23</span>
+</a>
+</div>
+<footer>© 2026 内部使用 · 数据来源：item-purchase</footer>
 </body>
 </html>
