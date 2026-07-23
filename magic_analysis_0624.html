@@ -8,64 +8,226 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
 <style>
 :root{
-  --bg:#faf8f5;--card:#fff;--accent:#e8734a;--accent2:#f4a261;--accent3:#2a9d8f;
-  --text:#2d2a26;--muted:#8a8580;--border:#ece8e2;--shadow:0 2px 12px rgba(0,0,0,.06);
-  --radius:14px;--font:'DM Sans',sans-serif;--serif:'DM Serif Display',serif;
+  --bg:#F7F5F2;
+  --card:#FFFFFF;
+  --accent:#C8553D;
+  --accent-soft:#FDF2EF;
+  --text:#1A1A1A;
+  --t2:#6B6B6B;
+  --t3:#A0A0A0;
+  --border:rgba(0,0,0,0.06);
+  --green:#059669;
+  --amber:#D97706;
+  --radius:14px;
+  --font:'DM Sans',sans-serif;
+  --serif:'DM Serif Display',serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;padding:0 0 60px}
-.hero{background:linear-gradient(135deg,#e8734a 0%,#f4a261 100%);color:#fff;padding:48px 0 36px;text-align:center}
-.hero h1{font-family:var(--serif);font-size:2.2rem;margin-bottom:8px}
-.hero p{opacity:.85;font-size:.95rem}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;padding:0 0 60px;position:relative;overflow-x:hidden}
+
+/* Grain texture overlay */
+body::before{
+  content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:9999;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:200px 200px;
+}
+
+/* Editorial header — warm cream bg, serif title */
+.header{
+  background:linear-gradient(180deg,#EDE8E2 0%,var(--bg) 100%);
+  padding:56px 0 40px;text-align:center;border-bottom:1px solid var(--border);
+}
+.header h1{
+  font-family:var(--serif);font-size:2.4rem;color:var(--text);
+  letter-spacing:-.5px;margin-bottom:10px;
+}
+.header p{color:var(--t2);font-size:.95rem;letter-spacing:.3px}
+.header .accent-line{
+  width:48px;height:3px;background:var(--accent);margin:18px auto 0;border-radius:2px;
+}
+
 .container{max-width:1100px;margin:0 auto;padding:0 20px}
-.conclusions{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 32px;margin:-24px auto 28px;position:relative;z-index:1;max-width:1100px}
+
+/* Section fade-up animation */
+.section, .conclusions, .kpi-strip, .goal-card, .rec-card{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+.section.visible, .conclusions.visible, .kpi-strip.visible, .goal-card.visible, .rec-card.visible{
+  opacity:1;transform:translateY(0);
+}
+
+/* Conclusions card */
+.conclusions{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 1px 8px rgba(0,0,0,.04);
+  padding:28px 32px;margin:-20px auto 28px;position:relative;z-index:1;max-width:1100px;
+  border:1px solid var(--border);
+}
 .conclusions h2{font-family:var(--serif);font-size:1.25rem;color:var(--accent);margin-bottom:14px}
 .conclusions ul{list-style:none;padding:0}
 .conclusions li{padding:8px 0;border-bottom:1px solid var(--border);font-size:.93rem}
 .conclusions li:last-child{border-bottom:none}
 .conclusions li::before{content:'→ ';color:var(--accent);font-weight:600}
-.kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px}
-.kpi{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;text-align:center}
-.kpi .label{font-size:.78rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+
+/* KPI strip */
+.kpi-strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px;
+}
+.kpi{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 1px 8px rgba(0,0,0,.04);
+  border:1px solid var(--border);padding:20px;text-align:center;
+  transition:box-shadow .25s,transform .25s;
+}
+.kpi:hover{box-shadow:0 4px 20px rgba(200,85,61,.1);transform:translateY(-2px)}
+.kpi .label{font-size:.78rem;color:var(--t3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;font-weight:600}
 .kpi .value{font-family:var(--serif);font-size:1.6rem;color:var(--accent)}
-.kpi .sub{font-size:.78rem;color:var(--muted);margin-top:2px}
-.section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 32px;margin-bottom:24px}
-.section h2{font-family:var(--serif);font-size:1.15rem;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.section h2 .num{background:var(--accent);color:#fff;border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font);font-size:.82rem;font-weight:700}
+.kpi .sub{font-size:.78rem;color:var(--t2);margin-top:2px}
+
+/* Sections */
+.section{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 1px 8px rgba(0,0,0,.04);
+  border:1px solid var(--border);
+  padding:28px 32px;margin-bottom:24px;
+  border-left:3px solid transparent;
+  transition:border-left-color .3s,box-shadow .3s,opacity .6s ease,transform .6s ease;
+}
+.section:hover{border-left-color:var(--accent);box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.section h2{
+  font-family:var(--serif);font-size:1.15rem;color:var(--text);
+  margin-bottom:6px;display:flex;align-items:center;gap:10px;
+}
+.section h2 .num{
+  background:var(--accent);color:#fff;border-radius:50%;
+  width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--font);font-size:.8rem;font-weight:700;flex-shrink:0;
+}
 .section h3{font-size:.92rem;color:var(--accent);margin:16px 0 8px;font-weight:600}
-.section p,.section li{font-size:.9rem;line-height:1.7}
+.section p,.section li{font-size:.9rem;line-height:1.7;color:var(--t2)}
 .section ul{padding-left:20px;margin:8px 0}
 .chart-box{width:100%;height:340px;margin:16px 0}
-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:12px 0}
-th{background:#f7f4f0;padding:10px 12px;text-align:left;font-weight:600;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
-td{padding:10px 12px;border-bottom:1px solid var(--border)}
+
+/* Tables */
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:.85rem;margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+th{
+  background:var(--accent-soft);padding:11px 14px;text-align:left;
+  font-weight:600;font-size:.78rem;color:var(--accent);
+  text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);
+}
+td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:nth-child(even) td{background:rgba(247,245,242,.5)}
 tr:last-child td{border-bottom:none}
-.highlight{background:#fef3ec;border-left:4px solid var(--accent);padding:14px 18px;border-radius:0 var(--radius) var(--radius) 0;margin:16px 0;font-size:.9rem}
-.tag{display:inline-block;background:var(--accent);color:#fff;padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin-right:6px}
-.tag-green{background:var(--accent3)}
-.tag-amber{background:var(--accent2)}
-.goal-card{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
-.goal-item{background:#f7f4f0;border-radius:10px;padding:16px 20px}
-.goal-item .glabel{font-size:.8rem;color:var(--muted)}
-.goal-item .gval{font-family:var(--serif);font-size:1.4rem;color:var(--accent)}
-.goal-item .gsub{font-size:.8rem;color:var(--muted);margin-top:2px}
-.rec-card{border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:12px 0}
-.rec-card h4{color:var(--accent);font-size:.95rem;margin-bottom:8px}
-.rec-card .prob{font-size:.82rem;color:var(--muted);margin-bottom:6px}
-.rec-card .act{font-size:.88rem}
-.rec-card .impact{font-size:.82rem;color:var(--accent3);margin-top:8px}
-.progress-bar{background:#ece8e2;border-radius:10px;height:18px;overflow:hidden;margin:8px 0}
-.progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s}
-footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:40px}
-@media(max-width:700px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.goal-card{grid-template-columns:1fr}.hero h1{font-size:1.5rem}}
+tr:hover td{background:var(--accent-soft)}
+
+/* Highlight / insight boxes */
+.highlight{
+  background:var(--accent-soft);border-left:4px solid var(--accent);
+  padding:14px 18px;border-radius:0 var(--radius) var(--radius) 0;
+  margin:16px 0;font-size:.9rem;color:var(--t2);line-height:1.7;
+}
+
+/* Tags */
+.tag{
+  display:inline-block;background:var(--accent);color:#fff;
+  padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin-right:6px;
+}
+.tag-green{background:var(--green)}
+.tag-amber{background:var(--amber)}
+
+/* Goal cards */
+.goal-card{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;
+}
+.goal-item{
+  background:var(--accent-soft);border-radius:12px;padding:18px 22px;
+  border:1px solid rgba(200,85,61,.08);position:relative;overflow:hidden;
+}
+.goal-item::after{
+  content:'';position:absolute;top:0;right:0;width:60px;height:100%;
+  background:linear-gradient(135deg,transparent 60%,rgba(200,85,61,.04));
+}
+.goal-item .glabel{font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.goal-item .gval{font-family:var(--serif);font-size:1.5rem;color:var(--accent);margin:4px 0 2px}
+.goal-item .gsub{font-size:.8rem;color:var(--t2)}
+
+/* Progress bar */
+.progress-bar{
+  background:rgba(0,0,0,.06);border-radius:10px;height:20px;overflow:hidden;margin:8px 0;
+}
+.progress-fill{
+  height:100%;border-radius:10px;
+  background:linear-gradient(90deg,var(--accent),#E8845A);
+  transition:width .8s cubic-bezier(.25,.46,.45,.94);
+  position:relative;
+}
+.progress-fill::after{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.25) 0%,transparent 100%);
+  border-radius:10px;
+}
+
+/* Recommendation cards */
+.rec-card{
+  border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin:14px 0;
+  position:relative;padding-left:72px;
+  transition:border-color .3s;
+}
+.rec-card:hover{border-color:rgba(200,85,61,.2)}
+.rec-card .rec-num{
+  position:absolute;left:22px;top:22px;
+  width:36px;height:36px;border-radius:50%;
+  background:var(--accent);color:#fff;
+  font-family:var(--serif);font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:400;
+}
+.rec-card h4{color:var(--text);font-size:.95rem;margin-bottom:8px;font-weight:600}
+.rec-card .prob{font-size:.85rem;color:var(--t2);margin-bottom:8px;line-height:1.6}
+.rec-card .act{font-size:.88rem;color:var(--text);line-height:1.6}
+.rec-card .impact{
+  font-size:.82rem;color:var(--green);margin-top:10px;
+  padding-top:10px;border-top:1px solid var(--border);font-weight:500;
+}
+
+/* PART headings */
+.part-heading{
+  font-family:var(--serif);font-size:1.1rem;color:var(--t3);
+  margin:32px 0 16px;letter-spacing:1.5px;text-transform:uppercase;
+}
+
+/* Footer */
+footer{
+  text-align:center;padding:40px 20px;margin-top:48px;
+  background:linear-gradient(180deg,var(--bg) 0%,#EDE8E2 100%);
+  border-top:1px solid var(--border);
+}
+footer .footer-brand{
+  font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:6px;
+}
+footer p{color:var(--t3);font-size:.8rem;letter-spacing:.3px}
+footer .accent-dot{color:var(--accent)}
+
+/* Responsive */
+@media(max-width:700px){
+  .kpi-strip{grid-template-columns:repeat(2,1fr)}
+  .goal-card{grid-template-columns:1fr}
+  .header h1{font-size:1.6rem}
+  .rec-card{padding-left:26px}
+  .rec-card .rec-num{position:static;margin-bottom:10px}
+  .section{padding:20px 18px}
+}
 </style>
 </head>
 <body>
 
-<div class="hero">
+<div class="header">
 <div class="container">
 <h1>Magic系列充值深度分析</h1>
 <p>2026年7月追踪 · 全年目标200万 · 分析日期 2026.07.23</p>
+<div class="accent-line"></div>
 </div>
 </div>
 
@@ -73,7 +235,7 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
 
 <!-- 核心结论 -->
 <div class="conclusions">
-<h2>📌 核心结论</h2>
+<h2>核心结论</h2>
 <ul>
 <li><strong>全系列564万</strong>，7月日均28,270元，与6月持平，大盘已企稳</li>
 <li><strong>Magic系列</strong>7月日均4,589元，比上半年日均4,928元下降6.9%，仍在下滑</li>
@@ -94,7 +256,7 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
 </div>
 
 <!-- PART 1 -->
-<h2 style="font-family:var(--serif);font-size:1.1rem;color:var(--muted);margin:24px 0 16px;letter-spacing:1px">PART 1 · 全系列共性分析</h2>
+<h2 class="part-heading">PART 1 · 全系列共性分析</h2>
 
 <div class="section">
 <h2><span class="num">01</span> 月度趋势</h2>
@@ -144,7 +306,7 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
 </div>
 
 <!-- PART 2 -->
-<h2 style="font-family:var(--serif);font-size:1.1rem;color:var(--muted);margin:24px 0 16px;letter-spacing:1px">PART 2 · MAGIC系列深度分析</h2>
+<h2 class="part-heading">PART 2 · Magic系列深度分析</h2>
 
 <div class="section">
 <h2><span class="num">04</span> Promoter 结构</h2>
@@ -164,7 +326,7 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
 <h2><span class="num">05</span> 留存与用户流动</h2>
 <table>
 <tr><th>月份转换</th><th>留存</th><th>留存率</th><th>流失</th><th>新增</th><th>净变动</th></tr>
-<tr><td>5→6月</td><td>2,538</td><td>75.0%</td><td>844</td><td>1,007</td><td style="color:var(--accent3)">+163</td></tr>
+<tr><td>5→6月</td><td>2,538</td><td>75.0%</td><td>844</td><td>1,007</td><td style="color:var(--green)">+163</td></tr>
 <tr><td>6→7月</td><td>2,353</td><td>66.4%</td><td>1,192</td><td>557</td><td style="color:var(--accent)">-635</td></tr>
 </table>
 <div class="highlight">7月留存率从75.0%降至66.4%，流失1,192人；新增仅266人（之前月均797人），新用户流入大幅萎缩，用户池进入净流出阶段</div>
@@ -186,7 +348,7 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
 </div>
 
 <!-- PART 3 -->
-<h2 style="font-family:var(--serif);font-size:1.1rem;color:var(--muted);margin:24px 0 16px;letter-spacing:1px">PART 3 · 全年目标追踪</h2>
+<h2 class="part-heading">PART 3 · 全年目标追踪</h2>
 
 <div class="section">
 <h2><span class="num">07</span> 目标进度</h2>
@@ -197,14 +359,14 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
 <div class="goal-item"><div class="glabel">月均需达</div><div class="gval">20.10万/月</div><div class="gsub">7月实际: 10.32万</div></div>
 </div>
 <div class="progress-bar"><div class="progress-fill" style="width:49.9%"></div></div>
-<p style="text-align:center;font-size:.85rem;color:var(--muted);margin-bottom:12px">49.9% 已完成 · 按7月节奏全年仅141万（70.5%）</p>
+<p style="text-align:center;font-size:.85rem;color:var(--t2);margin-bottom:12px">49.9% 已完成 · 按7月节奏全年仅141万（70.5%）</p>
 <div class="chart-box" id="chart-target"></div>
 <div class="highlight">按7月节奏（10.32万/月）全年仅141万，完成70.5%；需月均20.10万才能达标，缺口近一倍</div>
 </div>
 
 <div class="section">
 <h2><span class="num">08</span> H2 各账号月度目标</h2>
-<p>为达成200万目标，各账号需比上半年月均提升<strong>53%</strong>：</p>
+<p>为达成200万目标，各账号需比上半年月均提升<strong style="color:var(--accent)">53%</strong>：</p>
 <table>
 <tr><th>账号</th><th>H1月均(万)</th><th>H2目标(万)</th><th>提升幅度</th><th>7月实际(万)</th><th>差距</th></tr>
 <tr><td><strong>bird1</strong></td><td>6.32</td><td>9.67</td><td>+53%</td><td>5.11</td><td style="color:var(--accent)">-4.56</td></tr>
@@ -234,37 +396,41 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
 </div>
 
 <!-- PART 4 -->
-<h2 style="font-family:var(--serif);font-size:1.1rem;color:var(--muted);margin:24px 0 16px;letter-spacing:1px">PART 4 · 下半年运营建议</h2>
+<h2 class="part-heading">PART 4 · 下半年运营建议</h2>
 
 <div class="section">
 <h2><span class="num">10</span> 运营策略建议</h2>
 
 <div class="rec-card">
-<h4>1️⃣ 礼包CD提醒机制</h4>
+<span class="rec-num">1</span>
+<h4>礼包CD提醒机制</h4>
 <div class="prob"><span class="tag">问题</span>特惠礼包占44%但复购间隔长，用户买完即忘</div>
 <div class="act"><span class="tag tag-green">行动</span>记录上次礼包购买时间，第6天触发企微提醒，推送"礼包即将刷新"话术</div>
-<div class="impact">📈 预期：礼包复购率提升15-20%，拉近购买周期</div>
+<div class="impact">预期：礼包复购率提升15-20%，拉近购买周期</div>
 </div>
 
 <div class="rec-card">
-<h4>2️⃣ 用户画像分层运营</h4>
+<span class="rec-num">2</span>
+<h4>用户画像分层运营</h4>
 <div class="prob"><span class="tag">问题</span>7,640名用户一刀切运营，无法精准触达</div>
 <div class="act"><span class="tag tag-green">行动</span>建立三层标签体系：购买次数（1次/2-5次/6+次）、消费档位（低/中/高）、活跃度（活跃/沉默/流失）。针对不同层级推送阶梯券，推动消费升级</div>
-<div class="impact">📈 预期：高价值用户ARPU提升20%，沉默用户唤醒率10-15%</div>
+<div class="impact">预期：高价值用户ARPU提升20%，沉默用户唤醒率10-15%</div>
 </div>
 
 <div class="rec-card">
-<h4>3️⃣ 大额券定向投放</h4>
+<span class="rec-num">3</span>
+<h4>大额券定向投放</h4>
 <div class="prob"><span class="tag">问题</span>500-50优惠券广撒网，ROI低</div>
 <div class="act"><span class="tag tag-green">行动</span>仅对买过500+商品的用户投放，精准触达高消费用户；低消费用户推小额度券</div>
-<div class="impact">📈 预期：大额券核销率从15%提升至40%+，减少无效补贴</div>
+<div class="impact">预期：大额券核销率从15%提升至40%+，减少无效补贴</div>
 </div>
 
 <div class="rec-card">
-<h4>4️⃣ 新用户引流与沉默召回</h4>
+<span class="rec-num">4</span>
+<h4>新用户引流与沉默召回</h4>
 <div class="prob"><span class="tag">问题</span>7月新增仅266人，用户池萎缩</div>
 <div class="act"><span class="tag tag-green">行动</span>① Magic破冰后48h内推62币（低门槛），3天后推礼包；② 沉默用户分层召回：7天沉默→轻提醒、14天沉默→优惠券、30天沉默→大额券+话术</div>
-<div class="impact">📈 预期：新用户次日留存提升至30%+，沉默召回率8-12%</div>
+<div class="impact">预期：新用户次日留存提升至30%+，沉默召回率8-12%</div>
 </div>
 
 </div>
@@ -272,22 +438,45 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
 </div><!-- container -->
 
 <footer>
-© 2026 内部使用 · 数据来源：item-purchase · 分析日期：2026.07.23
+<div class="footer-brand">Magic Series <span class="accent-dot">·</span> Recharge Analysis</div>
+<p>© 2026 内部使用 · 数据来源：item-purchase · 分析日期：2026.07.23</p>
 </footer>
 
 <script>
+// Fade-up animation via IntersectionObserver
+(function(){
+  var targets=document.querySelectorAll('.section,.conclusions,.kpi-strip,.goal-card,.rec-card');
+  if('IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    },{threshold:0.08});
+    targets.forEach(function(el){obs.observe(el)});
+  }else{
+    // Fallback for older browsers
+    targets.forEach(function(el){el.classList.add('visible')});
+  }
+})();
+
+// Chart color palette
+var palette=['#C8553D','#E8845A','#2A9D8F','#264653','#E9C46A','#A0A0A0'];
+
 // 月度趋势堆叠柱状图
 (function(){
   var c=echarts.init(document.getElementById('chart-monthly'));
   c.setOption({
     tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
-    legend:{data:['Magic','VIP'],top:4},
+    legend:{data:['Magic','VIP'],top:4,textStyle:{fontFamily:'DM Sans',color:'#6B6B6B'}},
     grid:{left:60,right:20,top:40,bottom:30},
-    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月','7月(23天)']},
-    yAxis:{type:'value',name:'万元',axisLabel:{formatter:'{value}'}},
+    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月','7月(23天)'],axisLine:{lineStyle:{color:'rgba(0,0,0,0.06)'}},axisLabel:{color:'#6B6B6B'}},
+    yAxis:{type:'value',name:'万元',axisLabel:{formatter:'{value}',color:'#6B6B6B'},splitLine:{lineStyle:{color:'rgba(0,0,0,0.04)'}}},
     series:[
-      {name:'Magic',type:'bar',stack:'total',data:[15.72,13.66,16.95,14.60,13.85,14.41,10.57],itemStyle:{color:'#e8734a'},barWidth:'40%'},
-      {name:'VIP',type:'bar',stack:'total',data:[67.16,76.95,78.42,68.35,70.57,70.85,54.45],itemStyle:{color:'#2a9d8f'},barWidth:'40%'}
+      {name:'Magic',type:'bar',stack:'total',data:[15.72,13.66,16.95,14.60,13.85,14.41,10.57],itemStyle:{color:palette[0]},barWidth:'40%'},
+      {name:'VIP',type:'bar',stack:'total',data:[67.16,76.95,78.42,68.35,70.57,70.85,54.45],itemStyle:{color:palette[2]},barWidth:'40%'}
     ]
   });
   window.addEventListener('resize',function(){c.resize()});
@@ -299,17 +488,17 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
   c.setOption({
     tooltip:{trigger:'axis'},
     grid:{left:60,right:20,top:20,bottom:30},
-    xAxis:{type:'category',data:['1个月','2个月','3个月','4个月','5个月','6个月','7个月']},
-    yAxis:{type:'value',name:'%',axisLabel:{formatter:'{value}%'}},
+    xAxis:{type:'category',data:['1个月','2个月','3个月','4个月','5个月','6个月','7个月'],axisLine:{lineStyle:{color:'rgba(0,0,0,0.06)'}},axisLabel:{color:'#6B6B6B'}},
+    yAxis:{type:'value',name:'%',axisLabel:{formatter:'{value}%',color:'#6B6B6B'},splitLine:{lineStyle:{color:'rgba(0,0,0,0.04)'}}},
     series:[{type:'bar',data:[
-      {value:35.2,itemStyle:{color:'#e8734a'}},
-      {value:16.9,itemStyle:{color:'#f4a261'}},
-      {value:11.4,itemStyle:{color:'#f4a261'}},
-      {value:9.2,itemStyle:{color:'#e9c46a'}},
-      {value:8.3,itemStyle:{color:'#e9c46a'}},
-      {value:6.7,itemStyle:{color:'#2a9d8f'}},
-      {value:12.2,itemStyle:{color:'#264653'}}
-    ],barWidth:'45%',label:{show:true,position:'top',formatter:'{c}%',fontSize:12}}]
+      {value:35.2,itemStyle:{color:palette[0]}},
+      {value:16.9,itemStyle:{color:palette[1]}},
+      {value:11.4,itemStyle:{color:palette[1]}},
+      {value:9.2,itemStyle:{color:palette[4]}},
+      {value:8.3,itemStyle:{color:palette[4]}},
+      {value:6.7,itemStyle:{color:palette[2]}},
+      {value:12.2,itemStyle:{color:palette[3]}}
+    ],barWidth:'45%',label:{show:true,position:'top',formatter:'{c}%',fontSize:12,color:'#6B6B6B'}}]
   });
   window.addEventListener('resize',function(){c.resize()});
 })();
@@ -319,15 +508,15 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
   var c=echarts.init(document.getElementById('chart-promoter'));
   c.setOption({
     tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
-    legend:{data:['bird1','bird2','bird3','社群'],top:4},
+    legend:{data:['bird1','bird2','bird3','社群'],top:4,textStyle:{fontFamily:'DM Sans',color:'#6B6B6B'}},
     grid:{left:60,right:20,top:40,bottom:30},
-    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月','7月']},
-    yAxis:{type:'value',name:'万元'},
+    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月','7月'],axisLine:{lineStyle:{color:'rgba(0,0,0,0.06)'}},axisLabel:{color:'#6B6B6B'}},
+    yAxis:{type:'value',name:'万元',axisLabel:{color:'#6B6B6B'},splitLine:{lineStyle:{color:'rgba(0,0,0,0.04)'}}},
     series:[
-      {name:'bird1',type:'bar',stack:'m',data:[1.61,5.76,7.03,10.43,6.69,6.40,5.11],itemStyle:{color:'#e8734a'}},
-      {name:'bird2',type:'bar',stack:'m',data:[0.35,1.36,1.84,1.73,1.91,1.76,1.12],itemStyle:{color:'#f4a261'}},
-      {name:'bird3',type:'bar',stack:'m',data:[1.64,4.88,6.62,1.83,4.81,5.84,4.09],itemStyle:{color:'#2a9d8f'}},
-      {name:'社群',type:'bar',stack:'m',data:[12.12,1.66,1.46,0.61,0.44,0.41,0.25],itemStyle:{color:'#ccc'}}
+      {name:'bird1',type:'bar',stack:'m',data:[1.61,5.76,7.03,10.43,6.69,6.40,5.11],itemStyle:{color:palette[0]}},
+      {name:'bird2',type:'bar',stack:'m',data:[0.35,1.36,1.84,1.73,1.91,1.76,1.12],itemStyle:{color:palette[1]}},
+      {name:'bird3',type:'bar',stack:'m',data:[1.64,4.88,6.62,1.83,4.81,5.84,4.09],itemStyle:{color:palette[2]}},
+      {name:'社群',type:'bar',stack:'m',data:[12.12,1.66,1.46,0.61,0.44,0.41,0.25],itemStyle:{color:palette[5]}}
     ]
   });
   window.addEventListener('resize',function(){c.resize()});
@@ -339,14 +528,14 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
   c.setOption({
     tooltip:{trigger:'item',formatter:'{b}: {c}万 ({d}%)'},
     series:[{type:'pie',radius:['40%','70%'],avoidLabelOverlap:true,
-      label:{formatter:'{b}\n{d}%'},
+      label:{formatter:'{b}\n{d}%',color:'#6B6B6B'},
       data:[
-        {value:4.63,name:'特惠礼包',itemStyle:{color:'#e8734a'}},
-        {value:2.22,name:'精力',itemStyle:{color:'#f4a261'}},
-        {value:0.63,name:'188币',itemStyle:{color:'#e9c46a'}},
-        {value:0.59,name:'340币',itemStyle:{color:'#2a9d8f'}},
-        {value:0.56,name:'1568币',itemStyle:{color:'#264653'}},
-        {value:0.55,name:'62币',itemStyle:{color:'#999'}}
+        {value:4.63,name:'特惠礼包',itemStyle:{color:palette[0]}},
+        {value:2.22,name:'精力',itemStyle:{color:palette[1]}},
+        {value:0.63,name:'188币',itemStyle:{color:palette[4]}},
+        {value:0.59,name:'340币',itemStyle:{color:palette[2]}},
+        {value:0.56,name:'1568币',itemStyle:{color:palette[3]}},
+        {value:0.55,name:'62币',itemStyle:{color:palette[5]}}
       ]
     }]
   });
@@ -359,14 +548,14 @@ footer{text-align:center;padding:32px 20px;color:var(--muted);font-size:.8rem;bo
   c.setOption({
     tooltip:{trigger:'axis'},
     grid:{left:60,right:20,top:20,bottom:30},
-    xAxis:{type:'category',data:['H1实际','7月','8月','9月','10月','11月','12月']},
-    yAxis:{type:'value',name:'万元'},
+    xAxis:{type:'category',data:['H1实际','7月','8月','9月','10月','11月','12月'],axisLine:{lineStyle:{color:'rgba(0,0,0,0.06)'}},axisLabel:{color:'#6B6B6B'}},
+    yAxis:{type:'value',name:'万元',axisLabel:{color:'#6B6B6B'},splitLine:{lineStyle:{color:'rgba(0,0,0,0.04)'}}},
     series:[
-      {name:'已确认',type:'bar',data:[89.19,10.32,null,null,null,null,null],itemStyle:{color:'#2a9d8f'},barWidth:'30%'},
-      {name:'按7月节奏',type:'bar',data:[null,null,10.32,10.32,10.32,10.32,10.32],itemStyle:{color:'#ddd'},barWidth:'30%'},
-      {name:'达标所需',type:'bar',data:[null,null,20.10,20.10,20.10,20.10,20.10],itemStyle:{color:'#e8734a'},barWidth:'30%'}
+      {name:'已确认',type:'bar',data:[89.19,10.32,null,null,null,null,null],itemStyle:{color:palette[2]},barWidth:'30%'},
+      {name:'按7月节奏',type:'bar',data:[null,null,10.32,10.32,10.32,10.32,10.32],itemStyle:{color:'#E0DDD9'},barWidth:'30%'},
+      {name:'达标所需',type:'bar',data:[null,null,20.10,20.10,20.10,20.10,20.10],itemStyle:{color:palette[0]},barWidth:'30%'}
     ],
-    legend:{data:['已确认','按7月节奏','达标所需'],top:0}
+    legend:{data:['已确认','按7月节奏','达标所需'],top:0,textStyle:{fontFamily:'DM Sans',color:'#6B6B6B'}}
   });
   window.addEventListener('resize',function(){c.resize()});
 })();
