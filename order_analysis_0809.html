@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>充值中心 · 订单深度分析报告 2026 H1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans SC', -apple-system, sans-serif; background: #f0f4f8; color: #2d3748; }
+  .page { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+  .header-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .badge { background: #667eea; color: #fff; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 20px; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; color: #1a202c; }
+  .sub { font-size: 13px; color: #718096; margin-bottom: 28px; }
+  .section { margin-bottom: 40px; }
+  .section-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; color: #1a202c; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .kpi-card { background: #fff; border-radius: 12px; padding: 16px 20px; border: 1px solid #e2e8f0; }
+  .kpi-card.orange { border-left: 4px solid #f6a623; }
+  .kpi-card.green { border-left: 4px solid #38a169; }
+  .kpi-card.purple { border-left: 4px solid #a78bfa; }
+  .kpi-card.red { border-left: 4px solid #f56565; }
+  .kpi-label { font-size: 12px; color: #718096; margin-bottom: 6px; }
+  .kpi-value { font-size: 24px; font-weight: 700; color: #1a202c; }
+  .kpi-sub { font-size: 12px; color: #a0aec0; margin-top: 4px; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .card-desc { font-size: 12px; color: #a0aec0; margin-bottom: 12px; }
+  .chart { width: 100%; height: 320px; }
+  .chart-sm { width: 100%; height: 260px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 10px; background: #f7fafc; color: #4a5568; font-weight: 600; border-bottom: 1px solid #e2e8f0; }
+  td { padding: 8px 10px; border-bottom: 1px solid #edf2f7; }
+  .insight { background: #ebf8ff; border-left: 4px solid #4299e1; border-radius: 0 8px 8px 0; padding: 12px 16px; font-size: 13px; color: #2b6cb0; line-height: 1.7; margin-top: 12px; }
+  .insight-orange { background: #fffaf0; border-left-color: #ed8936; color: #7b4b1a; }
+  .insight-green { background: #f0fff4; border-left-color: #48bb78; color: #276749; }
+  .ops-card { background: #fff; border: 1px solid #e2e8f0; border-left: 4px solid #667eea; border-radius: 12px; padding: 20px 24px; }
+  .ops-card.orange { border-left-color: #ed8936; }
+  .ops-card.green { border-left-color: #48bb78; }
+  .ops-card h3 { font-size: 15px; margin-bottom: 10px; }
+  .ops-card ul { padding-left: 20px; }
+  .ops-card li { font-size: 13px; line-height: 2; color: #4a5568; }
+  .tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-right: 4px; }
+  .tag-blue { background: #ebf4ff; color: #3182ce; }
+  .tag-orange { background: #fffaf0; color: #dd6b20; }
+  .tag-green { background: #f0fff4; color: #38a169; }
+  .tag-red { background: #fff5f5; color: #e53e3e; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="header-top"><span class="badge">2026 H1 · 数据截至 8/9</span></div>
+<h1>充值中心 · 订单深度分析报告</h1>
+<p class="sub">数据范围：2026-01-01 ~ 2026-08-09（已剔除 8/10 当日不完整数据）&nbsp;|&nbsp; 有效订单 469,216 笔 &nbsp;|&nbsp; 总收入 ¥638.9万</p>
+
+<!-- ═══ 核心KPI ═══ -->
+<div class="section">
+  <div class="section-title">核心结论 · 收入起色评估</div>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Q1日均收入 (1/1-4/15)</div><div class="kpi-value">¥29,611</div><div class="kpi-sub">基准线</div></div>
+    <div class="kpi-card orange"><div class="kpi-label">Q2日均收入 (4/16-6/30)</div><div class="kpi-value">¥27,706</div><div class="kpi-sub">-6.4% vs Q1 · 下滑</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Q3日均收入 (7/1-8/9)</div><div class="kpi-value">¥29,358</div><div class="kpi-sub">-0.9% vs Q1 · 回升</div></div>
+    <div class="kpi-card purple"><div class="kpi-label">VIP组 Q3日均</div><div class="kpi-value">¥24,431</div><div class="kpi-sub">+0.9% vs Q1 · 已反超</div></div>
+    <div class="kpi-card red"><div class="kpi-label">社群组 Q3日均</div><div class="kpi-value">¥4,626</div><div class="kpi-sub">-9.8% vs Q1 · 走弱</div></div>
+    <div class="kpi-card orange"><div class="kpi-label">周五日均收入</div><div class="kpi-value">¥67,870</div><div class="kpi-sub">工作日 19,267 的 3.5x</div></div>
+  </div>
+  <div class="insight insight-green">
+    <strong>💡 核心结论</strong>：整体收入经历「Q1平稳 → Q2下滑 → Q3回升」的 V 型走势。<br>
+    Q2 日均收入 ¥27,706 较 Q1 下滑 6.4%，但 <strong>Q3 已回升至 ¥29,358（-0.9% vs Q1）</strong>，收入恢复中。<br>
+    回升完全由 <strong>VIP 组驱动</strong>（Q3日均 ¥24,431，超过 Q1 的 ¥24,206），核心是每周特惠礼包 + 大额风车币订单企稳；<br>
+    而 <strong>社群组持续走弱</strong>（Q3日均 ¥4,626，较 Q1 降 9.8%），是收入未能突破的关键拖累。
+  </div>
+</div>
+
+<!-- ═══ 月度趋势 ═══ -->
+<div class="section">
+  <div class="section-title">月度收入趋势</div>
+  <div class="card">
+    <div class="card-title">各月日均收入</div>
+    <div class="card-desc">2月最高 ¥32,361/天，4-6月走低，7月回升至 ¥30,267/天</div>
+    <div id="chartMonth" class="chart"></div>
+  </div>
+</div>
+
+<!-- ═══ 周维度 ═══ -->
+<div class="section">
+  <div class="section-title">周维度趋势</div>
+  <div class="card">
+    <div class="card-title">每周收入 & 日均（W01-W32）</div>
+    <div class="card-desc">W07-W11 春节后高峰，W18-W25 低谷，W27-W31 回升</div>
+    <div id="chartWeek" class="chart"></div>
+  </div>
+</div>
+
+<!-- ═══ 分组对比 ═══ -->
+<div class="section">
+  <div class="section-title">用户分组对比 · 谁在带动回升</div>
+  <div class="card">
+    <div class="card-title">VIP组 / 社群组 · 分阶段日均收入</div>
+    <div class="card-desc">Q1=1/1-4/15 &nbsp; Q2=4/16-6/30 &nbsp; Q3=7/1-8/9</div>
+    <div id="chartGroup" class="chart-sm"></div>
+  </div>
+  <div class="two-col" style="margin-top:16px">
+    <div class="card">
+      <div class="card-title">分组核心指标（Q3 阶段）</div>
+      <table>
+        <tr><th>指标</th><th>VIP组</th><th>社群组</th></tr>
+        <tr><td>覆盖用户</td><td>1,654</td><td>3,443</td></tr>
+        <tr><td>日均收入</td><td>¥24,431</td><td>¥4,626</td></tr>
+        <tr><td>客单价</td><td>¥32.11</td><td>¥3.90</td></tr>
+        <tr><td>ARPU</td><td>¥591</td><td>¥54</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">分组阶段变化（日均收入）</div>
+      <table>
+        <tr><th>日均收入</th><th>Q1</th><th>Q2</th><th>Q3</th></tr>
+        <tr><td>VIP组</td><td>¥24,206</td><td>¥22,666</td><td>¥24,431</td></tr>
+        <tr><td>社群组</td><td>¥5,130</td><td>¥4,648</td><td>¥4,626</td></tr>
+        <tr><td>自然量</td><td>¥275</td><td>¥393</td><td>¥301</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="insight insight-orange" style="margin-top:16px">
+    <strong>⚠️ 关键信号</strong>：VIP 组用户数从 Q1 的 2,387 人降至 Q3 的 1,654 人（-31%），但人均 ARPU 从 ¥1,065 升至 ¥591——<strong>收入回升靠的是头部大额用户贡献</strong>，而非用户面扩大，付费大盘的基础并不牢固。<br>
+    社群组用户流失更严重（Q1 6,075 → Q3 3,443，-43%），且客单价仅 ¥3.90，付费动力明显不足。
+  </div>
+</div>
+
+<!-- ═══ 商品结构 ═══ -->
+<div class="section">
+  <div class="section-title">商品结构分析</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">VIP组 · 商品收入 TOP8</div>
+      <div class="card-desc">每周特惠礼包是绝对主力</div>
+      <div id="chartVipItem" class="chart-sm"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">社群组 · 商品收入 TOP8</div>
+      <div class="card-desc">低档小额商品占主体</div>
+      <div id="chartSocialItem" class="chart-sm"></div>
+    </div>
+  </div>
+  <div class="ops-card" style="margin-top:16px">
+    <h3>📦 商品结构运营建议</h3>
+    <ul>
+      <li><span class="tag tag-green">VIP</span> 每周特惠礼包贡献 VIP 收入主体，客单 ¥151 稳定，建议维持档位策略并加大中高价位曝光</li>
+      <li><span class="tag tag-green">VIP</span> 8068风车币（客单 ¥579）是第二收入源，大额币种对 VIP 高付费用户吸引力强，可做定向增购引导</li>
+      <li><span class="tag tag-orange">社群</span> 10分钟无限精力（¥1/单）是引流钩子，但需搭配低档礼包转化付费</li>
+      <li><span class="tag tag-orange">社群</span> 社群客单价仅 ¥3.90，重点是推动从「小额尝鲜」走向「每周特惠礼包」的升级路径</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ 优惠券 ═══ -->
+<div class="section">
+  <div class="section-title">优惠券策略分析（分组）</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">社群组 · 各优惠券拉动收入 & 使用笔数</div>
+      <div class="card-desc">使用率 0.9%</div>
+      <div id="chartCoupSocial" class="chart-sm"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">VIP组 · 各优惠券拉动收入 & 使用笔数</div>
+      <div class="card-desc">使用率 6.0%</div>
+      <div id="chartCoupVip" class="chart-sm"></div>
+    </div>
+  </div>
+  <div class="ops-card orange" style="margin-top:16px">
+    <h3>🎟️ 优惠券策略建议</h3>
+    <ul>
+      <li><span class="tag tag-green">VIP</span> 满120减12 拉动 ¥38.3万（1,775笔），是 VIP 主力券，维持投放</li>
+      <li><span class="tag tag-green">VIP</span> 满500减50 仅 134笔（拉动 ¥6.5万），大额券触达人群窄，需配合高付费用户精准推送</li>
+      <li><span class="tag tag-orange">社群</span> 满111减11 是社群拉动第一（¥9.9万），但笔数仅 626，社群券使用率整体仅 0.9%——<strong>发券不少、核销极低</strong>，重点应优化推送触达而非加码面额</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ 时段分析 ═══ -->
+<div class="section">
+  <div class="section-title">时段分析 · 工作日 / 周五 / 周末</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">社群组 · 各时段日均订单量</div>
+      <div class="card-desc">周五 20-22时 高峰明显（新关发布拉升）</div>
+      <div id="chartSocialHour" class="chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">VIP组 · 各时段日均收入</div>
+      <div class="card-desc">周五 14时 是绝对峰值（¥10,314/h）</div>
+      <div id="chartVipHour" class="chart"></div>
+    </div>
+  </div>
+  <div class="ops-card" style="margin-top:16px">
+    <h3>⏰ 推送时段优化建议</h3>
+    <ul>
+      <li><span class="tag tag-orange">周五</span> 14时 VIP 收入峰值 ¥10,314/h（全场最强），VIP 大额礼包/大额券应在 <strong>周五 13-14时</strong> 前触达</li>
+      <li><span class="tag tag-blue">工作日</span> 社群订单高峰 20-22时，VIP 工作日 14-16时 & 20-22时 双峰，推送设在 <strong>20:00</strong> 可双覆盖</li>
+      <li><span class="tag tag-green">周末</span> 全天相对平稳，VIP 周末 11-15时 偏强，可做周末礼包专属推送</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ 周五专题 ═══ -->
+<div class="section">
+  <div class="section-title">周五新关日专题 · 32周数据</div>
+  <div class="card">
+    <div class="card-title">每个周五收入</div>
+    <div class="card-desc">周五日均 ¥67,870，工作日 19,267 的 3.5x</div>
+    <div id="chartFriday" class="chart-sm"></div>
+    <div class="insight insight-orange">
+      周五依然是 <strong>最确定性的高收入日</strong>（3.5x 工作日），运营活动（满送、大额券）应优先保障周五档期。<br>
+      7-8月周五收入维持 ¥55,847 ~ ¥73,500，无衰减迹象，说明新关发布机制仍稳定。
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 增长建议 ═══ -->
+<div class="section">
+  <div class="section-title">📈 增长关注点</div>
+  <div class="ops-card green">
+    <h3>下一阶段增长策略</h3>
+    <ul>
+      <li><strong>止住社群下滑</strong>：社群 Q3 日均较 Q1 降 9.8%，用户流失 43%。需排查社群触达链路（推送频次、落地页、首充引导），先止跌再谈增长</li>
+      <li><strong>扩大 VIP 用户面</strong>：VIP 收入靠头部拉动，但用户数从 Q1 2,387 降至 Q3 1,654。应针对「中等付费」（ARPU ¥200-500）客群做升级券，培育新的中坚层</li>
+      <li><strong>稳定周五基本盘</strong>：32个周五贡献约 ¥217万，占总收入 34%，新关 + 满送 + 大额券的固定组合要保</li>
+      <li><strong>8月展望</strong>：8月1-9日日均 ¥26,225 低于 7月（¥30,267），存在回落风险，需关注 8月中下旬 是否有新增长点</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+var D = {"total_rev": 6389110.99, "total_cnt": 469216, "phase": {"Q1": {"days": 105, "cnt": 225421, "rev": 3109105.44, "daily": 29610.53}, "Q2": {"days": 76, "cnt": 164362, "rev": 2105693.68, "daily": 27706.5}, "Q3": {"days": 40, "cnt": 79433, "rev": 1174311.87, "daily": 29357.8}}, "months": {"2026-01": {"cnt": 68741, "rev": 828761.4, "daily": 26734.24, "days": 31}, "2026-02": {"cnt": 49349, "rev": 906110.05, "daily": 32361.07, "days": 28}, "2026-03": {"cnt": 71410, "rev": 953703.5, "daily": 30764.63, "days": 31}, "2026-04": {"cnt": 69048, "rev": 829488.86, "daily": 27649.63, "days": 30}, "2026-05": {"cnt": 66675, "rev": 844162.81, "daily": 27231.06, "days": 31}, "2026-06": {"cnt": 64560, "rev": 852572.5, "daily": 28419.08, "days": 30}, "2026-07": {"cnt": 62610, "rev": 938286.96, "daily": 30267.32, "days": 31}, "2026-08": {"cnt": 16823, "rev": 236024.91, "daily": 26224.99, "days": 9}}, "groups": {"vip": {"Q1": {"daily": 24206.11, "cnt": 75263, "rev": 2541642.0, "users": 2387, "arpu": 1064.79, "aov": 33.77}, "Q2": {"daily": 22665.96, "cnt": 56335, "rev": 1722612.62, "users": 1967, "arpu": 875.76, "aov": 30.58}, "Q3": {"daily": 24430.58, "cnt": 30438, "rev": 977223.02, "users": 1654, "arpu": 590.82, "aov": 32.11}}, "social": {"Q1": {"daily": 5129.86, "cnt": 144342, "rev": 538635.06, "users": 6075, "arpu": 88.66, "aov": 3.73}, "Q2": {"daily": 4648.0, "cnt": 104644, "rev": 353248.0, "users": 4755, "arpu": 74.29, "aov": 3.38}, "Q3": {"daily": 4626.44, "cnt": 47450, "rev": 185057.59, "users": 3443, "arpu": 53.75, "aov": 3.9}}, "natural": {"Q1": {"daily": 274.56, "cnt": 5816, "rev": 28828.38, "users": 306, "arpu": 94.21, "aov": 4.96}, "Q2": {"daily": 392.54, "cnt": 3383, "rev": 29833.06, "users": 235, "arpu": 126.95, "aov": 8.82}, "Q3": {"daily": 300.78, "cnt": 1545, "rev": 12031.26, "users": 140, "arpu": 85.94, "aov": 7.79}}}, "weeks": {"W01": {"cnt": 9091, "rev": 139440.47, "daily": 34860.12}, "W02": {"cnt": 16747, "rev": 184629.91, "daily": 26375.7}, "W03": {"cnt": 16423, "rev": 169157.17, "daily": 24165.31}, "W04": {"cnt": 15630, "rev": 179242.42, "daily": 25606.06}, "W05": {"cnt": 12590, "rev": 175622.07, "daily": 25088.87}, "W06": {"cnt": 14956, "rev": 187545.57, "daily": 26792.22}, "W07": {"cnt": 11739, "rev": 219517.19, "daily": 31359.6}, "W08": {"cnt": 9513, "rev": 259292.96, "daily": 37041.85}, "W09": {"cnt": 13135, "rev": 248010.99, "daily": 35430.14}, "W10": {"cnt": 15554, "rev": 231753.46, "daily": 33107.64}, "W11": {"cnt": 16793, "rev": 246704.94, "daily": 35243.56}, "W12": {"cnt": 17175, "rev": 203048.35, "daily": 29006.91}, "W13": {"cnt": 15608, "rev": 207824.21, "daily": 29689.17}, "W14": {"cnt": 16001, "rev": 192699.3, "daily": 27528.47}, "W15": {"cnt": 17028, "rev": 192026.16, "daily": 27432.31}, "W16": {"cnt": 16772, "rev": 215556.92, "daily": 30793.85}, "W17": {"cnt": 15944, "rev": 203052.46, "daily": 29007.49}, "W18": {"cnt": 14051, "rev": 167809.24, "daily": 23972.75}, "W19": {"cnt": 15204, "rev": 180804.34, "daily": 25829.19}, "W20": {"cnt": 15041, "rev": 180105.58, "daily": 25729.37}, "W21": {"cnt": 15337, "rev": 207798.36, "daily": 29685.48}, "W22": {"cnt": 14891, "rev": 170584.55, "daily": 24369.22}, "W23": {"cnt": 14795, "rev": 196383.8, "daily": 28054.83}, "W24": {"cnt": 14344, "rev": 207133.96, "daily": 29590.57}, "W25": {"cnt": 15591, "rev": 201936.8, "daily": 28848.11}, "W26": {"cnt": 15560, "rev": 204314.32, "daily": 29187.76}, "W27": {"cnt": 14894, "rev": 211338.47, "daily": 30191.21}, "W28": {"cnt": 14720, "rev": 219801.53, "daily": 31400.22}, "W29": {"cnt": 13471, "rev": 188751.15, "daily": 26964.45}, "W30": {"cnt": 14013, "rev": 212356.96, "daily": 30336.71}, "W31": {"cnt": 13909, "rev": 208509.09, "daily": 29787.01}, "W32": {"cnt": 12696, "rev": 176358.29, "daily": 25194.04}}, "daytype": {"wkd": {"cnt": 258182, "rev": 2408415.42, "daily": 19267.32}, "fri": {"cnt": 76034, "rev": 2171852.94, "daily": 67870.4}, "wke": {"cnt": 135000, "rev": 1808842.63, "daily": 28263.17}}, "fri_avg": 67870.4, "fri_list": [70770.89, 69308.37, 60590.01, 71514.47, 69805.08, 72262.49, 74765.28, 73401.09, 78275.76, 71347.23, 71628.93, 73165.97, 75765.86, 69581.42, 67764.63, 59586.62, 69732.8, 58437.32, 57201.62, 62972.49, 58868.81, 58710.43, 63178.84, 73658.03, 58663.43, 69723.62, 70921.44, 73499.56, 55847.08, 70819.07, 73360.65, 66723.65], "items": {"vip": [{"name": "每周特惠礼包", "cnt": 17370, "rev": 2621286.72}, {"name": "8068个风车币", "cnt": 1222, "rev": 707751.04}, {"name": "至尊礼包", "cnt": 888, "rev": 463470.03}, {"name": "1568个风车币", "cnt": 2162, "rev": 240585.04}, {"name": "超大礼包", "cnt": 1636, "rev": 223038.02}, {"name": "丰富礼包", "cnt": 3062, "rev": 185983.05}, {"name": "340个风车币", "cnt": 6627, "rev": 178854.07}, {"name": "豪华礼包", "cnt": 631, "rev": 176866.0}, {"name": "3168个风车币", "cnt": 582, "rev": 130680.0}, {"name": "10分钟无限精力", "cnt": 111612, "rev": 111536.76}], "social": [{"name": "每周特惠礼包", "cnt": 40449, "rev": 454240.58}, {"name": "10分钟无限精力", "cnt": 235082, "rev": 234517.7}, {"name": "188个风车币", "cnt": 4710, "rev": 76237.03}, {"name": "62个风车币", "cnt": 11899, "rev": 64234.8}, {"name": "340个风车币", "cnt": 2306, "rev": 62241.01}, {"name": "1568个风车币", "cnt": 519, "rev": 56521.02}, {"name": "丰富礼包", "cnt": 802, "rev": 48665.01}, {"name": "超大礼包", "cnt": 183, "rev": 24639.01}, {"name": "至尊礼包", "cnt": 36, "rev": 18849.0}, {"name": "8068个风车币", "cnt": 29, "rev": 16828.0}]}, "coupons": {"vip": {"list": [{"name": "满120减12", "cnt": 4082, "rev": 982225.0}, {"name": "满111减11", "cnt": 1775, "rev": 383199.0}, {"name": "满100减10", "cnt": 1348, "rev": 271405.0}, {"name": "满90减10", "cnt": 431, "rev": 70679.0}, {"name": "满500减50", "cnt": 134, "rev": 64690.0}, {"name": "满6减1", "cnt": 564, "rev": 61320.0}, {"name": "满300减30", "cnt": 128, "rev": 59839.0}, {"name": "满50减5", "cnt": 440, "rev": 57819.0}], "rate": 6.0}, "social": {"list": [{"name": "满111减11", "cnt": 626, "rev": 99297.0}, {"name": "满120减12", "cnt": 297, "rev": 54308.0}, {"name": "满100减10", "cnt": 146, "rev": 21497.0}, {"name": "满6减1", "cnt": 365, "rev": 15611.4}, {"name": "满90减10", "cnt": 93, "rev": 12358.0}, {"name": "满50减5", "cnt": 79, "rev": 7914.0}, {"name": "满300减30", "cnt": 15, "rev": 6800.0}, {"name": "满500减50", "cnt": 9, "rev": 4288.0}], "rate": 0.9}}, "hours": {"social": {"wkd_cnt": [61.5, 60.8, 37.9, 25.1, 17.2, 12.0, 13.1, 16.9, 34.1, 53.3, 51.2, 48.7, 65.4, 74.9, 75.0, 78.1, 67.8, 54.8, 62.3, 80.9, 87.1, 95.9, 93.4, 71.1], "fri_cnt": [55.4, 56.4, 34.3, 22.8, 15.5, 10.6, 11.9, 13.4, 31.1, 44.7, 38.5, 35.7, 48.2, 57.4, 61.3, 62.9, 64.1, 53.6, 53.6, 110.9, 123.0, 127.6, 133.3, 94.1], "wke_cnt": [42.2, 48.2, 40.7, 26.1, 17.9, 14.2, 13.8, 16.5, 27.5, 37.2, 53.7, 53.7, 62.3, 77.0, 82.3, 81.5, 77.0, 70.9, 69.1, 78.3, 87.2, 92.4, 95.1, 72.6]}, "vip": {"wkd_rev": [597, 443, 258, 178, 151, 203, 265, 355, 524, 649, 701, 627, 706, 639, 995, 985, 878, 675, 687, 906, 986, 860, 866, 630], "fri_rev": [568, 441, 360, 157, 188, 263, 279, 246, 460, 679, 998, 696, 743, 1286, 10314, 5314, 3507, 3176, 5253, 6981, 6040, 5087, 4293, 3092], "wke_rev": [1348, 842, 585, 334, 358, 233, 515, 496, 958, 1229, 1433, 1373, 1089, 1260, 1255, 1057, 929, 834, 967, 1067, 1375, 1135, 1197, 980]}}};
+var months = Object.keys(D.months);
+var monthRevs = months.map(function(m){return D.months[m].daily});
+
+(function(){
+  var c = echarts.init(document.getElementById('chartMonth'));
+  c.setOption({
+    tooltip:{trigger:'axis',formatter:function(ps){var p=ps[0];return p.name+'<br>日均收入 ¥'+p.value.toLocaleString();}},
+    grid:{top:20,left:70,right:20,bottom:30},
+    xAxis:{type:'category',data:months,axisLabel:{color:'#718096'}},
+    yAxis:{type:'value',axisLabel:{color:'#718096',formatter:function(v){return (v/10000).toFixed(1)+'万'}},splitLine:{lineStyle:{color:'#edf2f7'}}},
+    series:[{type:'bar',data:monthRevs,barMaxWidth:28,
+      itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#667eea'},{offset:1,color:'#a78bfa'}]),borderRadius:[4,4,0,0]},
+      label:{show:true,position:'top',fontSize:10,formatter:function(p){return (p.value/10000).toFixed(2)+'万'}}}]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+
+(function(){
+  var c = echarts.init(document.getElementById('chartWeek'));
+  var wks = Object.keys(D.weeks);
+  var revs = wks.map(function(w){return D.weeks[w].rev/10000});
+  var dlys = wks.map(function(w){return D.weeks[w].daily});
+  c.setOption({
+    tooltip:{trigger:'axis'},
+    legend:{bottom:0,textStyle:{color:'#4a5568',fontSize:11}},
+    grid:{top:20,bottom:40,left:70,right:20},
+    xAxis:{type:'category',data:wks,axisLabel:{color:'#718096',fontSize:10}},
+    yAxis:{type:'value',axisLabel:{color:'#718096',formatter:function(v){return v+'万'}},splitLine:{lineStyle:{color:'#edf2f7'}}},
+    series:[
+      {name:'周收入(万)',type:'bar',data:revs,barMaxWidth:12,itemStyle:{color:'#a78bfa',opacity:.7}},
+      {name:'日均(万)',type:'line',data:dlys,itemStyle:{color:'#ed8936'},lineStyle:{width:2},smooth:true}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+
+(function(){
+  var c = echarts.init(document.getElementById('chartGroup'));
+  var phs = ['Q1','Q2','Q3'];
+  var vip = phs.map(function(p){return D.groups.vip[p].daily});
+  var soc = phs.map(function(p){return D.groups.social[p].daily});
+  c.setOption({
+    tooltip:{trigger:'axis',valueFormatter:function(v){return '¥'+Number(v).toLocaleString()}},
+    legend:{bottom:0,textStyle:{color:'#4a5568',fontSize:11}},
+    grid:{top:20,bottom:30,left:80,right:20},
+    xAxis:{type:'category',data:['Q1 (1/1-4/15)','Q2 (4/16-6/30)','Q3 (7/1-8/9)'],axisLabel:{color:'#718096'}},
+    yAxis:{type:'value',axisLabel:{color:'#718096',formatter:function(v){return (v/10000).toFixed(1)+'万'}},splitLine:{lineStyle:{color:'#edf2f7'}}},
+    series:[
+      {name:'VIP组日均收入',type:'bar',data:vip,barMaxWidth:40,itemStyle:{color:'#f87171',borderRadius:[4,4,0,0]}},
+      {name:'社群组日均收入',type:'bar',data:soc,barMaxWidth:40,itemStyle:{color:'#60a5fa',borderRadius:[4,4,0,0]}}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+
+function itemChart(id, items, color){
+  var c = echarts.init(document.getElementById(id));
+  var names = items.map(function(i){return i.name});
+  var revs = items.map(function(i){return i.rev});
+  var cnts = items.map(function(i){return i.cnt});
+  c.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    legend:{bottom:0,textStyle:{color:'#4a5568',fontSize:11}},
+    grid:{top:20,bottom:60,left:90,right:60},
+    xAxis:{type:'value',axisLabel:{color:'#718096',formatter:function(v){return v>=10000?(v/10000).toFixed(0)+'万':v}}},
+    yAxis:{type:'category',data:names,axisLabel:{color:'#2d3748',fontSize:11,width:120,overflow:'truncate'},inverse:true},
+    series:[
+      {name:'拉动收入(元)',type:'bar',data:revs,itemStyle:{color:color,borderRadius:[0,4,4,0]},barMaxWidth:22},
+      {name:'使用笔数',type:'bar',data:cnts,itemStyle:{color:'#fbbf24',borderRadius:[0,4,4,0]},barMaxWidth:22}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+}
+itemChart('chartVipItem', D.items.vip, '#f87171');
+itemChart('chartSocialItem', D.items.social, '#60a5fa');
+
+function coupChart(id, list, color){
+  var c = echarts.init(document.getElementById(id));
+  var names = list.map(function(i){return i.name});
+  var revs = list.map(function(i){return i.rev});
+  var cnts = list.map(function(i){return i.cnt});
+  c.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    legend:{bottom:0,textStyle:{color:'#4a5568',fontSize:11}},
+    grid:{top:20,bottom:60,left:90,right:60},
+    xAxis:{type:'value',axisLabel:{color:'#718096',formatter:function(v){return v>=10000?(v/10000).toFixed(0)+'万':v}}},
+    yAxis:{type:'category',data:names,axisLabel:{color:'#2d3748',fontSize:11,width:120,overflow:'truncate'},inverse:true},
+    series:[
+      {name:'拉动收入(元)',type:'bar',data:revs,itemStyle:{color:color,borderRadius:[0,4,4,0]},barMaxWidth:22},
+      {name:'使用笔数',type:'bar',data:cnts,itemStyle:{color:'#fbbf24',borderRadius:[0,4,4,0]},barMaxWidth:22}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+}
+coupChart('chartCoupSocial', D.coupons.social.list, '#60a5fa');
+coupChart('chartCoupVip', D.coupons.vip.list, '#f87171');
+
+(function(){
+  var c = echarts.init(document.getElementById('chartSocialHour'));
+  var h = [];
+  for(var i=0;i<24;i++) h.push(i+':00');
+  var s = D.hours.social;
+  c.setOption({
+    tooltip:{trigger:'axis'},
+    legend:{bottom:0,textStyle:{color:'#4a5568',fontSize:11}},
+    grid:{top:20,bottom:40,left:60,right:20},
+    xAxis:{type:'category',data:h,axisLabel:{color:'#718096',fontSize:10}},
+    yAxis:{type:'value',axisLabel:{color:'#718096'},splitLine:{lineStyle:{color:'#edf2f7'}}},
+    series:[
+      {name:'工作日',type:'line',data:s.wkd_cnt,itemStyle:{color:'#667eea'},smooth:true},
+      {name:'周五',type:'line',data:s.fri_cnt,itemStyle:{color:'#f6a623'},smooth:true},
+      {name:'周末',type:'line',data:s.wke_cnt,itemStyle:{color:'#38a169'},smooth:true}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+
+(function(){
+  var c = echarts.init(document.getElementById('chartVipHour'));
+  var h = [];
+  for(var i=0;i<24;i++) h.push(i+':00');
+  var v = D.hours.vip;
+  c.setOption({
+    tooltip:{trigger:'axis',valueFormatter:function(x){return '¥'+Number(x).toLocaleString()}},
+    legend:{bottom:0,textStyle:{color:'#4a5568',fontSize:11}},
+    grid:{top:20,bottom:40,left:80,right:20},
+    xAxis:{type:'category',data:h,axisLabel:{color:'#718096',fontSize:10}},
+    yAxis:{type:'value',axisLabel:{color:'#718096',formatter:function(v){return (v/10000).toFixed(1)+'万'}},splitLine:{lineStyle:{color:'#edf2f7'}}},
+    series:[
+      {name:'工作日',type:'line',data:v.wkd_rev,itemStyle:{color:'#667eea'},smooth:true},
+      {name:'周五',type:'line',data:v.fri_rev,itemStyle:{color:'#f6a623'},smooth:true},
+      {name:'周末',type:'line',data:v.wke_rev,itemStyle:{color:'#38a169'},smooth:true}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+
+(function(){
+  var c = echarts.init(document.getElementById('chartFriday'));
+  var fri = D.fri_list;
+  c.setOption({
+    tooltip:{trigger:'axis',valueFormatter:function(v){return '¥'+Number(v).toLocaleString()}},
+    grid:{top:20,bottom:30,left:80,right:20},
+    xAxis:{type:'category',data:fri.map(function(_,i){return 'F'+(i+1)}),axisLabel:{color:'#718096',fontSize:10}},
+    yAxis:{type:'value',axisLabel:{color:'#718096',formatter:function(v){return (v/10000).toFixed(1)+'万'}},splitLine:{lineStyle:{color:'#edf2f7'}}},
+    series:[{type:'bar',data:fri,barMaxWidth:20,
+      itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#ed8936'},{offset:1,color:'#f6ad55'}]),borderRadius:[4,4,0,0]},
+      markLine:{data:[{type:'average',name:'均值'}],lineStyle:{color:'#e53e3e',type:'dashed'},label:{formatter:'均值 ¥'+Number(D.fri_avg).toLocaleString()}}}]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+</script>
+</body>
+</html>
