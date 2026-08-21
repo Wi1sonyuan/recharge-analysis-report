@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Magic系列充值分析 · 2026.08.21</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+:root{
+  --bg:#F7F5F2;
+  --card:#FFFFFF;
+  --accent:#C8553D;
+  --accent-soft:#FDF2EF;
+  --text:#1A1A1A;
+  --t2:#6B6B6B;
+  --t3:#A0A0A0;
+  --border:rgba(0,0,0,0.06);
+  --green:#059669;
+  --amber:#D97706;
+  --radius:14px;
+  --font:'DM Sans',sans-serif;
+  --serif:'DM Serif Display',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;padding:0 0 60px;position:relative;overflow-x:hidden}
+
+/* Grain texture overlay */
+body::before{
+  content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:9999;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:200px 200px;
+}
+
+/* Editorial header — warm cream bg, serif title */
+.header{
+  background:linear-gradient(180deg,#EDE8E2 0%,var(--bg) 100%);
+  padding:56px 0 40px;text-align:center;border-bottom:1px solid var(--border);
+}
+.header h1{
+  font-family:var(--serif);font-size:2.4rem;color:var(--text);
+  letter-spacing:-.5px;margin-bottom:10px;
+}
+.header p{color:var(--t2);font-size:.95rem;letter-spacing:.3px}
+.header .accent-line{
+  width:48px;height:3px;background:var(--accent);margin:18px auto 0;border-radius:2px;
+}
+
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* Section fade-up animation */
+.section, .conclusions, .kpi-strip, .goal-card, .rec-card{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+.section.visible, .conclusions.visible, .kpi-strip.visible, .goal-card.visible, .rec-card.visible{
+  opacity:1;transform:translateY(0);
+}
+
+/* Conclusions card */
+.conclusions{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 1px 8px rgba(0,0,0,.04);
+  padding:28px 32px;margin:-20px auto 28px;position:relative;z-index:1;max-width:1100px;
+  border:1px solid var(--border);
+}
+.conclusions h2{font-family:var(--serif);font-size:1.25rem;color:var(--accent);margin-bottom:14px}
+.conclusions ul{list-style:none;padding:0}
+.conclusions li{padding:8px 0;border-bottom:1px solid var(--border);font-size:.93rem}
+.conclusions li:last-child{border-bottom:none}
+.conclusions li::before{content:'→ ';color:var(--accent);font-weight:600}
+
+/* KPI strip */
+.kpi-strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px;
+}
+.kpi{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 1px 8px rgba(0,0,0,.04);
+  border:1px solid var(--border);padding:20px;text-align:center;
+  transition:box-shadow .25s,transform .25s;
+}
+.kpi:hover{box-shadow:0 4px 20px rgba(200,85,61,.1);transform:translateY(-2px)}
+.kpi .label{font-size:.78rem;color:var(--t3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.kpi .value{font-family:var(--serif);font-size:1.6rem;color:var(--accent)}
+.kpi .sub{font-size:.78rem;color:var(--t2);margin-top:2px}
+
+/* Sections */
+.section{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 1px 8px rgba(0,0,0,.04);
+  border:1px solid var(--border);
+  padding:28px 32px;margin-bottom:24px;
+  border-left:3px solid transparent;
+  transition:border-left-color .3s,box-shadow .3s,opacity .6s ease,transform .6s ease;
+}
+.section:hover{border-left-color:var(--accent);box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.section h2{
+  font-family:var(--serif);font-size:1.15rem;color:var(--text);
+  margin-bottom:6px;display:flex;align-items:center;gap:10px;
+}
+.section h2 .num{
+  background:var(--accent);color:#fff;border-radius:50%;
+  width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--font);font-size:.8rem;font-weight:700;flex-shrink:0;
+}
+.section h3{font-size:.92rem;color:var(--accent);margin:16px 0 8px;font-weight:600}
+.section p,.section li{font-size:.9rem;line-height:1.7;color:var(--t2)}
+.section ul{padding-left:20px;margin:8px 0}
+.chart-box{width:100%;height:340px;margin:16px 0}
+
+/* Tables */
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:.85rem;margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+th{
+  background:var(--accent-soft);padding:11px 14px;text-align:left;
+  font-weight:600;font-size:.78rem;color:var(--accent);
+  text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);
+}
+td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:nth-child(even) td{background:rgba(247,245,242,.5)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--accent-soft)}
+
+/* Highlight / insight boxes */
+.highlight{
+  background:var(--accent-soft);border-left:4px solid var(--accent);
+  padding:14px 18px;border-radius:0 var(--radius) var(--radius) 0;
+  margin:16px 0;font-size:.9rem;color:var(--t2);line-height:1.7;
+}
+
+/* Tags */
+.tag{
+  display:inline-block;background:var(--accent);color:#fff;
+  padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin-right:6px;
+}
+.tag-green{background:var(--green)}
+.tag-amber{background:var(--amber)}
+
+/* Goal cards */
+.goal-card{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;
+}
+.goal-item{
+  background:var(--accent-soft);border-radius:12px;padding:18px 22px;
+  border:1px solid rgba(200,85,61,.08);position:relative;overflow:hidden;
+}
+.goal-item::after{
+  content:'';position:absolute;top:0;right:0;width:60px;height:100%;
+  background:linear-gradient(135deg,transparent 60%,rgba(200,85,61,.04));
+}
+.goal-item .glabel{font-size:.78rem;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.goal-item .gval{font-family:var(--serif);font-size:1.5rem;color:var(--accent);margin:4px 0 2px}
+.goal-item .gsub{font-size:.8rem;color:var(--t2)}
+
+/* Progress bar */
+.progress-bar{
+  background:rgba(0,0,0,.06);border-radius:10px;height:20px;overflow:hidden;margin:8px 0;
+}
+.progress-fill{
+  height:100%;border-radius:10px;
+  background:linear-gradient(90deg,var(--accent),#E8845A);
+  transition:width .8s cubic-bezier(.25,.46,.45,.94);
+  position:relative;
+}
+.progress-fill::after{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.25) 0%,transparent 100%);
+  border-radius:10px;
+}
+
+/* Recommendation cards */
+.rec-card{
+  border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin:14px 0;
+  position:relative;padding-left:72px;
+  transition:border-color .3s;
+}
+.rec-card:hover{border-color:rgba(200,85,61,.2)}
+.rec-card .rec-num{
+  position:absolute;left:22px;top:22px;
+  width:36px;height:36px;border-radius:50%;
+  background:var(--accent);color:#fff;
+  font-family:var(--serif);font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:400;
+}
+.rec-card h4{color:var(--text);font-size:.95rem;margin-bottom:8px;font-weight:600}
+.rec-card .prob{font-size:.85rem;color:var(--t2);margin-bottom:8px;line-height:1.6}
+.rec-card .act{font-size:.88rem;color:var(--text);line-height:1.6}
+.rec-card .impact{
+  font-size:.82rem;color:var(--green);margin-top:10px;
+  padding-top:10px;border-top:1px solid var(--border);font-weight:500;
+}
+
+/* PART headings */
+.part-heading{
+  font-family:var(--serif);font-size:1.1rem;color:var(--t3);
+  margin:32px 0 16px;letter-spacing:1.5px;text-transform:uppercase;
+}
+
+/* Footer */
+footer{
+  text-align:center;padding:40px 20px;margin-top:48px;
+  background:linear-gradient(180deg,var(--bg) 0%,#EDE8E2 100%);
+  border-top:1px solid var(--border);
+}
+footer .footer-brand{
+  font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:6px;
+}
+footer p{color:var(--t3);font-size:.8rem;letter-spacing:.3px}
+footer .accent-dot{color:var(--accent)}
+
+/* Responsive */
+@media(max-width:700px){
+  .kpi-strip{grid-template-columns:repeat(2,1fr)}
+  .goal-card{grid-template-columns:1fr}
+  .header h1{font-size:1.6rem}
+  .rec-card{padding-left:26px}
+  .rec-card .rec-num{position:static;margin-bottom:10px}
+  .section{padding:20px 18px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<div class="container">
+<h1>Magic系列充值深度分析</h1>
+<p>2026年8月追踪 · 全年目标200万 · 数据截至8月20日</p>
+<div class="accent-line"></div>
+</div>
+</div>
+
+<div class="container">
+
+<!-- 核心结论 -->
+<div class="conclusions">
+<h2>核心结论</h2>
+<ul>
+<li><strong>全系列693.56万</strong>，7月日均30,267元，8月(截至20日)日均27,324元</li>
+<li><strong>Magic系列全年累计112.91万</strong>，目标200万，完成56.5%，进度仍落后</li>
+<li><strong>Magic 8月日均<strong>4,430元</strong>，比上半年日均4,928元下降10.1%，创历史新高低</strong>，目标200万，完成49.9%，后5个月需再做100万</li>
+<li>7→8月留存率<strong>64.1%</strong>（正常偏低水平），流失1,153人</li>
+<li>7月新增<strong>353人</strong>，8月(截至20日)<strong>294人</strong>，新用户持续萎缩</li>
+</ul>
+</div>
+
+<!-- KPI Strip -->
+<div class="kpi-strip">
+<div class="kpi"><div class="label">全系列累计</div><div class="value">693.56万</div><div class="sub">日均 28,648 元</div></div>
+<div class="kpi"><div class="label">Magic组</div><div class="value">99.74万</div><div class="sub">完成 53.8%</div></div>
+<div class="kpi"><div class="label">VIP组</div><div class="value">468万</div><div class="sub">159K单</div></div>
+<div class="kpi"><div class="label">Magic目标</div><div class="value">200万</div><div class="sub">缺口 87.09万</div></div>
+<div class="kpi"><div class="label">7月Magic日均</div><div class="value">4,589元</div><div class="sub">-5.0% vs 上半年</div></div>
+<div class="kpi"><div class="label">月活用户</div><div class="value">2,622人</div><div class="sub">7月3,209 ↓19%</div>
+<div class="kpi"><div class="label">8月新增</div><div class="value">294人</div><div class="sub">7月353 ↓17%</div>
+</div>
+
+<!-- PART 1 -->
+<h2 class="part-heading">PART 1 · 全系列共性分析</h2>
+
+<div class="section">
+<h2><span class="num">01</span> 月度趋势</h2>
+<div class="chart-box" id="chart-monthly"></div>
+<table>
+<tr><th>月份</th><th>收入(万)</th><th>天数</th><th>日均(元)</th><th>环比</th></tr>
+<tr><td>1月</td><td>82.88</td><td>31</td><td>26,734</td><td>—</td></tr>
+<tr><td>2月</td><td>90.61</td><td>28</td><td>32,361</td><td>+21.1%</td></tr>
+<tr><td>3月</td><td>95.37</td><td>31</td><td>30,765</td><td>-4.9%</td></tr>
+<tr><td>4月</td><td>82.95</td><td>30</td><td>27,650</td><td>-10.1%</td></tr>
+<tr><td>5月</td><td>84.42</td><td>31</td><td>27,231</td><td>-1.5%</td></tr>
+<tr><td>6月</td><td>85.26</td><td>30</td><td>28,419</td><td>+4.4%</td></tr>
+<tr><td>7月</td><td>65.02</td><td>23</td><td>28,270</td><td>-0.5%</td></tr>
+</table>
+<div class="highlight">7月日均28,270元与6月基本持平，大盘已企稳；但Magic组仍在下滑通道</div>
+</div>
+
+<div class="section">
+<h2><span class="num">02</span> 用户生命周期</h2>
+<p>Magic用户按首次出现月份至今的活跃月数分布（7个月数据）：</p>
+<div class="chart-box" id="chart-lifecycle"></div>
+<table>
+<tr><th>活跃月数</th><th>占比</th><th>说明</th></tr>
+<tr><td>1个月</td><td>35.2%</td><td>仅出现1次即流失</td></tr>
+<tr><td>2个月</td><td>16.9%</td><td></td></tr>
+<tr><td>3个月</td><td>11.4%</td><td></td></tr>
+<tr><td>4个月</td><td>9.2%</td><td></td></tr>
+<tr><td>5个月</td><td>8.3%</td><td></td></tr>
+<tr><td>6个月</td><td>6.7%</td><td></td></tr>
+<tr><td>7个月（全）</td><td>12.2%</td><td>贯穿全部7个月的核心用户</td></tr>
+</table>
+<div class="highlight"><strong>12.2%</strong> 的用户贯穿全部7个月，是Magic系列的基石；<strong>35.2%</strong> 仅出现1次即流失，拉新转化需重点关注</div>
+</div>
+
+<div class="section">
+<h2><span class="num">03</span> 购买间隔分布</h2>
+<p>同一天内多次购买 vs 间隔天数分布：</p>
+<table>
+<tr><th>间隔</th><th>Magic</th><th>VIP</th></tr>
+<tr><td>当天复购</td><td>69.1%</td><td>71.4%</td></tr>
+<tr><td>1天</td><td>11.4%</td><td>11.2%</td></tr>
+<tr><td>2-3天</td><td>4.5%</td><td>3.9%</td></tr>
+<tr><td>4-7天</td><td>7.8%</td><td>7.2%</td></tr>
+<tr><td>8+天</td><td>7.3%</td><td>6.3%</td></tr>
+</table>
+<div class="highlight">近7成购买发生在同一天内（冲动型），购买后48h是激活复购的黄金窗口</div>
+</div>
+
+<!-- PART 2 -->
+<h2 class="part-heading">PART 2 · Magic系列深度分析</h2>
+
+<div class="section">
+<h2><span class="num">04</span> Promoter 结构</h2>
+<p>Magic各promoter（magicbird1/2/3 + 社群）月度收入：</p>
+<div class="chart-box" id="chart-promoter"></div>
+<table>
+<tr><th>Promoter</th><th>1月</th><th>2月</th><th>3月</th><th>4月</th><th>5月</th><th>6月</th><th>7月</th></tr>
+<tr><td><strong>magicbird1</strong></td><td>1.61</td><td>5.76</td><td>7.03</td><td>10.43</td><td>6.69</td><td>6.40</td><td>5.11</td></tr>
+<tr><td><strong>magicbird2</strong></td><td>0.35</td><td>1.36</td><td>1.84</td><td>1.73</td><td>1.91</td><td>1.76</td><td>1.12</td></tr>
+<tr><td><strong>magicbird3</strong></td><td>1.64</td><td>4.88</td><td>6.62</td><td>1.83</td><td>4.81</td><td>5.84</td><td>4.09</td></tr>
+<tr><td>社群</td><td>12.12</td><td>1.66</td><td>1.46</td><td>0.61</td><td>0.44</td><td>0.41</td><td>0.25</td></tr>
+</table>
+<div class="highlight"><strong>bird1</strong> 7月回升至6.91万但8月仅1.87万；<strong>bird3</strong> 波动大，3月6.62万为峰值；<strong>社群</strong> 已从1月12万萎缩至0.25万，自然出清</div>
+</div>
+
+<div class="section">
+<h2><span class="num">05</span> 留存与用户流动</h2>
+<table>
+<tr><th>月份转换</th><th>留存</th><th>留存率</th><th>流失</th><th>新增</th><th>净变动</th></tr>
+<tr><td>5→6月</td><td>2,538</td><td>75.0%</td><td>844</td><td>1,007</td><td style="color:var(--green)">+163</td></tr>
+<tr><td>6→7月</td><td>2,353</td><td>66.4%</td><td>1,192</td><td>557</td><td style="color:var(--accent)">-635</td></tr>
+</table>
+<div class="highlight">7月留存率从75.0%降至66.4%，流失1,192人；新增仅266人（之前月均797人），新用户流入大幅萎缩，用户池进入净流出阶段</div>
+</div>
+
+<div class="section">
+<h2><span class="num">06</span> 7月商品结构</h2>
+<div class="chart-box" id="chart-product"></div>
+<table>
+<tr><th>商品</th><th>收入(万)</th><th>占比</th></tr>
+<tr><td>特惠礼包</td><td>4.63</td><td>43.9%</td></tr>
+<tr><td>精力</td><td>2.22</td><td>21.0%</td></tr>
+<tr><td>188币</td><td>0.63</td><td>6.0%</td></tr>
+<tr><td>340币</td><td>0.59</td><td>5.7%</td></tr>
+<tr><td>1568币</td><td>0.56</td><td>5.4%</td></tr>
+<tr><td>62币</td><td>0.55</td><td>5.2%</td></tr>
+</table>
+<div class="highlight">特惠礼包占43.9%为绝对主力，精力占21%为第二支柱；大额币包（1568币）占比5.4%，客单价贡献可观</div>
+</div>
+
+<!-- PART 3 -->
+<h2 class="part-heading">PART 3 · 全年目标追踪</h2>
+
+<div class="section">
+<h2><span class="num">07</span> 目标进度</h2>
+<div class="goal-card">
+<div class="goal-item"><div class="glabel">全年目标</div><div class="gval">200万</div><div class="gsub">bird1 + bird2 + bird3</div></div>
+<div class="goal-item"><div class="glabel">已完成</div><div class="gval">112.91万</div><div class="gsub">H1: 89.19 + Jul: 14.52 + Aug: 9.20</div></div>
+<div class="goal-item"><div class="glabel">剩余目标</div><div class="gval">87.09万</div><div class="gsub">~4.3个月</div></div>
+<div class="goal-item"><div class="glabel">月均需达</div><div class="gval">20.25万/月</div><div class="gsub">8月推算: 13.87万</div></div>
+</div>
+<div class="progress-bar"><div class="progress-fill" style="width:56.5%"></div></div>
+<p style="text-align:center;font-size:.85rem;color:var(--t2);margin-bottom:12px">56.5% 已完成 · 按7月节奏全年仅141万（70.5%）</p>
+<div class="chart-box" id="chart-target"></div>
+<div class="highlight">按7月节奏（10.32万/月）全年仅141万，完成70.5%；需月均20.10万才能达标，缺口近一倍</div>
+</div>
+
+<div class="section">
+<h2><span class="num">08</span> H2 各账号月度目标</h2>
+<p>为达成200万目标，各账号需比上半年月均提升<strong style="color:var(--accent)">53%</strong>：</p>
+<table>
+<tr><th>账号</th><th>H1月均(万)</th><th>H2目标(万)</th><th>提升幅度</th><th>7月实际(万)</th><th>差距</th></tr>
+<tr><td><strong>bird1</strong></td><td>6.32</td><td>9.67</td><td>+53%</td><td>5.11</td><td style="color:var(--accent)">-4.56</td></tr>
+<tr><td><strong>bird3</strong></td><td>4.27</td><td>6.54</td><td>+53%</td><td>4.09</td><td style="color:var(--accent)">-2.45</td></tr>
+<tr><td><strong>bird2</strong></td><td>1.49</td><td>2.28</td><td>+53%</td><td>1.12</td><td style="color:var(--accent)">-1.16</td></tr>
+<tr><td>社群</td><td>—</td><td>—</td><td>自然萎缩</td><td>0.25</td><td>—</td></tr>
+</table>
+<div class="highlight">三个账号7月实际均远低于H2目标，bird1差距最大（-4.56万）；若不采取措施，200万目标难以达成</div>
+</div>
+
+<div class="section">
+<h2><span class="num">09</span> 达标可能性分析</h2>
+<h3>各账号历史峰值 vs 目标</h3>
+<table>
+<tr><th>账号</th><th>目标(万)</th><th>历史峰值</th><th>峰值月份</th><th>能否达标</th></tr>
+<tr><td>bird1</td><td>9.67</td><td>10.43</td><td>4月</td><td><span class="tag tag-green">✓ 可以</span></td></tr>
+<tr><td>bird3</td><td>6.54</td><td>6.62</td><td>3月</td><td><span class="tag tag-green">✓ 勉强</span></td></tr>
+<tr><td>bird2</td><td>2.28</td><td>1.91</td><td>5月</td><td><span class="tag">✗ 需创新高</span></td></tr>
+</table>
+<h3>理想情景 vs 现实</h3>
+<div class="highlight">
+<strong>理想：</strong>bird1=9.67 + bird3=6.54 + bird2=2.28 = <strong>18.49万/月</strong>，全年可达200万<br>
+<strong>现实：</strong>bird1=9.67 + bird3=6.54 + bird2=1.91（历史峰值）= <strong>18.12万/月</strong><br>
+<strong>推算：</strong>89.19 + 10.32 + 18.12×5 = <strong>190.25万（95%）</strong>，仍差约10万<br>
+<strong>核心难点：</strong>三个号需同时保持在巅峰状态，概率极低；bird2需突破历史新高
+</div>
+</div>
+
+<!-- PART 4 -->
+<h2 class="part-heading">PART 4 · 下半年运营建议</h2>
+
+<div class="section">
+<h2><span class="num">10</span> 运营策略建议</h2>
+
+<div class="rec-card">
+<span class="rec-num">1</span>
+<h4>礼包CD提醒机制</h4>
+<div class="prob"><span class="tag">问题</span>特惠礼包占44%但复购间隔长，用户买完即忘</div>
+<div class="act"><span class="tag tag-green">行动</span>记录上次礼包购买时间，第6天触发企微提醒，推送"礼包即将刷新"话术</div>
+<div class="impact">预期：礼包复购率提升15-20%，拉近购买周期</div>
+</div>
+
+<div class="rec-card">
+<span class="rec-num">2</span>
+<h4>用户画像分层运营</h4>
+<div class="prob"><span class="tag">问题</span>7,640名用户一刀切运营，无法精准触达</div>
+<div class="act"><span class="tag tag-green">行动</span>建立三层标签体系：购买次数（1次/2-5次/6+次）、消费档位（低/中/高）、活跃度（活跃/沉默/流失）。针对不同层级推送阶梯券，推动消费升级</div>
+<div class="impact">预期：高价值用户ARPU提升20%，沉默用户唤醒率10-15%</div>
+</div>
+
+<div class="rec-card">
+<span class="rec-num">3</span>
+<h4>大额券定向投放</h4>
+<div class="prob"><span class="tag">问题</span>500-50优惠券广撒网，ROI低</div>
+<div class="act"><span class="tag tag-green">行动</span>仅对买过500+商品的用户投放，精准触达高消费用户；低消费用户推小额度券</div>
+<div class="impact">预期：大额券核销率从15%提升至40%+，减少无效补贴</div>
+</div>
+
+<div class="rec-card">
+<span class="rec-num">4</span>
+<h4>新用户引流与沉默召回</h4>
+<div class="prob"><span class="tag">问题</span>7月新增仅266人，用户池萎缩</div>
+<div class="act"><span class="tag tag-green">行动</span>① Magic破冰后48h内推62币（低门槛），3天后推礼包；② 沉默用户分层召回：7天沉默→轻提醒、14天沉默→优惠券、30天沉默→大额券+话术</div>
+<div class="impact">预期：新用户次日留存提升至30%+，沉默召回率8-12%</div>
+</div>
+
+</div>
+
+</div><!-- container -->
+
+<footer>
+<div class="footer-brand">Magic Series <span class="accent-dot">·</span> Recharge Analysis</div>
+<p>© 2026 内部使用 · 数据来源：item-purchase · 数据截至：2026.08.20</p>
+</footer>
+
+<script>
+// Fade-up animation via IntersectionObserver
+(function(){
+  var targets=document.querySelectorAll('.section,.conclusions,.kpi-strip,.goal-card,.rec-card');
+  if('IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    },{threshold:0.08});
+    targets.forEach(function(el){obs.observe(el)});
+  }else{
+    // Fallback for older browsers
+    targets.forEach(function(el){el.classList.add('visible')});
+  }
+})();
+
+// Chart color palette
+var palette=['#C8553D','#E8845A','#2A9D8F','#264653','#E9C46A','#A0A0A0'];
+
+// 月度趋势堆叠柱状图
+(function(){
+  var c=echarts.init(document.getElementById('chart-monthly'));
+  c.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    legend:{data:['Magic','VIP'],top:4,textStyle:{fontFamily:'DM Sans',color:'#6B6B6B'}},
+    grid:{left:60,right:20,top:40,bottom:30},
+    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月','7月(23天)'],axisLine:{lineStyle:{color:'rgba(0,0,0,0.06)'}},axisLabel:{color:'#6B6B6B'}},
+    yAxis:{type:'value',name:'万元',axisLabel:{formatter:'{value}',color:'#6B6B6B'},splitLine:{lineStyle:{color:'rgba(0,0,0,0.04)'}}},
+    series:[
+      {name:'Magic',type:'bar',stack:'total',data:[15.72,13.66,16.95,14.61,13.85,14.40,14.52,9.20],itemStyle:{color:palette[0]},barWidth:'40%'},
+      {name:'VIP',type:'bar',stack:'total',data:[67.16,76.95,78.42,68.35,70.57,70.85,54.45],itemStyle:{color:palette[2]},barWidth:'40%'}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+
+// 用户生命周期
+(function(){
+  var c=echarts.init(document.getElementById('chart-lifecycle'));
+  c.setOption({
+    tooltip:{trigger:'axis'},
+    grid:{left:60,right:20,top:20,bottom:30},
+    xAxis:{type:'category',data:['1个月','2个月','3个月','4个月','5个月','6个月','7个月'],axisLine:{lineStyle:{color:'rgba(0,0,0,0.06)'}},axisLabel:{color:'#6B6B6B'}},
+    yAxis:{type:'value',name:'%',axisLabel:{formatter:'{value}%',color:'#6B6B6B'},splitLine:{lineStyle:{color:'rgba(0,0,0,0.04)'}}},
+    series:[{type:'bar',data:[
+      {value:35.2,itemStyle:{color:palette[0]}},
+      {value:16.9,itemStyle:{color:palette[1]}},
+      {value:11.4,itemStyle:{color:palette[1]}},
+      {value:9.2,itemStyle:{color:palette[4]}},
+      {value:8.3,itemStyle:{color:palette[4]}},
+      {value:6.7,itemStyle:{color:palette[2]}},
+      {value:12.2,itemStyle:{color:palette[3]}}
+    ],barWidth:'45%',label:{show:true,position:'top',formatter:'{c}%',fontSize:12,color:'#6B6B6B'}}]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+
+// Promoter堆叠
+(function(){
+  var c=echarts.init(document.getElementById('chart-promoter'));
+  c.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+    legend:{data:['bird1','bird2','bird3','社群'],top:4,textStyle:{fontFamily:'DM Sans',color:'#6B6B6B'}},
+    grid:{left:60,right:20,top:40,bottom:30},
+    xAxis:{type:'category',data:['1月','2月','3月','4月','5月','6月','7月'],axisLine:{lineStyle:{color:'rgba(0,0,0,0.06)'}},axisLabel:{color:'#6B6B6B'}},
+    yAxis:{type:'value',name:'万元',axisLabel:{color:'#6B6B6B'},splitLine:{lineStyle:{color:'rgba(0,0,0,0.04)'}}},
+    series:[
+      {name:'bird1',type:'bar',stack:'m',data:[1.61,5.76,7.03,10.43,6.69,6.40,6.91,4.49],itemStyle:{color:palette[0]}},
+      {name:'bird2',type:'bar',stack:'m',data:[0.35,1.36,1.84,1.73,1.91,1.76,1.53,0.82],itemStyle:{color:palette[1]}},
+      {name:'bird3',type:'bar',stack:'m',data:[1.64,4.88,6.62,1.83,4.81,5.84,5.75,3.61],itemStyle:{color:palette[2]}},
+      {name:'社群',type:'bar',stack:'m',data:[12.12,1.66,1.46,0.61,0.44,0.41,0.33,0.29],itemStyle:{color:palette[5]}}
+    ]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+
+// 商品结构饼图
+(function(){
+  var c=echarts.init(document.getElementById('chart-product'));
+  c.setOption({
+    tooltip:{trigger:'item',formatter:'{b}: {c}万 ({d}%)'},
+    series:[{type:'pie',radius:['40%','70%'],avoidLabelOverlap:true,
+      label:{formatter:'{b}\n{d}%',color:'#6B6B6B'},
+      data:[
+        {value:4.63,name:'特惠礼包',itemStyle:{color:palette[0]}},
+        {value:2.22,name:'精力',itemStyle:{color:palette[1]}},
+        {value:0.63,name:'188币',itemStyle:{color:palette[4]}},
+        {value:0.59,name:'340币',itemStyle:{color:palette[2]}},
+        {value:0.56,name:'1568币',itemStyle:{color:palette[3]}},
+        {value:0.55,name:'62币',itemStyle:{color:palette[5]}}
+      ]
+    }]
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+
+// 目标进度对比
+(function(){
+  var c=echarts.init(document.getElementById('chart-target'));
+  c.setOption({
+    tooltip:{trigger:'axis'},
+    grid:{left:60,right:20,top:20,bottom:30},
+    xAxis:{type:'category',data:['H1实际','7月','8月','9月','10月','11月','12月'],axisLine:{lineStyle:{color:'rgba(0,0,0,0.06)'}},axisLabel:{color:'#6B6B6B'}},
+    yAxis:{type:'value',name:'万元',axisLabel:{color:'#6B6B6B'},splitLine:{lineStyle:{color:'rgba(0,0,0,0.04)'}}},
+    series:[
+      {name:'已确认',type:'bar',data:[89.19,14.52,9.20,null,null,null,null],itemStyle:{color:palette[2]},barWidth:'30%'},
+      {name:'按7月节奏',type:'bar',data:[null,null,null,4.62,4.62,4.62,4.62],itemStyle:{color:'#E0DDD9'},barWidth:'30%'},
+      {name:'达标所需',type:'bar',data:[null,null,20.25,20.25,20.25,20.25,20.25],itemStyle:{color:palette[0]},barWidth:'30%'}
+    ],
+    legend:{data:['已确认','按7月节奏','达标所需'],top:0,textStyle:{fontFamily:'DM Sans',color:'#6B6B6B'}}
+  });
+  window.addEventListener('resize',function(){c.resize()});
+})();
+</script>
+
+</body>
+</html>
